@@ -8,8 +8,8 @@ COMMON_FLAGS = -std=c++17 -Wall -Werror -Wpedantic
 DEBUG_FLAGS = -g -O0
 RELEASE_FLAGS = -O3
 
-BIN = ../bin
-SRC = *.cpp
+BIN = bin
+SRC = src/*.cpp
 EXE = $(BIN)/bfvm
 ifeq ($(OS), Windows_NT)
 	LIBS = -lkernel32

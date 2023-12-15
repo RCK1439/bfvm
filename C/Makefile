@@ -4,9 +4,9 @@ COMMON_FLAGS = -Wall -Werror -Wpedantic
 DEBUG_FLAGS = -ggdb -O0
 RELEASE_FLAGS = -O3
 
-BIN = ../bin
+BIN = bin
 LOCALBIN = ~/.local/bin
-SRC = $(wildcard *.c)
+SRC = src/*.c
 EXE = $(BIN)/bfvm
 
 $(BIN):
