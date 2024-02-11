@@ -35,7 +35,7 @@ impl Compiler {
     }
 
     pub fn compile(&mut self) -> Vec<ByteCode> {
-        let mut byte_code = Vec::<ByteCode>::new();
+        let mut byte_code: Vec<ByteCode> = Vec::<ByteCode>::new();
 
         self.parse_program(&mut byte_code);
         return byte_code;
@@ -64,7 +64,7 @@ impl Compiler {
     }
 
     fn parse_add_byte(&mut self, byte_code: &mut Vec<ByteCode>) {
-        let mut code = ByteCode {
+        let mut code: ByteCode = ByteCode {
             code: OpCode::AddB,
             operand: 0
         };
@@ -79,7 +79,7 @@ impl Compiler {
     }
 
     fn parse_sub_byte(&mut self, byte_code: &mut Vec<ByteCode>) {
-        let mut code = ByteCode {
+        let mut code: ByteCode = ByteCode {
             code: OpCode::SubB,
             operand: 0
         };
@@ -94,7 +94,7 @@ impl Compiler {
     }
 
     fn parse_sub_ptr(&mut self, byte_code: &mut Vec<ByteCode>) {
-        let mut code = ByteCode {
+        let mut code: ByteCode = ByteCode {
             code: OpCode::SubP,
             operand: 0
         };
@@ -109,7 +109,7 @@ impl Compiler {
     }
 
     fn parse_add_ptr(&mut self, byte_code: &mut Vec<ByteCode>) {
-        let mut code = ByteCode {
+        let mut code: ByteCode = ByteCode {
             code: OpCode::AddP,
             operand: 0
         };
@@ -145,7 +145,7 @@ impl Compiler {
     }
 
     fn parse_conditional(&mut self, byte_code: &mut Vec<ByteCode>) {
-        let mut braces = Vec::<usize>::new();
+        let mut braces: Vec<usize> = Vec::<usize>::new();
 
         braces.push(self.current_line);
         byte_code.push(ByteCode {
@@ -179,7 +179,7 @@ impl Compiler {
                     self.token = self.lexer.get_token();    
                 },
                 lexer::Token::BracketRight => {
-                    let open = braces.pop()
+                    let open: usize = braces.pop()
                         .unwrap();
 
                     byte_code[open].operand = self.current_line + 1;

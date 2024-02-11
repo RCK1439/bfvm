@@ -1,4 +1,5 @@
-use std::io::Read;
+use std::io::{BufReader, Read};
+use std::fs::File;
 
 #[derive(PartialEq)]
 pub enum Token {
@@ -21,11 +22,11 @@ pub struct LexicalAnalyzer {
 
 impl LexicalAnalyzer {
     pub fn init(filepath: &str) -> LexicalAnalyzer {
-        let file = std::fs::File::open(filepath)
+        let file: File = std::fs::File::open(filepath)
             .expect("failed to open file");
 
-        let mut reader = std::io::BufReader::new(file);
-        let mut data = String::new();
+        let mut reader: BufReader<File> = std::io::BufReader::new(file);
+        let mut data: String = String::new();
 
         reader.read_to_string(&mut data)
             .expect("failed to read data");
@@ -42,7 +43,7 @@ impl LexicalAnalyzer {
                 return Token::EndOfFile;
             }
 
-            let ch = self.content
+            let ch: char = self.content
                 .chars()
                 .nth(self.curr)
                 .unwrap();
@@ -64,6 +65,7 @@ impl LexicalAnalyzer {
         }
     }
 
+    #[inline]
     fn is_instruction(&self, ch: char) -> bool {
         return
             ch == '+' || ch == '-' || ch == '<' ||

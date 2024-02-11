@@ -11,7 +11,7 @@ pub struct VirtualMachine {
 
 impl VirtualMachine {
     pub fn init(filepath: &str) -> VirtualMachine {
-        let mut compiler = Compiler::new(filepath);
+        let mut compiler: Compiler = Compiler::new(filepath);
 
         return VirtualMachine {
             data: [0; 30000],
@@ -22,9 +22,9 @@ impl VirtualMachine {
     }
 
     pub fn run(&mut self) {
-        let time = Instant::now();
+        let time: Instant = Instant::now();
         while self.byte_code[self.instruction_ptr].code != OpCode::End {
-            let bc = self.byte_code[self.instruction_ptr];
+            let bc: ByteCode = self.byte_code[self.instruction_ptr];
             match bc.code {
                 OpCode::AddB => self.add_byte(bc.operand as u8),
                 OpCode::SubB => self.sub_byte(bc.operand as u8),
@@ -37,23 +37,26 @@ impl VirtualMachine {
                 _ => debug_assert!(false)
             }
         }
-        let elapsed = time
+        let elapsed: f32 = time
             .elapsed()
             .as_secs_f32();
 
         println!("bfvm: time elapsed: {}ms", elapsed * 1000.0);
     }
 
+    #[inline]
     fn add_byte(&mut self, val: u8) {
         self.data[self.data_ptr] = self.data[self.data_ptr].wrapping_add(val);
         self.instruction_ptr += 1;
     }
 
+    #[inline]
     fn sub_byte(&mut self, val: u8) {
         self.data[self.data_ptr] = self.data[self.data_ptr].wrapping_sub(val);
         self.instruction_ptr += 1;
     }
 
+    #[inline]
     fn add_ptr(&mut self, val: usize) {
         self.data_ptr = self.data_ptr.wrapping_add(val);
 
@@ -64,6 +67,7 @@ impl VirtualMachine {
         self.instruction_ptr += 1;
     }
 
+    #[inline]
     fn sub_ptr(&mut self, val: usize) {
         self.data_ptr = self.data_ptr.wrapping_sub(val);
 
@@ -74,16 +78,19 @@ impl VirtualMachine {
         self.instruction_ptr += 1;
     }
 
+    #[inline]
     fn write(&mut self) {
         print!("{}", self.data[self.data_ptr] as char);
         self.instruction_ptr += 1;
     }
 
+    #[inline]
     fn read(&mut self) {
         // TODO: Read a single byte in from stdin
         self.instruction_ptr += 1;
     }
 
+    #[inline]
     fn jump_zero(&mut self, line: usize) {
         if self.data[self.data_ptr] != 0 {
             self.instruction_ptr += 1;
@@ -92,6 +99,7 @@ impl VirtualMachine {
         }
     }
 
+    #[inline]
     fn jump(&mut self, line: usize) {
         self.instruction_ptr = line;
     }

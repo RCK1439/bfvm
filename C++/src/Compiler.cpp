@@ -174,7 +174,7 @@ namespace bfc
                 break;
                 case Token::BRACE_RIGHT:
                 {
-                    std::size_t open = braces.top().code;
+                    const std::size_t open = braces.top().code;
 
                     out[open].line = ++s_CurrentLine;
                     out.emplace_back(OpCode::JMP, open);

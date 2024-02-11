@@ -70,7 +70,7 @@ namespace bfc
     inline static char NextCharacter() noexcept
     {
         static char last = 0x00;
-        char ret = static_cast<char>(s_Source.get());
+        const char ret = static_cast<char>(s_Source.get());
 
         if (last == 0x0A && ret != EOF)
         {

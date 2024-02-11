@@ -16,7 +16,7 @@ namespace bfvm
 
     /* --- constants ------------------------------------------------------------*/
 
-    static constexpr std::size_t DATA_SIZE = 30000U; // Size of data array.
+    static constexpr std::size_t DATA_SIZE = 30000;    // Size of data array.
 
     /* --- global variables -----------------------------------------------------*/
 
@@ -47,10 +47,7 @@ namespace bfvm
     {
         using namespace bfc;
 
-        std::chrono::time_point<std::chrono::high_resolution_clock> start, end;
-        std::chrono::duration<f32> duration;
-
-        start = std::chrono::high_resolution_clock::now();
+        const auto start = std::chrono::high_resolution_clock::now();
         while (s_ByteCode[s_InstructionPointer].op != OpCode::END)
         {
             ByteCode& code = s_ByteCode[s_InstructionPointer];
@@ -68,9 +65,9 @@ namespace bfvm
                 default: bflog::LogError("unknown opcode: %d", static_cast<i32>(code.op));
             }
         }
-        end = std::chrono::high_resolution_clock::now();
+        const auto end = std::chrono::high_resolution_clock::now();
 
-        duration = end - start;
+        const std::chrono::duration<f32> duration = end - start;
         bflog::LogInfo("time elapsed: %.3fms", duration.count() * 1000.0f);
     }
 
@@ -124,9 +121,13 @@ namespace bfvm
 
     inline void JZ(std::size_t line) noexcept
     {
-        s_InstructionPointer = (s_DataArray[s_DataPointer] != 0x00) ? s_InstructionPointer + 1 : line;
+        s_InstructionPointer = (s_DataArray[s_DataPointer] != 0x00) ?
+            s_InstructionPointer + 1 : line;
     }
 
-    inline void JMP(std::size_t line) noexcept { s_InstructionPointer = line; }
+    inline void JMP(std::size_t line) noexcept
+    {
+        s_InstructionPointer = line;
+    }
 
 } // namespace bfvm

@@ -2,6 +2,8 @@ mod bfvm;
 mod bfc;
 mod lexer;
 
+use bfvm::VirtualMachine;
+
 fn main() {
     let args: Vec<String> = std::env::args()
         .collect();
@@ -11,6 +13,6 @@ fn main() {
         std::process::exit(1);
     }
 
-    let mut vm = bfvm::VirtualMachine::init(&args[1]);
+    let mut vm: VirtualMachine = bfvm::VirtualMachine::init(&args[1]);
     vm.run();
 }

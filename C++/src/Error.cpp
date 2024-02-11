@@ -90,10 +90,8 @@ namespace bflog
 
     void SetProgramName(std::string_view filepath) noexcept
     {
-        std::size_t pos;
-
         s_ProgName = filepath;
-        pos = s_ProgName.find_last_of(DELIM);
+        const std::size_t pos = s_ProgName.find_last_of(DELIM);
 
         s_ProgName = s_ProgName.substr(pos + 1);
     }
@@ -164,7 +162,7 @@ namespace bflog
     {
         constexpr std::size_t BUF_SIZE = 512;
 
-        std::string_view pre = GetLogLevelString(level);
+        const std::string_view pre = GetLogLevelString(level);
         char buffer[BUF_SIZE];
 
         stream.flush();
@@ -176,7 +174,7 @@ namespace bflog
 
     inline static std::string_view GetLogLevelString(Level level) noexcept
     {
-        std::string_view str[] = 
+        const std::string_view str[] = 
         {
             "",
             "\033[1;32minfo: \033[m",
