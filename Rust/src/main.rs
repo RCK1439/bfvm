@@ -4,6 +4,7 @@ mod lexer;
 
 use bfvm::VirtualMachine;
 
+/// Main routine for the BFVM developed in the Rust Programming Language.
 fn main() {
     let args: Vec<String> = std::env::args()
         .collect();
@@ -13,6 +14,6 @@ fn main() {
         std::process::exit(1);
     }
 
-    let mut vm: VirtualMachine = bfvm::VirtualMachine::init(&args[1]);
+    let mut vm: VirtualMachine = bfvm::VirtualMachine::new(&args[1]);
     vm.run();
 }

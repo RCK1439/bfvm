@@ -1,5 +1,6 @@
 use crate::lexer;
 
+/// OpCodes to be used for the Brainf*ck Virtual Machine assembly language.
 #[derive(PartialEq, Clone, Copy)]
 pub enum OpCode {
     AddB,
@@ -13,6 +14,7 @@ pub enum OpCode {
     End
 }
 
+/// Bytecode representation. This is a combination of an OpCode and an operand.
 #[derive(Clone, Copy)]
 pub struct ByteCode {
     pub code: OpCode,
@@ -20,6 +22,16 @@ pub struct ByteCode {
 }
 
 impl ByteCode {
+    /// Creates a new instance of a ByteCode.
+    /// 
+    /// # Arguments
+    /// 
+    /// * `code` - The OpCode of the ByteCode.
+    /// * `operand` - The operand of the ByteCode.
+    /// 
+    /// # Returns
+    /// 
+    /// An instance of a ByteCode object.
     pub fn new(code: OpCode, operand: usize) -> Self {
         ByteCode {
             code,
@@ -35,14 +47,30 @@ pub struct Compiler {
 }
 
 impl Compiler {
-    pub fn new(filepath: &str) -> Compiler {
+    /// Creates a new instance of the BFVM compiler.
+    /// 
+    /// # Arguments
+    /// 
+    /// `filepath` - The path to a Brainf*ck source file.
+    /// 
+    /// # Returns
+    /// 
+    /// An instance of the BFC (Brainf*ck compiler).
+    pub fn new(filepath: &str) -> Self {
         Compiler {
             current_line: 0,
-            lexer: lexer::LexicalAnalyzer::init(filepath),
+            lexer: lexer::LexicalAnalyzer::new(filepath),
             token: lexer::Token::None
         }
     }
 
+    /// Compiles the code within the Brainf*ck source file used to create
+    /// this instance of the BFC to the BFVM assembly language.
+    /// 
+    /// # Returns
+    /// 
+    /// A vector of the BFVM assembly instructions in the order to be executed
+    /// in.
     pub fn compile(&mut self) -> Vec<ByteCode> {
         let mut byte_code: Vec<ByteCode> = Vec::<ByteCode>::new();
 
@@ -50,6 +78,11 @@ impl Compiler {
         byte_code
     }
 
+    /// Parses the whole Brainf*ck source file.
+    /// 
+    /// # Arguments
+    /// 
+    /// `byte_code` - The vector to append the BFVM assembly instructions to.
     fn parse_program(&mut self, byte_code: &mut Vec<ByteCode>) {
         self.token = self.lexer.get_token();
 
@@ -69,6 +102,12 @@ impl Compiler {
         byte_code.push(ByteCode::new(OpCode::End, 0));
     }
 
+    /// Parses contiguous `+` instructions of the Brainf*ck programming
+    /// language.
+    /// 
+    /// # Arguments
+    /// 
+    /// `byte_code` - The vector to append the BFVM assembly instructions to.
     fn parse_add_byte(&mut self, byte_code: &mut Vec<ByteCode>) {
         let mut op: usize = 0;
 
@@ -81,6 +120,12 @@ impl Compiler {
         self.current_line += 1;
     }
 
+    /// Parses contiguous `-` instructions of the Brainf*ck programming
+    /// language.
+    /// 
+    /// # Arguments
+    /// 
+    /// `byte_code` - The vector to append the BFVM assembly instructions to.
     fn parse_sub_byte(&mut self, byte_code: &mut Vec<ByteCode>) {
         let mut op: usize = 0;
 
@@ -93,6 +138,12 @@ impl Compiler {
         self.current_line += 1;
     }
 
+    /// Parses contiguous `<` instructions of the Brainf*ck programming
+    /// language.
+    /// 
+    /// # Arguments
+    /// 
+    /// `byte_code` - The vector to append the BFVM assembly instructions to.
     fn parse_sub_ptr(&mut self, byte_code: &mut Vec<ByteCode>) {
         let mut op: usize = 0;
 
@@ -105,6 +156,12 @@ impl Compiler {
         self.current_line += 1;
     }
 
+    /// Parses contiguous `>` instructions of the Brainf*ck programming
+    /// language.
+    /// 
+    /// # Arguments
+    /// 
+    /// `byte_code` - The vector to append the BFVM assembly instructions to.
     fn parse_add_ptr(&mut self, byte_code: &mut Vec<ByteCode>) {
         let mut op: usize = 0;
 
@@ -118,6 +175,11 @@ impl Compiler {
         self.current_line += 1;
     }
 
+    /// Parses the `.` instruction of the Brainf*ck programming language.
+    /// 
+    /// # Arguments
+    /// 
+    /// `byte_code` - The vector to append the BFVM assembly instructions to.
     fn parse_write(&mut self, byte_code: &mut Vec<ByteCode>) {
         byte_code.push(ByteCode::new(OpCode::Write, 0));
 
@@ -125,6 +187,11 @@ impl Compiler {
         self.token = self.lexer.get_token();
     }
 
+    /// Parses the `,` instruction of the Brainf*ck programming language.
+    /// 
+    /// # Arguments
+    /// 
+    /// `byte_code` - The vector to append the BFVM assembly instructions to.
     fn parse_read(&mut self, byte_code: &mut Vec<ByteCode>) {
         byte_code.push(ByteCode::new(OpCode::Read, 0));
 
@@ -132,6 +199,12 @@ impl Compiler {
         self.token = self.lexer.get_token();
     }
 
+    /// Parses the control flow (`[`/`]`) operations in the Brainf*ck
+    /// programming language.
+    /// 
+    /// # Arguments
+    /// 
+    /// `byte_code` - The vector to append the BFVM assembly instructions to.
     fn parse_conditional(&mut self, byte_code: &mut Vec<ByteCode>) {
         let mut braces: Vec<usize> = Vec::<usize>::new();
 

@@ -1,6 +1,7 @@
 use std::io::{BufReader, Read};
 use std::fs::File;
 
+/// Representation of the tokens to be found in a Brainf*ck sourve file.
 #[derive(PartialEq)]
 pub enum Token {
     None,
@@ -15,13 +16,23 @@ pub enum Token {
     EndOfFile
 }
 
+/// Representation of the Lexer used by the Brainf*ck compiler.
 pub struct LexicalAnalyzer {
     content: String,
     curr: usize
 }
 
 impl LexicalAnalyzer {
-    pub fn init(filepath: &str) -> LexicalAnalyzer {
+    /// Creates a new instance of the LexicalAnalyzer.
+    /// 
+    /// # Arguments
+    /// 
+    /// `filepath` - The path to a Brainf*ck source file.
+    /// 
+    /// # Returns
+    /// 
+    /// A new instance of the LexicalAnalyzer.
+    pub fn new(filepath: &str) -> Self {
         let file: File = std::fs::File::open(filepath)
             .expect("failed to open file");
 
@@ -37,6 +48,11 @@ impl LexicalAnalyzer {
         }
     }
 
+    /// Retrieves the next token from the Brainf*ck source file.
+    /// 
+    /// # Returns
+    /// 
+    /// The next token from the source file.
     pub fn get_token(&mut self) -> Token {
         loop {
             if self.curr >= self.content.len() {
@@ -65,6 +81,16 @@ impl LexicalAnalyzer {
         }
     }
 
+    /// Checks if `ch` is a valid instruction in the Brainf*ck programming
+    /// language.
+    /// 
+    /// # Arguments
+    /// 
+    /// `ch` - The character to check for.
+    /// 
+    /// # Returns
+    /// 
+    /// `true`, if `ch` is a valid Brainf*ck instruction. `false`, otherwise.
     #[inline]
     fn is_instruction(&self, ch: char) -> bool {
         ch == '+' || ch == '-' || ch == '<' ||
