@@ -55,22 +55,34 @@ impl VirtualMachine {
         println!("bfvm: time elapsed: {}ms", elapsed * 1000.0);
     }
 
-    /// Adds `val` to the byte at the current `data_ptr`. 
-    #[inline]
+    /// Adds `val` to the byte at the current `data_ptr`.
+    /// 
+    /// # Arguments
+    /// 
+    /// `val` - The value to increment the byte with.
+    #[inline(always)]
     fn add_byte(&mut self, val: u8) {
         self.data[self.data_ptr] = self.data[self.data_ptr].wrapping_add(val);
         self.instruction_ptr += 1;
     }
 
     /// Subtracts `val` from the byte at the current `data_ptr`.
-    #[inline]
+    /// 
+    /// # Arguments
+    /// 
+    /// `val` - The value to decrement the byte with.
+    #[inline(always)]
     fn sub_byte(&mut self, val: u8) {
         self.data[self.data_ptr] = self.data[self.data_ptr].wrapping_sub(val);
         self.instruction_ptr += 1;
     }
 
-    /// Adds `val` to the `data_ptr`
-    #[inline]
+    /// Adds `val` to the `data_ptr`.
+    /// 
+    /// # Arguments
+    /// 
+    /// `val` - The amount to shift the `data_ptr` up by.
+    #[inline(always)]
     fn add_ptr(&mut self, val: usize) {
         self.data_ptr = self.data_ptr.wrapping_add(val);
 
@@ -81,8 +93,12 @@ impl VirtualMachine {
         self.instruction_ptr += 1;
     }
 
-    /// Subtracts `val` from the `data_ptr`
-    #[inline]
+    /// Subtracts `val` from the `data_ptr`.
+    /// 
+    /// # Arguments
+    /// 
+    /// `val` - The amount to shift the `data_ptr` down by.
+    #[inline(always)]
     fn sub_ptr(&mut self, val: usize) {
         self.data_ptr = self.data_ptr.wrapping_sub(val);
 
@@ -94,21 +110,25 @@ impl VirtualMachine {
     }
 
     /// Writes the byte at `data_ptr` to the `stdout`.
-    #[inline]
+    #[inline(always)]
     fn write(&mut self) {
         print!("{}", self.data[self.data_ptr] as char);
         self.instruction_ptr += 1;
     }
 
     /// Reads in a byte from the user via `stdin`.
-    #[inline]
+    #[inline(always)]
     fn read(&mut self) {
         // TODO: Read a single byte in from stdin
         self.instruction_ptr += 1;
     }
 
     /// Jumps to the instruction at `line` when the byte at `data_ptr` is zero.
-    #[inline]
+    /// 
+    /// # Arguments
+    /// 
+    /// `line` - The line in the assembly instructions to jump to.
+    #[inline(always)]
     fn jump_zero(&mut self, line: usize) {
         if self.data[self.data_ptr] != 0 {
             self.instruction_ptr += 1;
@@ -118,7 +138,11 @@ impl VirtualMachine {
     }
 
     /// Jumps to the instruction at `line`.
-    #[inline]
+    /// 
+    /// # Arguments
+    /// 
+    /// `line` - The line to jump to.
+    #[inline(always)]
     fn jump(&mut self, line: usize) {
         self.instruction_ptr = line;
     }

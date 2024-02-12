@@ -91,7 +91,7 @@ impl LexicalAnalyzer {
     /// # Returns
     /// 
     /// `true`, if `ch` is a valid Brainf*ck instruction. `false`, otherwise.
-    #[inline]
+    #[inline(always)]
     fn is_instruction(&self, ch: char) -> bool {
         ch == '+' || ch == '-' || ch == '<' ||
         ch == '>' || ch == '.' || ch == ',' ||
