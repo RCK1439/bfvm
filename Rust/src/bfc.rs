@@ -19,6 +19,15 @@ pub struct ByteCode {
     pub operand: usize
 }
 
+impl ByteCode {
+    pub fn new(code: OpCode, operand: usize) -> Self {
+        ByteCode {
+            code,
+            operand
+        }
+    }
+}
+
 pub struct Compiler {
     current_line: usize,
     lexer: lexer::LexicalAnalyzer,
@@ -27,18 +36,18 @@ pub struct Compiler {
 
 impl Compiler {
     pub fn new(filepath: &str) -> Compiler {
-        return Compiler {
+        Compiler {
             current_line: 0,
             lexer: lexer::LexicalAnalyzer::init(filepath),
             token: lexer::Token::None
-        };
+        }
     }
 
     pub fn compile(&mut self) -> Vec<ByteCode> {
         let mut byte_code: Vec<ByteCode> = Vec::<ByteCode>::new();
 
         self.parse_program(&mut byte_code);
-        return byte_code;
+        byte_code
     }
 
     fn parse_program(&mut self, byte_code: &mut Vec<ByteCode>) {
@@ -57,88 +66,67 @@ impl Compiler {
             }
         }
 
-        byte_code.push(ByteCode {
-            code: OpCode::End,
-            operand: 0
-        });
+        byte_code.push(ByteCode::new(OpCode::End, 0));
     }
 
     fn parse_add_byte(&mut self, byte_code: &mut Vec<ByteCode>) {
-        let mut code: ByteCode = ByteCode {
-            code: OpCode::AddB,
-            operand: 0
-        };
+        let mut op: usize = 0;
 
         while self.token == lexer::Token::Plus {
-            code.operand += 1;
+            op += 1;
             self.token = self.lexer.get_token();
         }
 
-        byte_code.push(code);
+        byte_code.push(ByteCode::new(OpCode::AddB, op));
         self.current_line += 1;
     }
 
     fn parse_sub_byte(&mut self, byte_code: &mut Vec<ByteCode>) {
-        let mut code: ByteCode = ByteCode {
-            code: OpCode::SubB,
-            operand: 0
-        };
+        let mut op: usize = 0;
 
         while self.token == lexer::Token::Minus {
-            code.operand += 1;
+            op += 1;
             self.token = self.lexer.get_token();
         }
 
-        byte_code.push(code);
+        byte_code.push(ByteCode::new(OpCode::SubB, op));
         self.current_line += 1;
     }
 
     fn parse_sub_ptr(&mut self, byte_code: &mut Vec<ByteCode>) {
-        let mut code: ByteCode = ByteCode {
-            code: OpCode::SubP,
-            operand: 0
-        };
+        let mut op: usize = 0;
 
         while self.token == lexer::Token::ArrowLeft {
-            code.operand += 1;
+            op += 1;
             self.token = self.lexer.get_token();
         }
 
-        byte_code.push(code);
+        byte_code.push(ByteCode::new(OpCode::SubP, op));
         self.current_line += 1;
     }
 
     fn parse_add_ptr(&mut self, byte_code: &mut Vec<ByteCode>) {
-        let mut code: ByteCode = ByteCode {
-            code: OpCode::AddP,
-            operand: 0
-        };
+        let mut op: usize = 0;
 
         while self.token == lexer::Token::ArrowRight {
-            code.operand += 1;
+            op += 1;
             self.token = self.lexer.get_token();
         }
 
-        byte_code.push(code);
+        byte_code.push(ByteCode::new(OpCode::AddP, op));
 
         self.current_line += 1;
     }
 
     fn parse_write(&mut self, byte_code: &mut Vec<ByteCode>) {
-        byte_code.push(ByteCode {
-            code: OpCode::Write,
-            operand: 0
-        });
+        byte_code.push(ByteCode::new(OpCode::Write, 0));
 
         self.current_line += 1;
         self.token = self.lexer.get_token();
     }
 
     fn parse_read(&mut self, byte_code: &mut Vec<ByteCode>) {
-        byte_code.push(ByteCode {
-            code: OpCode::Read,
-            operand: 0
-        });
+        byte_code.push(ByteCode::new(OpCode::Read, 0));
 
         self.current_line += 1;
         self.token = self.lexer.get_token();
@@ -148,10 +136,7 @@ impl Compiler {
         let mut braces: Vec<usize> = Vec::<usize>::new();
 
         braces.push(self.current_line);
-        byte_code.push(ByteCode {
-            code: OpCode::Jz,
-            operand: 0
-        });
+        byte_code.push(ByteCode::new(OpCode::Jz, 0));
 
         self.current_line += 1;
         self.token = self.lexer.get_token();
@@ -170,10 +155,7 @@ impl Compiler {
                 lexer::Token::Comma => self.parse_read(byte_code),
                 lexer::Token::BracketLeft => {
                     braces.push(self.current_line);
-                    byte_code.push(ByteCode {
-                        code: OpCode::Jz,
-                        operand: 0
-                    });
+                    byte_code.push(ByteCode::new(OpCode::Jz, 0));
 
                     self.current_line += 1;
                     self.token = self.lexer.get_token();    
@@ -183,10 +165,7 @@ impl Compiler {
                         .unwrap();
 
                     byte_code[open].operand = self.current_line + 1;
-                    byte_code.push(ByteCode {
-                        code: OpCode::Jmp,
-                        operand: open
-                    });
+                    byte_code.push(ByteCode::new(OpCode::Jmp, open));
 
                     self.current_line += 1;
                     self.token = self.lexer.get_token();

@@ -13,12 +13,12 @@ impl VirtualMachine {
     pub fn init(filepath: &str) -> VirtualMachine {
         let mut compiler: Compiler = Compiler::new(filepath);
 
-        return VirtualMachine {
+        VirtualMachine {
             data: [0; 30000],
             data_ptr: 0,
             byte_code: compiler.compile(),
             instruction_ptr: 0
-        };
+        }
     }
 
     pub fn run(&mut self) {

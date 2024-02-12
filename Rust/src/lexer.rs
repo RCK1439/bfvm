@@ -31,10 +31,10 @@ impl LexicalAnalyzer {
         reader.read_to_string(&mut data)
             .expect("failed to read data");
 
-        return LexicalAnalyzer {
+        LexicalAnalyzer {
             content: data,
             curr: 0
-        };
+        }
     }
 
     pub fn get_token(&mut self) -> Token {
@@ -67,9 +67,8 @@ impl LexicalAnalyzer {
 
     #[inline]
     fn is_instruction(&self, ch: char) -> bool {
-        return
-            ch == '+' || ch == '-' || ch == '<' ||
-            ch == '>' || ch == '.' || ch == ',' ||
-            ch == '[' || ch == ']';
+        ch == '+' || ch == '-' || ch == '<' ||
+        ch == '>' || ch == '.' || ch == ',' ||
+        ch == '[' || ch == ']'
     }
 }
