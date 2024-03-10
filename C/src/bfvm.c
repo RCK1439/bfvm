@@ -48,14 +48,9 @@ static void jmp(size_t line);
  */
 int main(int argc, char *argv[])
 {
-    clock_t start, end;
-    f32 delta;
-    ByteCode *code;
-
-    code = compile(argc < 2 ? NULL : argv[1]);
+    ByteCode *code = compile(argc < 2 ? NULL : argv[1]);
     ip = 0;
 
-    start = clock();
     while (code[ip].op != BFVM_END) {
         switch (code[ip].op) {
             case BFVM_ADDB: addb(code[ip].bval); break;
@@ -69,10 +64,6 @@ int main(int argc, char *argv[])
             default: log_err("unknown opcode %d\n", code[ip].op);
         }
     }
-    end = clock();
-
-    delta = (f32)(end - start) / CLOCKS_PER_SEC;
-    log_norm("time elapsed: %.5fms", delta * 1000.0f);
 
     free(code);
     return EXIT_SUCCESS;

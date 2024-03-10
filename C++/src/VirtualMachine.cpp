@@ -47,7 +47,6 @@ namespace bfvm
     {
         using namespace bfc;
 
-        const auto start = std::chrono::high_resolution_clock::now();
         while (s_ByteCode[s_InstructionPointer].op != OpCode::END)
         {
             ByteCode& code = s_ByteCode[s_InstructionPointer];
@@ -65,10 +64,6 @@ namespace bfvm
                 default: bflog::LogError("unknown opcode: %d", static_cast<i32>(code.op));
             }
         }
-        const auto end = std::chrono::high_resolution_clock::now();
-
-        const std::chrono::duration<f32> duration = end - start;
-        bflog::LogInfo("time elapsed: %.3fms", duration.count() * 1000.0f);
     }
 
     /* --- execution routines ---------------------------------------------------*/
