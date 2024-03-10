@@ -8,26 +8,19 @@ Now every time I need to learn a new language, I'll be adding it to this reposit
 
 ## Languages
 
-The original VM was built in C, the next was built in C++ in an effort to learn modern C++ and the next after that was Rust (to learn Rust). It was also interesting to note the performance differences between the languages.
+The original VM was built in C, the next was built in C++ in an effort to learn modern C++. It is also interesting to note the performance differences between the languages.
 
 ## Performance
 
-As mentioned before the performance differences were interesting to me. Note, the programs were measured very naively, but I had no intentions for serious metrics. The programs were measured on my laptop (10th gen Intel Core i5, 8GB RAM and GeForce MX330) simply by seeing how long it takes to run the ```mandelbrot.b``` program (you'll find this in the tests folder). I chose this program because it was the "most intense" one to run. Here are the results (in milliseconds):
-
-### Linux (Ubuntu [TODO: PUT VERSION HERE])
+As mentioned before the performance differences were interesting to me. Note, the programs were measured very naively, but I had no intentions for serious metrics. The programs were measured on my laptop (10th gen Intel Core i5, 8GB RAM, Nvidia GeForce MX330 with 64-bit Ubuntu 22.04.4 LTS) simply by seeing how long it takes to run the ```mandelbrot.b``` program (you'll find this in the tests folder). I chose this program because it was the "most intense" one to run. Here are the results (in seconds):
 
 |Language|Time (s) |
 |:-------|:--------|
-| C      |6868.927 |
-| C++    |6830.545 |
+| C      | 6.153   |
+| C++    | 6.295   |
 
 ## Building
 
-The C/C++ projects only use basic Makefiles to compile. The Rust project simply uses cargo.
-
-### Linux
-
-####  C/C++:
 1. Ensure that you have the [clang](https://clang.llvm.org/) compiler installed on your system. 
 2. In the C or C++ folder, run the following command: ```make release```.
 This will build the executable with optimizations turned on to a ```bin``` directory.
