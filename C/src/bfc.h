@@ -8,7 +8,8 @@
 #ifndef BFC_H
 #define BFC_H
 
-#include "types.h"
+#include <stddef.h>
+#include <stdint.h>
 
 /* --- type definitions -----------------------------------------------------*/
 
@@ -57,9 +58,9 @@ typedef enum OpCode {
 typedef struct ByteCode {
     OpCode op;    /* the opcode to execute */
     union {
-        u8 bval;     /* the value to add to the byte */
-        u16 dval;    /* the offset on the data pointer */
-        size_t line; /* the instruction pointer to jump to */
+        uint8_t bval;  /* the value to add to the byte */
+        uint16_t dval; /* the offset on the data pointer */
+        size_t line;   /* the instruction pointer to jump to */
     };
 } ByteCode;
 

@@ -129,7 +129,7 @@ void log_norm(const char *fmt, ...)
 
 void log_info(const char *fmt, ...)
 {
-    i32 istty = isatty(2);
+    int istty = isatty(2);
     va_list args;
     const char *prefix = istty ? ASCII_BOLD_CYAN "info:" ASCII_RESET : "info:";
 
@@ -140,7 +140,7 @@ void log_info(const char *fmt, ...)
 
 void log_err(const char *fmt, ...)
 {
-    i32 istty = isatty(2);
+    int istty = isatty(2);
     va_list args;
     const char *prefix = istty ? ASCII_BOLD_RED "error:" ASCII_RESET :
         "error:";
@@ -154,7 +154,7 @@ void log_err(const char *fmt, ...)
 
 void log_errpos(const char *fmt, ...)
 {
-    i32 istty = isatty(2);
+    int istty = isatty(2);
     va_list args;
     char prefix[512];
     const char *start = istty ? ASCII_BOLD_WHITE : "";
@@ -204,7 +204,7 @@ void *erealloc(void *p, size_t size)
 char *estrdup(const char *s)
 {
     char *dup;
-    u64 size;
+    size_t size;
 
     size = strlen(s) + 1;
     if ((dup = (char*)malloc(sizeof(char) * size)) == NULL) {
@@ -220,7 +220,7 @@ char *estrdup(const char *s)
 static void cprintf(FILE *stream, const char *prefix, const char *fmt,
     va_list args)
 {
-    i32 istty = isatty(2);
+    int istty = isatty(2);
     const char *ac_start = (istty ? ASCII_BOLD_WHITE : "");
     const char *ac_end = (istty ? ASCII_RESET : "");
 

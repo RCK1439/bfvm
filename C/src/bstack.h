@@ -8,8 +8,9 @@
 #ifndef BSTACK_H
 #define BSTACK_H
 
-#include "types.h"
 #include "error.h"
+
+#include <stdbool.h>
 
 /* --- type definitions -----------------------------------------------------*/
 

@@ -8,7 +8,6 @@
 
 #include "lexer.h"
 #include "error.h"
-#include "types.h"
 
 #include <stdlib.h>
 

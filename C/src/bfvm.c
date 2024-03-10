@@ -8,6 +8,7 @@
 #include "bfc.h"
 #include "error.h"
 
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -18,16 +19,16 @@
 
 /* --- global variables -----------------------------------------------------*/
 
-static u8 data[DATA_SIZE]; /* data array */
-static u16 dp;             /* data ptr */
-static size_t ip;          /* instruction ptr */
+static uint8_t data[DATA_SIZE]; /* data array */
+static uint16_t dp;             /* data ptr */
+static size_t ip;               /* instruction ptr */
 
 /* --- execution routines ---------------------------------------------------*/
 
-static void addb(u8 val);
-static void subb(u8 val);
-static void addp(u16 val);
-static void subp(u16 val);
+static void addb(uint8_t val);
+static void subb(uint8_t val);
+static void addp(uint16_t val);
+static void subp(uint16_t val);
 static void write(void);
 static void read(void);
 static void jz(size_t line);
@@ -71,19 +72,19 @@ int main(int argc, char *argv[])
 
 /* --- execution routines ---------------------------------------------------*/
 
-inline static void addb(u8 val)
+inline static void addb(uint8_t val)
 {
     data[dp] += val;
     ip++;
 }
 
-inline static void subb(u8 val)
+inline static void subb(uint8_t val)
 {
     data[dp] -= val;
     ip++;
 }
 
-inline static void addp(u16 val)
+inline static void addp(uint16_t val)
 {
     dp += val;
     if (dp >= DATA_SIZE) {
@@ -93,7 +94,7 @@ inline static void addp(u16 val)
     ip++;
 }
 
-inline static void subp(u16 val)
+inline static void subp(uint16_t val)
 {
     dp -= val;
     if (dp >= DATA_SIZE) {
@@ -114,12 +115,13 @@ inline static void write(void)
 
 inline static void read(void)
 {
-    i32 ch;
+    int ch;
+
     if ((ch = fgetc(stdin)) == EOF) {
         log_err("failed to read byte");
     }
 
-    data[dp] = (u8)ch;
+    data[dp] = (uint8_t)ch;
     ip++;
 }
 
