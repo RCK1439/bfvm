@@ -42,7 +42,7 @@ void next_token(Token *token)
 {
     do {
         nextch();
-    } while (!INSTRUCTION(ch) && ch != EOF);
+    } while (!BF_CMD(ch) && ch != EOF);
 
     *token = ch;
 }

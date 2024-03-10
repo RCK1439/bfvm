@@ -16,19 +16,10 @@ As mentioned before the performance differences were interesting to me. Note, th
 
 ### Linux (Ubuntu [TODO: PUT VERSION HERE])
 
-|Language|Time (ms) |
-|:-------|:---------|
-| C      |6868.927  |
-| C++    |6830.545  |
-| Rust   |9759      |
-
-### Windows (11)
-
-|Language|Time (ms) |
-|:-------|:---------|
-| C      | TODO     |
-| C++    | TODO     |
-| Rust   | TODO     |
+|Language|Time (s) |
+|:-------|:--------|
+| C      |6868.927 |
+| C++    |6830.545 |
 
 ## Building
 
@@ -41,22 +32,6 @@ The C/C++ projects only use basic Makefiles to compile. The Rust project simply 
 2. In the C or C++ folder, run the following command: ```make release```.
 This will build the executable with optimizations turned on to a ```bin``` directory.
 
-#### Rust:
-1. Ensure that you have [Rust](https://www.rust-lang.org/) installed on your system.
-2. In the Rust folder, run the following command: ```cargo build --release```
-This should create the ```target``` folder where you'll find the executable.
-
-### Windows
-
-#### C/C++:
-1. Ensure you have [mingw](https://www.mingw-w64.org/) installed.
-2. In the C or C++ folder, run ```make release```. This will build the executable with optimizations turned on to a ```bin``` directory.
-
-#### Rust:
-1. Ensure that you have [Rust](https://www.rust-lang.org/) installed on your system.
-2. In the Rust folder, run the following command: ```cargo build --release```
-This should create the ```target``` folder where you'll find the executable.
-
 ## Installing
 
 TODO
@@ -68,10 +43,6 @@ The virtual machine takes in only one argument, which is the filepath to a Brain
 ### Linux
 
 ```./bfvm path/to/src/file.b```
-
-### Windows
-
-```.\bfvm.exe path\to\src\file.b```
 
 Pretty straight forward, huh?
 

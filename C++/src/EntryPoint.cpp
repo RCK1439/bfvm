@@ -8,8 +8,6 @@
 #include "Error.hpp"
 #include "VirtualMachine.hpp"
 
-#include <iostream>
-
 /* --- main routine ---------------------------------------------------------*/
 
 /**
@@ -25,15 +23,11 @@
  */
 int main(int argc, char* argv[])
 {
-    bflog::InitLogger();
-
     if (argc < 2)
     {
         bflog::LogCritical("no sources");
     }
 
-    bfvm::InitVM(argv[1]);
-    bfvm::Execute();
-
-    return EXIT_SUCCESS;
+    bfvm::Init(argv[1]);
+    bfvm::Run();
 }

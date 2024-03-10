@@ -7,15 +7,13 @@
 
 #pragma once
 
-#include "Types.hpp"
-
 #include <string_view>
 #include <vector>
 
 namespace bfc
 {
 
-    /* --- type definitions -----------------------------------------------------*/
+    /* --- type definitions -------------------------------------------------*/
 
     /**
      * The opcodes available in our BFVM assembly language.
@@ -39,12 +37,12 @@ namespace bfc
      */
     struct ByteCode
     {
-        OpCode op; // The opcode. Self-explanatory.
+        OpCode op;
         union
         {
-            u8 bval;          // The value to modify the byte with.
-            u16 dval;         // The value to modify the data pointer with.
-            std::size_t line; // The line number to jump to in the asm code.
+            uint8_t bval;
+            uint16_t dval;
+            std::size_t line;
         };
 
         // Just a little default constructor :)
@@ -58,10 +56,11 @@ namespace bfc
          * @param[in] operand
          *      The value associated with theopcode.
          */
-        ByteCode(OpCode code, std::size_t operand = 0U) : op(code), line(operand) {}
+        ByteCode(OpCode code, std::size_t operand = 0U) :
+            op(code), line(operand) {}
     };
 
-    /* --- compiler interface ---------------------------------------------------*/
+    /* --- compiler interface -----------------------------------------------*/
 
     /**
      * Compiles the Brainfuck source file to byte code that the virtual
@@ -72,6 +71,7 @@ namespace bfc
      * @param[out] out
      *      The vector in which the compiled byte code will be saved in.
      */
-    void Compile(std::string_view filepath, std::vector<ByteCode>& out) noexcept;
+    void Compile(std::string_view filepath,
+        std::vector<ByteCode>& out) noexcept;
 
 } // namespace bfc

@@ -7,19 +7,17 @@
 
 #pragma once
 
-#include "Types.hpp"
-
 #include <string_view>
 
 namespace bfc
 {
 
-    /* --- type definitions -----------------------------------------------------*/
+    /* --- type definitions -------------------------------------------------*/
 
     /**
      * The available tokens of the Brainfuck programming language.
      */
-    enum class Token : i8
+    enum class Token : int8_t
     {
         PLUS = 0x2B,        // '+'
         MINUS = 0x2D,       // '-'
@@ -32,7 +30,7 @@ namespace bfc
         END_OF_FILE = -1    // EOF
     };
 
-    /* --- lexer interface ------------------------------------------------------*/
+    /* --- lexer interface --------------------------------------------------*/
 
     /**
      * Initializes the lexer for token retrieval.

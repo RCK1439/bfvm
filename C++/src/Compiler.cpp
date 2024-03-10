@@ -9,26 +9,25 @@
 #include "Error.hpp"
 #include "Lexer.hpp"
 
-#include <iostream>
 #include <stack>
 
 namespace bfc
 {
 
-    /* --- type definitions -----------------------------------------------------*/
+    /* --- type definitions -------------------------------------------------*/
 
     struct BracePosition
     {
-        bflog::SourcePosition src; // The position in the source file.
-        std::size_t code;          // The position in byte code.
+        bflog::SourcePosition src;
+        std::size_t code;
     };
 
-    /* --- global variables -----------------------------------------------------*/
+    /* --- global variables -------------------------------------------------*/
 
-    static Token s_Token;                  // The current token from the file.
-    static std::size_t s_CurrentLine{ 0 }; // The current line in the byte code.
+    static Token s_Token;
+    static std::size_t s_CurrentLine{ 0 };
 
-    /* --- parser routines ------------------------------------------------------*/
+    /* --- parser routines --------------------------------------------------*/
 
     static void ParseProgram(std::vector<ByteCode>& out) noexcept;
     static void ParseAddByte(std::vector<ByteCode>& out) noexcept;
@@ -39,9 +38,10 @@ namespace bfc
     static void ParseRead(std::vector<ByteCode>& out) noexcept;
     static void ParseConditional(std::vector<ByteCode>& out) noexcept;
 
-    /* --- compiler interface ---------------------------------------------------*/
+    /* --- compiler interface -----------------------------------------------*/
 
-    void Compile(std::string_view filepath, std::vector<ByteCode>& out) noexcept
+    void Compile(std::string_view filepath,
+        std::vector<ByteCode>& out) noexcept
     {
         InitLexer(filepath);
         bflog::SetProgramName(filepath);
@@ -50,7 +50,7 @@ namespace bfc
         CloseLexer();
     }
 
-    /* --- parser routines ------------------------------------------------------*/
+    /* --- parser routines --------------------------------------------------*/
 
     static void ParseProgram(std::vector<ByteCode>& out) noexcept
     {
@@ -66,7 +66,8 @@ namespace bfc
                 case Token::DOT:         ParseWrite(out);       break;
                 case Token::COMMA:       ParseRead(out);        break;
                 case Token::BRACE_LEFT:  ParseConditional(out); break;
-                default: bflog::LogErrorPosition("invalid token: %d", static_cast<i32>(s_Token));
+                default: bflog::LogErrorPosition("invalid token: %d",
+                    static_cast<int32_t>(s_Token));
             }
         }
 
@@ -183,7 +184,8 @@ namespace bfc
                     braces.pop();
                 }
                 break;
-                default: bflog::LogErrorPosition("invalid token: %d", static_cast<i32>(s_Token));
+                default: bflog::LogErrorPosition("invalid token: %d",
+                    static_cast<int32_t>(s_Token));
             }
         }
     }

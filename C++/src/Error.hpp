@@ -12,27 +12,22 @@
 namespace bflog
 {
 
-    /* --- type definitions -----------------------------------------------------*/
+    /* --- type definitions -------------------------------------------------*/
 
     /**
      * Represents a position in the source file.
      */
     struct SourcePosition
     {
-        std::size_t line;   // The line in the file.
-        std::size_t column; // The column in the file.
+        std::size_t line;
+        std::size_t column;
     };
 
-    /* --- external variables ---------------------------------------------------*/
+    /* --- external variables -----------------------------------------------*/
 
-    extern SourcePosition g_Position; // The global source position.
+    extern SourcePosition g_Position;
 
-    /* --- error interface ------------------------------------------------------*/
-
-    /**
-     * Initializes the logging system
-     */
-    void InitLogger() noexcept;
+    /* --- error interface --------------------------------------------------*/
 
     /**
      * Sets the name of the program.

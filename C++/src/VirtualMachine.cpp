@@ -8,42 +8,42 @@
 #include "VirtualMachine.hpp"
 #include "Error.hpp"
 
-#include <chrono>
+#include <array>
 #include <iostream>
 
 namespace bfvm
 {
 
-    /* --- constants ------------------------------------------------------------*/
+    /* --- constants --------------------------------------------------------*/
 
-    static constexpr std::size_t DATA_SIZE = 30000;    // Size of data array.
+    static constexpr std::size_t DATA_SIZE = 30000;
 
-    /* --- global variables -----------------------------------------------------*/
+    /* --- global variables -------------------------------------------------*/
 
-    static std::array<u8, DATA_SIZE> s_DataArray{ 0 }; // The data array
-    static std::vector<bfc::ByteCode> s_ByteCode;      // The byte code to execute
-    static u16 s_DataPointer{ 0 };                     // The data pointer
-    static std::size_t s_InstructionPointer{ 0 };      // The instruction pointer
+    static std::array<uint8_t, DATA_SIZE> s_DataArray{ 0 };
+    static std::vector<bfc::ByteCode> s_ByteCode;
+    static uint16_t s_DataPointer{ 0 };
+    static std::size_t s_InstructionPointer{ 0 };
 
-    /* --- execution routines ---------------------------------------------------*/
+    /* --- execution routines -----------------------------------------------*/
 
-    static void ADDB(u8 val) noexcept;
-    static void SUBB(u8 val) noexcept;
-    static void ADDP(u16 val) noexcept;
-    static void SUBP(u16 val) noexcept;
+    static void ADDB(uint8_t val) noexcept;
+    static void SUBB(uint8_t val) noexcept;
+    static void ADDP(uint16_t val) noexcept;
+    static void SUBP(uint16_t val) noexcept;
     static void WRITE() noexcept;
     static void READ() noexcept;
     static void JZ(std::size_t line) noexcept;
     static void JMP(std::size_t line) noexcept;
 
-    /* --- virtual machine interface --------------------------------------------*/
+    /* --- virtual machine interface ----------------------------------------*/
 
-    void InitVM(std::string_view filepath) noexcept
+    void Init(std::string_view filepath) noexcept
     {
         bfc::Compile(filepath, s_ByteCode);
     }
 
-    void Execute() noexcept
+    void Run() noexcept
     {
         using namespace bfc;
 
@@ -61,26 +61,27 @@ namespace bfvm
                 case OpCode::READ:  READ();          break;
                 case OpCode::JZ:    JZ(code.line);   break;
                 case OpCode::JMP:   JMP(code.line);  break;
-                default: bflog::LogError("unknown opcode: %d", static_cast<i32>(code.op));
+                default: bflog::LogError("unknown opcode: %d",
+                    static_cast<int32_t>(code.op));
             }
         }
     }
 
-    /* --- execution routines ---------------------------------------------------*/
+    /* --- execution routines -----------------------------------------------*/
 
-    inline void ADDB(u8 val) noexcept
+    inline void ADDB(uint8_t val) noexcept
     {
         s_DataArray[s_DataPointer] += val;
         s_InstructionPointer++;
     }
 
-    inline void SUBB(u8 val) noexcept
+    inline void SUBB(uint8_t val) noexcept
     {
         s_DataArray[s_DataPointer] -= val;
         s_InstructionPointer++;
     }
 
-    inline void ADDP(u16 val) noexcept
+    inline void ADDP(uint16_t val) noexcept
     {
         s_DataPointer += val;
         if (s_DataPointer >= DATA_SIZE)
@@ -91,7 +92,7 @@ namespace bfvm
         s_InstructionPointer++;
     }
 
-    inline void SUBP(u16 val) noexcept
+    inline void SUBP(uint16_t val) noexcept
     {
         s_DataPointer -= val;
         if (s_DataPointer >= DATA_SIZE)

@@ -9,22 +9,21 @@
 #include "Error.hpp"
 
 #include <fstream>
-#include <iostream>
 
 /* --- helper macros --------------------------------------------------------*/
 
-#define INSTRUCTION(ch) (ch == '+' || ch == '-' || ch == '<' ||\
-                         ch == '>' || ch == '.' || ch == ',' ||\
-                         ch == '[' || ch == ']')
+#define BF_CMD(ch) (ch == '+' || ch == '-' || ch == '<' ||\
+                    ch == '>' || ch == '.' || ch == ',' ||\
+                    ch == '[' || ch == ']')
 
 namespace bfc
 {
 
-    /* --- global variables -----------------------------------------------------*/
+    /* --- global variables -------------------------------------------------*/
 
-    static std::ifstream s_Source; // The Brainfuck source file.
+    static std::ifstream s_Source;
 
-    /* --- function prototypes --------------------------------------------------*/
+    /* --- function prototypes ----------------------------------------------*/
 
     /**
      * Retrieves the next character from the source file.
@@ -34,7 +33,7 @@ namespace bfc
      */
     static char NextCharacter() noexcept;
 
-    /* --- lexer interface ------------------------------------------------------*/
+    /* --- lexer interface --------------------------------------------------*/
 
     void InitLexer(std::string_view filepath) noexcept
     {
@@ -60,12 +59,12 @@ namespace bfc
         do
         {
             ch = NextCharacter();
-        } while (!INSTRUCTION(ch) && ch != EOF);
+        } while (!BF_CMD(ch) && ch != EOF);
 
         return static_cast<Token>(ch);
     }
 
-    /* --- utility functions ----------------------------------------------------*/
+    /* --- utility functions ------------------------------------------------*/
 
     inline static char NextCharacter() noexcept
     {
