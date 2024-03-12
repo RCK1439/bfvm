@@ -3,6 +3,7 @@ use bfvm::VirtualMachine;
 
 mod bfc;
 mod bfvm;
+mod error;
 mod lexer;
 
 /// The entry point of BFVM. To run the BFVM from the command line the
@@ -12,8 +13,7 @@ fn main() {
         .collect();
 
     if args.len() < 2 {
-        // TODO: Implement error emitter.
-        println!("bfvm: error: no sources");
+        log_fatal!("no sources");
         std::process::exit(0);
     }
 

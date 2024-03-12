@@ -1,4 +1,4 @@
-use crate::lexer::{Lexer, Token};
+use crate::{lexer::{Lexer, Token}, log_error};
 
 /* --- type definitions ---------------------------------------------------- */
 
@@ -37,7 +37,7 @@ impl Compiler {
             let lex_err: &str = lex
                 .err()
                 .unwrap();
-            println!("bfvm: error: {lex_err}");
+            log_error!("{lex_err}");
             std::process::exit(0);
         }
 
@@ -77,7 +77,7 @@ impl Compiler {
                 Token::Comma => self.parse_read(code),
                 Token::BracketLeft => self.parse_conditional(code),
                 _ => {
-                    println!("bfvm: error: invalid token");
+                    log_error!("bfvm: error: invalid token");
                     std::process::exit(0);
                 }
             }
@@ -225,7 +225,7 @@ impl Compiler {
         self.current_token = self.lexer.next_token();
         while !braces.is_empty() {
             if self.current_token.is_none() {
-                println!("bfvm: error: no matching ']'");
+                log_error!("bfvm: error: no matching ']'");
                 std::process::exit(0);
             }
 

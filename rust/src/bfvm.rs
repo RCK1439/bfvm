@@ -1,4 +1,5 @@
 use crate::bfc::OpCode;
+use crate::log_error;
 
 use std::io::Read;
 
@@ -91,7 +92,7 @@ impl VirtualMachine {
         self.data_ptr += offset;
         
         if self.instruction_ptr >= DATA_SIZE {
-            println!("bfvm: error: data pointer out of range");
+            log_error!("data pointer out of range");
             std::process::exit(0);
         }
         self.instruction_ptr += 1;
@@ -108,7 +109,7 @@ impl VirtualMachine {
         self.data_ptr -= offset;
         
         if self.instruction_ptr >= DATA_SIZE {
-            println!("bfvm: error: data pointer out of range");
+            log_error!("data pointer out of range");
             std::process::exit(0);
         }
         self.instruction_ptr += 1;
@@ -131,7 +132,7 @@ impl VirtualMachine {
         let res: std::io::Result<usize> = std::io::stdin().read(&mut byte_buffer);
         
         if res.is_err() {
-            println!("bfvm: error: failed to read byte");
+            log_error!("failed to read byte");
             std::process::exit(0);
         }
         

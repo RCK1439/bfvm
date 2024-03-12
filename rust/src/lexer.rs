@@ -1,4 +1,6 @@
 
+use crate::log_error;
+
 /* --- type definitions ---------------------------------------------------- */
 
 /// This represents the tokens that can be found in the Brainfuck source
@@ -64,7 +66,7 @@ impl Lexer {
                     '[' => Some(Token::BracketLeft),
                     ']' => Some(Token::BracketRight),
                     _=> {
-                        println!("bfvm: error: unknown command: {}", ch);
+                        log_error!("unknown command: {}", ch);
                         std::process::exit(0);
                     }
                 }
