@@ -1,10 +1,12 @@
-use bfc::OpCode;
+use bfc::{OpCode, Compiler};
 use bfvm::VirtualMachine;
 
 mod bfc;
 mod bfvm;
 mod lexer;
 
+/// The entry point of BFVM. To run the BFVM from the command line the
+/// arguments must look as follows: `./bfvm <filepath>`
 fn main() {
     let args: Vec<String> = std::env::args()
         .collect();
@@ -15,7 +17,9 @@ fn main() {
         std::process::exit(0);
     }
 
-    let code: Vec<OpCode> = bfc::compile(&args[1]);
-    let mut vm: VirtualMachine = VirtualMachine::from_asm(code);
+    let mut bfc: Compiler = Compiler::from_source(&args[1]);
+    let asm: Vec<OpCode> = bfc.compile();
+    
+    let mut vm: VirtualMachine = VirtualMachine::from_asm(asm);
     vm.run();
 }
