@@ -1,6 +1,4 @@
 
-use crate::log_error;
-
 /* --- type definitions ---------------------------------------------------- */
 
 /// This represents the tokens that can be found in the Brainfuck source
@@ -27,6 +25,16 @@ pub struct Lexer {
 /* --- implementations ----------------------------------------------------- */
 
 impl Token {
+    /// Creates a token from the character
+    /// 
+    /// # Parameters
+    /// 
+    /// - `ch` - The character to create the token from
+    /// 
+    /// # Note
+    /// 
+    /// - This function assumes that `ch` is a valid Brainfuck command.
+    /// - Before calling this function ensure that `ch` is valid.
     #[inline]
     unsafe fn from_bf_cmd(ch: char) -> Self {
         let val: u8 = ch as u8;
