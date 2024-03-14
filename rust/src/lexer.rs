@@ -18,14 +18,14 @@ pub enum Token {
 /// This represents the lexical analyzer used to retrieve tokens from the
 /// Brainfuck source program.
 pub struct Lexer {
-    source_content: String,
+    src_buf: String,
     curr: usize
 }
 
 /* --- implementations ----------------------------------------------------- */
 
 impl Token {
-    /// Creates a token from the character
+    /// Creates a token from the character.
     /// 
     /// # Parameters
     /// 
@@ -57,7 +57,7 @@ impl Lexer {
         }
 
         Ok(Lexer {
-            source_content: buf.unwrap(),
+            src_buf: buf.unwrap(),
             curr: 0_usize
         })
     }
@@ -66,7 +66,7 @@ impl Lexer {
     /// when the end of the file has been reached.
     pub fn next_token(&mut self) -> Option<Token> {
         loop {
-            let ch: char = self.source_content
+            let ch: char = self.src_buf
                 .chars()
                 .nth(self.curr)?;
 
