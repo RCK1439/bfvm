@@ -1,6 +1,6 @@
 CC = clang++
 
-COMMON_FLAGS = -std=c++17 -Wall -Werror -Wpedantic
+COMMON_FLAGS = -std=c++17 -Wall -Werror -Wpedantic -fno-exceptions
 DEBUG_FLAGS = -g -O0
 RELEASE_FLAGS = -O3
 

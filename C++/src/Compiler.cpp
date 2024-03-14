@@ -18,7 +18,7 @@ namespace bfc
 
     struct BracePosition
     {
-        bflog::SourcePosition src;
+        bfl::SourcePosition src;
         std::size_t code;
     };
 
@@ -44,7 +44,7 @@ namespace bfc
         std::vector<ByteCode>& out) noexcept
     {
         InitLexer(filepath);
-        bflog::SetProgramName(filepath);
+        bfl::SetProgramName(filepath);
 
         ParseProgram(out);
         CloseLexer();
@@ -66,7 +66,7 @@ namespace bfc
                 case Token::DOT:         ParseWrite(out);       break;
                 case Token::COMMA:       ParseRead(out);        break;
                 case Token::BRACE_LEFT:  ParseConditional(out); break;
-                default: bflog::LogErrorPosition("invalid token: %d",
+                default: bfl::LogErrorPosition("invalid token: %d",
                     static_cast<int32_t>(s_Token));
             }
         }
@@ -146,7 +146,7 @@ namespace bfc
     {
         std::stack<BracePosition, std::vector<BracePosition>> braces;
 
-        braces.push({ bflog::g_Position, s_CurrentLine++ });
+        braces.push({ bfl::g_Position, s_CurrentLine++ });
         out.emplace_back(OpCode::JZ);
 
         s_Token = GetToken();
@@ -154,8 +154,8 @@ namespace bfc
         {
             if (s_Token == Token::END_OF_FILE)
             {
-                bflog::g_Position = braces.top().src;
-                bflog::LogErrorPosition("no matching ']'");
+                bfl::g_Position = braces.top().src;
+                bfl::LogErrorPosition("no matching ']'");
             }
             switch (s_Token)
             {
@@ -167,7 +167,7 @@ namespace bfc
                 case Token::COMMA:       ParseRead(out);    break;
                 case Token::BRACE_LEFT:
                 {
-                    braces.push({ bflog::g_Position, s_CurrentLine++ });
+                    braces.push({ bfl::g_Position, s_CurrentLine++ });
                     out.emplace_back(OpCode::JZ);
 
                     s_Token = GetToken();
@@ -184,7 +184,7 @@ namespace bfc
                     braces.pop();
                 }
                 break;
-                default: bflog::LogErrorPosition("invalid token: %d",
+                default: bfl::LogErrorPosition("invalid token: %d",
                     static_cast<int32_t>(s_Token));
             }
         }

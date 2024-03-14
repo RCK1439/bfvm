@@ -61,7 +61,7 @@ namespace bfvm
                 case OpCode::READ:  READ();          break;
                 case OpCode::JZ:    JZ(code.line);   break;
                 case OpCode::JMP:   JMP(code.line);  break;
-                default: bflog::LogError("unknown opcode: %d",
+                default: bfl::LogError("unknown opcode: %d",
                     static_cast<int32_t>(code.op));
             }
         }
@@ -86,7 +86,7 @@ namespace bfvm
         s_DataPointer += val;
         if (s_DataPointer >= DATA_SIZE)
         {
-            bflog::LogError("data pointer out of range");
+            bfl::LogError("data pointer out of range");
         }
 
         s_InstructionPointer++;
@@ -97,7 +97,7 @@ namespace bfvm
         s_DataPointer -= val;
         if (s_DataPointer >= DATA_SIZE)
         {
-            bflog::LogError("data pointer out of range");
+            bfl::LogError("data pointer out of range");
         }
 
         s_InstructionPointer++;

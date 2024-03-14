@@ -37,13 +37,13 @@ namespace bfc
 
     void InitLexer(std::string_view filepath) noexcept
     {
-        bflog::g_Position.line = 1;
-        bflog::g_Position.column = 0;
+        bfl::g_Position.line = 1;
+        bfl::g_Position.column = 0;
 
         s_Source.open(filepath.data());
         if (s_Source.fail())
         {
-            bflog::LogCritical("could not open file: %s", filepath.data());
+            bfl::LogCritical("could not open file: %s", filepath.data());
         }
     }
 
@@ -73,8 +73,8 @@ namespace bfc
 
         if (last == 0x0A && ret != EOF)
         {
-            bflog::g_Position.line++;
-            bflog::g_Position.column = 1;
+            bfl::g_Position.line++;
+            bfl::g_Position.column = 1;
         }
         else if (ret == EOF)
         {
@@ -82,7 +82,7 @@ namespace bfc
         }
         else
         {
-            bflog::g_Position.column++;
+            bfl::g_Position.column++;
         }
 
         last = ret;

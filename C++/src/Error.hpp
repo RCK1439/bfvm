@@ -9,7 +9,7 @@
 
 #include <string_view>
 
-namespace bflog
+namespace bfl
 {
 
     /* --- type definitions -------------------------------------------------*/

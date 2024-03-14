@@ -12,7 +12,7 @@
 #include <iostream>
 #include <string>
 
-namespace bflog
+namespace bfl
 {
 
     /* --- constants --------------------------------------------------------*/
