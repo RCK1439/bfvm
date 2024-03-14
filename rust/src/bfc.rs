@@ -38,7 +38,7 @@ impl Compiler {
                 .err()
                 .unwrap();
             log_error!("{lex_err}");
-            std::process::exit(0);
+            std::process::exit(1);
         }
 
         Compiler {
@@ -226,7 +226,7 @@ impl Compiler {
         while !braces.is_empty() {
             if self.curr_tok.is_none() {
                 log_error!("bfvm: error: no matching ']'");
-                std::process::exit(0);
+                std::process::exit(1);
             }
 
             let token: Token = self.curr_tok.unwrap();

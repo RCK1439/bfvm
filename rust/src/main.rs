@@ -14,7 +14,7 @@ fn main() {
 
     if args.len() < 2 {
         log_fatal!("no sources");
-        std::process::exit(0);
+        std::process::exit(1);
     }
 
     let mut bfc: Compiler = Compiler::from_source(&args[1]);

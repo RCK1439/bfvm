@@ -93,7 +93,7 @@ impl VirtualMachine {
         
         if self.instruction_ptr >= DATA_SIZE {
             log_error!("data pointer out of range");
-            std::process::exit(0);
+            std::process::exit(1);
         }
         self.instruction_ptr += 1;
     }
@@ -110,7 +110,7 @@ impl VirtualMachine {
         
         if self.instruction_ptr >= DATA_SIZE {
             log_error!("data pointer out of range");
-            std::process::exit(0);
+            std::process::exit(1);
         }
         self.instruction_ptr += 1;
     }
@@ -133,7 +133,7 @@ impl VirtualMachine {
         
         if res.is_err() {
             log_error!("failed to read byte");
-            std::process::exit(0);
+            std::process::exit(1);
         }
         
         self.instruction_ptr += 1;
