@@ -7,14 +7,14 @@ use crate::log_error;
 /// program.
 #[derive(PartialEq, Clone, Copy)]
 pub enum Token {
-    Plus,
-    Minus,
-    ArrowLeft,
-    ArrowRight,
-    Dot,
-    Comma,
-    BracketLeft,
-    BracketRight
+    Plus         = 0x2B,
+    Minus        = 0x2D,
+    ArrowLeft    = 0x3C,
+    ArrowRight   = 0x3E,
+    Dot          = 0x2E,
+    Comma        = 0x2C,
+    BracketLeft  = 0x5B,
+    BracketRight = 0x5D
 }
 
 /// This represents the lexical analyzer used to retrieve tokens from the
@@ -25,6 +25,14 @@ pub struct Lexer {
 }
 
 /* --- implementations ----------------------------------------------------- */
+
+impl Token {
+    #[inline]
+    unsafe fn from_bf_cmd(ch: char) -> Self {
+        let val: u8 = ch as u8;
+        std::mem::transmute(val)
+    }
+}
 
 impl Lexer {
     /// Attempts to create an instance of the lexical analyzer. `Ok` on
@@ -56,20 +64,7 @@ impl Lexer {
 
             self.curr += 1;
             if is_bf_command(ch) {
-                return match ch {
-                    '+' => Some(Token::Plus),
-                    '-' => Some(Token::Minus),
-                    '<' => Some(Token::ArrowLeft),
-                    '>' => Some(Token::ArrowRight),
-                    '.' => Some(Token::Dot),
-                    ',' => Some(Token::Comma),
-                    '[' => Some(Token::BracketLeft),
-                    ']' => Some(Token::BracketRight),
-                    _=> {
-                        log_error!("unknown command: {}", ch);
-                        std::process::exit(0);
-                    }
-                }
+                return unsafe { Some(Token::from_bf_cmd(ch)) };
             }
         }
     }
