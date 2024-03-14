@@ -50,14 +50,9 @@ impl Lexer {
     /// # Parameters
     /// 
     /// - `filepath` - The path to a Brainfuck source file.
-    pub fn from_source(filepath: &str) -> Result<Self, &str> {
-        let buf: Result<String, std::io::Error> = std::fs::read_to_string(filepath);
-        if buf.is_err() {
-            return Err("couldn't read file content");
-        }
-
+    pub fn from_source(filepath: &str) -> Result<Self, std::io::Error> {
         Ok(Lexer {
-            src_buf: buf.unwrap(),
+            src_buf: std::fs::read_to_string(filepath)?,
             curr: 0_usize
         })
     }

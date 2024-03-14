@@ -32,12 +32,9 @@ impl Compiler {
     /// 
     /// - `filepath` - The filepath to a Brainfuck source file.
     pub fn from_source(filepath: &str) -> Self {
-        let lex: Result<Lexer, &str> = Lexer::from_source(filepath);
+        let lex: Result<Lexer, std::io::Error> = Lexer::from_source(filepath);
         if lex.is_err() {
-            let lex_err: &str = lex
-                .err()
-                .unwrap();
-            log_error!("{lex_err}");
+            log_error!("failed to open file or read from file");
             std::process::exit(1);
         }
 
