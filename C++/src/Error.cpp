@@ -6,7 +6,6 @@
  */
 
 #include "Error.hpp"
-#include "Lexer.hpp"
 
 #include <cstdarg>
 #include <iostream>

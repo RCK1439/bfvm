@@ -9,8 +9,6 @@
 #include "lexer.h"
 #include "error.h"
 
-#include <stdlib.h>
-
 /* --- helper macros --------------------------------------------------------*/
 
 #define BF_CMD(ch) (ch == '+' || ch == '-' || ch == '>' ||\

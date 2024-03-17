@@ -8,9 +8,7 @@
 #include "bstack.h"
 #include "error.h"
 
-#include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 
 /* --- constants ------------------------------------------------------------*/
 

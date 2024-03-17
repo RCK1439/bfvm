@@ -90,7 +90,7 @@ impl Compiler {
     /// 
     /// - `code` - The vector containing the assembly instructions.
     fn parse_add_byte(&mut self, code: &mut Vec<OpCode>) {
-        let mut operand: u8 = 0_u8;
+        let mut operand: u8 = 0u8;
 
         while self.curr_tok.is_some() {
             let token: Token = self.curr_tok.unwrap();
@@ -114,7 +114,7 @@ impl Compiler {
     /// 
     /// - `code` - The vector containing the assembly instructions.
     fn parse_sub_byte(&mut self, code: &mut Vec<OpCode>) {
-        let mut operand: u8 = 0_u8;
+        let mut operand: u8 = 0u8;
 
         while self.curr_tok.is_some() {
             let token: Token = self.curr_tok.unwrap();
@@ -138,7 +138,7 @@ impl Compiler {
     /// 
     /// - `code` - The vector containing the assembly instructions.
     fn parse_add_ptr(&mut self, code: &mut Vec<OpCode>) {
-        let mut offset: usize = 0_usize;
+        let mut offset: usize = 0usize;
 
         while self.curr_tok.is_some() {
             let token: Token = self.curr_tok.unwrap();
@@ -162,7 +162,7 @@ impl Compiler {
     /// 
     /// - `code` - The vector containing the assembly instructions.
     fn parse_sub_ptr(&mut self, code: &mut Vec<OpCode>) {
-        let mut offset: usize = 0_usize;
+        let mut offset: usize = 0usize;
 
         while self.curr_tok.is_some() {
             let token: Token = self.curr_tok.unwrap();

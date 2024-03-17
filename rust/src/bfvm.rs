@@ -5,7 +5,7 @@ use std::io::Read;
 
 /* --- constants ----------------------------------------------------------- */
 
-const DATA_SIZE: usize = 30000_usize; // The maximum size of the data array
+const DATA_SIZE: usize = 30000usize; // The maximum size of the data array
 
 /* --- type definitions ---------------------------------------------------- */
 
@@ -28,9 +28,9 @@ impl VirtualMachine {
     pub fn from_asm(code: Vec<OpCode>) -> Self {
         VirtualMachine {
             data: [0; DATA_SIZE],
-            data_ptr: 0_usize,
+            data_ptr: 0usize,
             code,
-            instruction_ptr: 0_usize
+            instruction_ptr: 0usize
         }
     }
 
@@ -128,7 +128,7 @@ impl VirtualMachine {
     /// data pointer.
     #[inline]
     fn read(&mut self) {
-        let mut byte_buffer: [u8; 1] = [0_u8];
+        let mut byte_buffer: [u8; 1] = [0u8];
         let res: std::io::Result<usize> = std::io::stdin().read(&mut byte_buffer);
         
         if res.is_err() {

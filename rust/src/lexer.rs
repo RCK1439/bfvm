@@ -53,7 +53,7 @@ impl Lexer {
     pub fn from_source(filepath: &str) -> Result<Self, std::io::Error> {
         Ok(Lexer {
             src_buf: std::fs::read_to_string(filepath)?,
-            curr: 0_usize
+            curr: 0usize
         })
     }
 
