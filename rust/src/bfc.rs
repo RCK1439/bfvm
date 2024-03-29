@@ -18,9 +18,9 @@ pub enum OpCode {
 
 /// This represents the JIT-compiler for the the virtual machine.
 pub struct Compiler {
-    curr_tok: Option<Token>, // The current token in the source file.
-    lexer: Lexer,            // The lexical analyzer.
-    curr_ln: usize           // The current line in the assembly code.
+    token: Token, // The current token in the source file.
+    lexer: Lexer, // The lexical analyzer.
+    currln: usize // The current line in the assembly code.
 }
 
 /* --- implementations ----------------------------------------------------- */
@@ -39,9 +39,9 @@ impl Compiler {
         }
 
         Compiler {
-            curr_tok: None,
+            token: Token::None,
             lexer: lex.unwrap(),
-            curr_ln: 0_usize
+            currln: 0_usize
         }
     }
 
@@ -61,11 +61,10 @@ impl Compiler {
     /// 
     /// - `code` - The vector containing the assembly instructions.
     fn parse_program(&mut self, code: &mut Vec<OpCode>) {
-        self.curr_tok = self.lexer.next_token();
+        self.token = self.lexer.next_token();
         
-        while self.curr_tok.is_some() {
-            let token: Token = self.curr_tok.unwrap();
-            match token {
+        while self.token != Token::EndOfFile {
+            match self.token {
                 Token::Plus => self.parse_add_byte(code),
                 Token::Minus => self.parse_sub_byte(code),
                 Token::ArrowLeft => self.parse_sub_ptr(code),
@@ -73,8 +72,8 @@ impl Compiler {
                 Token::Dot => self.parse_write(code),
                 Token::Comma => self.parse_read(code),
                 Token::BracketLeft => self.parse_conditional(code),
-                Token::BracketRight => {
-                    log_error!("unexpected token: ']'");
+                _ => {
+                    log_error!("unexpected token");
                     std::process::exit(1);
                 }
             }
@@ -92,19 +91,13 @@ impl Compiler {
     fn parse_add_byte(&mut self, code: &mut Vec<OpCode>) {
         let mut operand: u8 = 0u8;
 
-        while self.curr_tok.is_some() {
-            let token: Token = self.curr_tok.unwrap();
-            if token == Token::Plus {
-                operand += 1;
-            } else {
-                break;
-            }
-
-            self.curr_tok = self.lexer.next_token();
+        while self.token == Token::Plus {
+            operand += 1;
+            self.token = self.lexer.next_token();
         }
 
         code.push(OpCode::AddB(operand));
-        self.curr_ln += 1;
+        self.currln += 1;
     }
 
     /// Parses the Brainfuck commands for subtracting from a byte and appends
@@ -116,19 +109,13 @@ impl Compiler {
     fn parse_sub_byte(&mut self, code: &mut Vec<OpCode>) {
         let mut operand: u8 = 0u8;
 
-        while self.curr_tok.is_some() {
-            let token: Token = self.curr_tok.unwrap();
-            if token == Token::Minus {
-                operand += 1;
-            } else {
-                break;
-            }
-
-            self.curr_tok = self.lexer.next_token();
+        while self.token == Token::Minus {
+            operand += 1;
+            self.token = self.lexer.next_token();
         }
 
         code.push(OpCode::SubB(operand));
-        self.curr_ln += 1;
+        self.currln += 1;
     }
 
     /// Parses the Brainfuck commands for adding to the data pointer and
@@ -140,19 +127,13 @@ impl Compiler {
     fn parse_add_ptr(&mut self, code: &mut Vec<OpCode>) {
         let mut offset: usize = 0usize;
 
-        while self.curr_tok.is_some() {
-            let token: Token = self.curr_tok.unwrap();
-            if token == Token::ArrowRight {
-                offset += 1;
-            } else {
-                break;
-            }
-
-            self.curr_tok = self.lexer.next_token();
+        while self.token == Token::ArrowRight {
+            offset += 1;
+            self.token = self.lexer.next_token();
         }
 
         code.push(OpCode::AddP(offset));
-        self.curr_ln += 1;
+        self.currln += 1;
     }
 
     /// Parses the Brainfuck commands for subtracting from the data pointer and
@@ -164,19 +145,13 @@ impl Compiler {
     fn parse_sub_ptr(&mut self, code: &mut Vec<OpCode>) {
         let mut offset: usize = 0usize;
 
-        while self.curr_tok.is_some() {
-            let token: Token = self.curr_tok.unwrap();
-            if token == Token::ArrowLeft {
-                offset += 1;
-            } else {
-                break;
-            }
-
-            self.curr_tok = self.lexer.next_token();
+        while self.token == Token::ArrowLeft {
+            offset += 1;
+            self.token = self.lexer.next_token();
         }
 
         code.push(OpCode::SubP(offset));
-        self.curr_ln += 1;
+        self.currln += 1;
     }
 
     /// Parses the Brainfuck command to write a byte to `stdout` and appends
@@ -188,8 +163,8 @@ impl Compiler {
     fn parse_write(&mut self, code: &mut Vec<OpCode>) {
         code.push(OpCode::Write);
         
-        self.curr_tok = self.lexer.next_token();
-        self.curr_ln += 1;
+        self.token = self.lexer.next_token();
+        self.currln += 1;
     }
 
     /// Parses the Brainfuck command to read a byte from `stdin` and appends
@@ -201,8 +176,8 @@ impl Compiler {
     fn parse_read(&mut self, code: &mut Vec<OpCode>) {
         code.push(OpCode::Read);
 
-        self.curr_tok = self.lexer.next_token();
-        self.curr_ln += 1;
+        self.token = self.lexer.next_token();
+        self.currln += 1;
     }
 
     /// Pares the Brainfuck command for condtional statements and appends the
@@ -214,20 +189,19 @@ impl Compiler {
     fn parse_conditional(&mut self, code: &mut Vec<OpCode>) {
         let mut braces: Vec<usize> = Vec::<usize>::new();
 
-        braces.push(self.curr_ln);
-        self.curr_ln += 1;
+        braces.push(self.currln);
+        self.currln += 1;
 
         code.push(OpCode::Jz(0_usize));
 
-        self.curr_tok = self.lexer.next_token();
+        self.token = self.lexer.next_token();
         while !braces.is_empty() {
-            if self.curr_tok.is_none() {
-                log_error!("bfvm: error: no matching ']'");
+            if self.token == Token::EndOfFile {
+                log_error!("no matching ']'");
                 std::process::exit(1);
             }
 
-            let token: Token = self.curr_tok.unwrap();
-            match token {
+            match self.token {
                 Token::Plus => self.parse_add_byte(code),
                 Token::Minus => self.parse_sub_byte(code),
                 Token::ArrowLeft => self.parse_sub_ptr(code),
@@ -235,23 +209,27 @@ impl Compiler {
                 Token::Dot => self.parse_write(code),
                 Token::Comma => self.parse_read(code),
                 Token::BracketLeft => {
-                    braces.push(self.curr_ln);
-                    self.curr_ln += 1;
+                    braces.push(self.currln);
+                    self.currln += 1;
 
                     code.push(OpCode::Jz(0_usize));
-                    self.curr_tok = self.lexer.next_token();
+                    self.token = self.lexer.next_token();
                 },
                 Token::BracketRight => {
                     let open: usize = braces
                         .pop()
                         .unwrap();
 
-                    self.curr_ln += 1;
-                    code[open] = OpCode::Jz(self.curr_ln);
+                    self.currln += 1;
+                    code[open] = OpCode::Jz(self.currln);
                     code.push(OpCode::Jmp(open));
 
-                    self.curr_tok = self.lexer.next_token();
+                    self.token = self.lexer.next_token();
                 },
+                _ => {
+                    log_error!("unexpected token");
+                    std::process::exit(1);
+                }
             }
         }
     }

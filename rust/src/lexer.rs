@@ -3,8 +3,9 @@
 
 /// This represents the tokens that can be found in the Brainfuck source
 /// program.
-#[derive(PartialEq, Clone, Copy)]
+#[derive(PartialEq)]
 pub enum Token {
+    None         = 0x00,
     Plus         = 0x2B,
     Minus        = 0x2D,
     ArrowLeft    = 0x3C,
@@ -12,7 +13,8 @@ pub enum Token {
     Dot          = 0x2E,
     Comma        = 0x2C,
     BracketLeft  = 0x5B,
-    BracketRight = 0x5D
+    BracketRight = 0x5D,
+    EndOfFile    = 0xFF
 }
 
 /// This represents the lexical analyzer used to retrieve tokens from the
@@ -23,24 +25,6 @@ pub struct Lexer {
 }
 
 /* --- implementations ----------------------------------------------------- */
-
-impl Token {
-    /// Creates a token from the character.
-    /// 
-    /// # Parameters
-    /// 
-    /// - `ch` - The character to create the token from
-    /// 
-    /// # Note
-    /// 
-    /// - This function assumes that `ch` is a valid Brainfuck command.
-    /// - Before calling this function ensure that `ch` is valid.
-    #[inline]
-    unsafe fn from_bf_cmd(ch: char) -> Self {
-        let val: u8 = ch as u8;
-        std::mem::transmute(val)
-    }
-}
 
 impl Lexer {
     /// Attempts to create an instance of the lexical analyzer. `Ok` on
@@ -57,19 +41,35 @@ impl Lexer {
         })
     }
 
-    /// Returns the next token in the source program. This will return `None`
-    /// when the end of the file has been reached.
-    pub fn next_token(&mut self) -> Option<Token> {
+    pub fn next_token(&mut self) -> Token {
         loop {
-            let ch: char = self.src_buf
-                .chars()
-                .nth(self.curr)?;
-
-            self.curr += 1;
-            if is_bf_command(ch) {
-                return unsafe { Some(Token::from_bf_cmd(ch)) };
+            if let Some(ch) = self.next_character() {
+                if is_bf_command(ch) {
+                    return match ch {
+                        '+' => Token::Plus,
+                        '-' => Token::Minus,
+                        '<' => Token::ArrowLeft,
+                        '>' => Token::ArrowRight,
+                        '.' => Token::Dot,
+                        ',' => Token::Comma,
+                        '[' => Token::BracketLeft,
+                        ']' => Token::BracketRight,
+                        _ => Token::None // This should never happen
+                    }
+                }
+            } else {
+                return Token::EndOfFile;
             }
         }
+    }
+
+    fn next_character(&mut self) -> Option<char> {
+        let ch: char = self.src_buf
+            .chars()
+            .nth(self.curr)?;
+
+        self.curr += 1;
+        Some(ch)
     }
 }
 
