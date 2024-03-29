@@ -41,7 +41,7 @@ void freeprogname(void);
 
 /**
  * Logs the given text to stdout as normal with a new line at the end.
- * The text will look like: "bfvm: <text>"
+ * The text will look like: `bfvm: <text>`
  * 
  * @param[in] fmt
  *      The text format.
@@ -50,7 +50,7 @@ void log_norm(const char *fmt, ...);
 
 /**
  * Logs the given text to stdout with an info tag at the start and a newline
- * at the end. The text will look like: "bfvm: info: <text>"
+ * at the end. The text will look like: `bfvm: info: <text>`
  * 
  * @param[in] fmt
  *      The text format.
@@ -58,9 +58,9 @@ void log_norm(const char *fmt, ...);
 void log_info(const char *fmt, ...);
 
 /**
- * Logs the given text to stderr with an error tag at the start and a newline
- * at the end. This function terminates the virtual machine with EXIT_FAILURE.
- * The text will look like: "bfvm: error: <text>"
+ * Logs the given text to `stderr` with an error tag at the start and a newline
+ * at the end. This function terminates the virtual machine with
+ * `EXIT_FAILURE`. The text will look like: `bfvm: error: <text>`
  * 
  * @param[in] fmt
  *      The text format.
@@ -68,12 +68,12 @@ void log_info(const char *fmt, ...);
 void log_err(const char *fmt, ...);
 
 /**
- * Logs the given text to stderr with an error tag at the start and a newline
+ * Logs the given text to `stderr` with an error tag at the start and a newline
  * at the end. This also provides extra information like the position of the
  * error and the source file name. This function is to be used during
  * compilation. This function terminates the virtual machine with
- * EXIT_FAILURE.
- * The text will look like: "bfvm: <filename>:<line>:<col>: error: <text>"
+ * `EXIT_FAILURE`.
+ * The text will look like: `bfvm: <filename>:<line>:<col>: error: <text>`
  * 
  * @param[in] fmt
  *      The text format.
@@ -81,7 +81,7 @@ void log_err(const char *fmt, ...);
 void log_errpos(const char *fmt, ...);
 
 /**
- * Attempts to allocate up to size bytes of memory. Terminates the virtual
+ * Attempts to allocate `size` bytes of memory. Terminates the virtual
  * machine if allocation fails.
  * 
  * @param[in] size

@@ -17,8 +17,8 @@
 /* --- global variables -----------------------------------------------------*/
 
 static brace_t *stack; /* the stack */
-static size_t sp;    /* the stack pointer */
-static size_t size;  /* the current size of the stack */
+static size_t sp;      /* the stack pointer */
+static size_t size;    /* the current size of the stack */
 
 /* --- function prototypes --------------------------------------------------*/
 

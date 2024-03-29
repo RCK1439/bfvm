@@ -19,7 +19,7 @@
  * file.
  */
 typedef struct brace_s {
-    size_t asm_pos;         /* the position in the assembly code */
+    size_t asm_pos;      /* the position in the assembly code */
     sourcepos_t src_pos; /* the position in the source file */
 } brace_t;
 

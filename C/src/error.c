@@ -23,9 +23,9 @@
 
 /* --- global variables -----------------------------------------------------*/
 
-sourcepos_t position; /* the current position in the source file being
-                            compiled */
-static char *progname;   /* the name of the program being compiled */
+sourcepos_t position;  /* the current position in the source file being
+                          compiled */
+static char *progname; /* the name of the program being compiled */
 
 /* --- function prototypes --------------------------------------------------*/
 
