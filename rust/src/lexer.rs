@@ -41,6 +41,7 @@ impl Lexer {
         })
     }
 
+    /// Returns the next token from the source files' content.
     pub fn next_token(&mut self) -> Token {
         loop {
             if let Some(ch) = self.next_character() {
@@ -63,6 +64,9 @@ impl Lexer {
         }
     }
 
+    /// Returns the next character in the source files' content.
+    /// 
+    /// This will return `None` if the end of the file has been encountered.
     fn next_character(&mut self) -> Option<char> {
         let ch: char = self.src_buf
             .chars()
