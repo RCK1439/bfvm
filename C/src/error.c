@@ -75,7 +75,7 @@
 
 /* --- global variables -----------------------------------------------------*/
 
-SourcePosition position; /* the current position in the source file being
+sourcepos_t position; /* the current position in the source file being
                             compiled */
 static char *progname;   /* the name of the program being compiled */
 

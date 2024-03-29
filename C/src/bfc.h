@@ -40,7 +40,7 @@
  * 
  * end: indicates the end of the program.
  */
-typedef enum OpCode {
+typedef enum opcode_s {
     BFVM_ADDB,
     BFVM_SUBB,
     BFVM_ADDP,
@@ -50,19 +50,19 @@ typedef enum OpCode {
     BFVM_JZ,
     BFVM_JMP,
     BFVM_END
-} OpCode;
+} opcode_t;
 
 /**
  * Combination of opcode and operand (if necessary).
  */
-typedef struct ByteCode {
-    OpCode op;    /* the opcode to execute */
+typedef struct bytecode_s {
+    opcode_t op;    /* the opcode to execute */
     union {
         uint8_t bval;  /* the value to add to the byte */
         uint16_t dval; /* the offset on the data pointer */
         size_t line;   /* the instruction pointer to jump to */
     };
-} ByteCode;
+} bytecode_t;
 
 /* --- bfc interface --------------------------------------------------------*/
 
@@ -78,6 +78,6 @@ typedef struct ByteCode {
  *      An array of instructions to be executed by the virtual machine.
  *      The array has a terminating value at the end (BFVM_END)
  */
-ByteCode *compile(const char *filepath);
+bytecode_t *compile(const char *filepath);
 
 #endif /* BFC_H */

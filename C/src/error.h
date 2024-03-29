@@ -15,12 +15,12 @@
 /**
  * The current position in the source file.
  */
-typedef struct SourcePosition {
+typedef struct sourcepos_s {
     size_t line;   /* the current line in the source file */
     size_t column; /* the column of the current character */
-} SourcePosition;
+} sourcepos_t;
 
-extern SourcePosition position; /* the position in the source file being
+extern sourcepos_t position; /* the position in the source file being
                                    compiled */
 
 /* --- error interface ------------------------------------------------------*/

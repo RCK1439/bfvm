@@ -16,7 +16,7 @@
  * Describes the tokens that can be read from the src
  * stream.
  */
-typedef enum {
+typedef enum token_s {
     TOK_EOF         = -1,   /* EOF */
     TOK_ADD         = 0x2B, /* + */
     TOK_SUB         = 0x2D, /* - */
@@ -26,7 +26,7 @@ typedef enum {
     TOK_COMMA       = 0x2C, /* , */
     TOK_BRACE_LEFT  = 0x5B, /* [ */
     TOK_BRACE_RIGHT = 0x5D  /* ] */
-} Token;
+} token_t;
 
 /* --- lexer interface ------------------------------------------------------*/
 
@@ -44,6 +44,6 @@ void init_lexer(FILE *src);
  * @param[out] token
  *      The token read from the stream.
  */
-void next_token(Token *token);
+void next_token(token_t *token);
 
 #endif /* LEXER_H */

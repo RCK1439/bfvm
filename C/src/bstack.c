@@ -16,7 +16,7 @@
 
 /* --- global variables -----------------------------------------------------*/
 
-static Brace *stack; /* the stack */
+static brace_t *stack; /* the stack */
 static size_t sp;    /* the stack pointer */
 static size_t size;  /* the current size of the stack */
 
@@ -33,7 +33,7 @@ static void ensure_space(void);
 void init_stack(void)
 {
     size = INIT_SIZE;
-    stack = (Brace*)emalloc(sizeof(Brace) * size);
+    stack = (brace_t*)emalloc(sizeof(brace_t) * size);
 
     sp = 0;
 }
@@ -43,13 +43,13 @@ void free_stack(void)
     free(stack);
 }
 
-void push(Brace val)
+void push(brace_t val)
 {
     ensure_space();
     stack[sp++] = val;
 }
 
-void pop(Brace *out)
+void pop(brace_t *out)
 {
     if (empty()) {
         log_err("stack underflow");
@@ -72,5 +72,5 @@ static void ensure_space(void)
     }
 
     size = size + (size / 2);
-    stack = (Brace*)erealloc(stack, sizeof(Brace) * size);
+    stack = (brace_t*)erealloc(stack, sizeof(brace_t) * size);
 }

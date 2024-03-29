@@ -49,7 +49,7 @@ static void jmp(size_t line);
  */
 int main(int argc, char *argv[])
 {
-    ByteCode *code = compile(argc < 2 ? NULL : argv[1]);
+    bytecode_t *code = compile(argc < 2 ? NULL : argv[1]);
     ip = 0;
 
     while (code[ip].op != BFVM_END) {

@@ -36,7 +36,7 @@ void init_lexer(FILE *src)
     position.column = 0;
 }
 
-void next_token(Token *token)
+void next_token(token_t *token)
 {
     do {
         nextch();

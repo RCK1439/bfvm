@@ -18,10 +18,10 @@
  * The position of the brace, both in the assembly code and in the source
  * file.
  */
-typedef struct Brace {
+typedef struct brace_s {
     size_t asm_pos;         /* the position in the assembly code */
-    SourcePosition src_pos; /* the position in the source file */
-} Brace;
+    sourcepos_t src_pos; /* the position in the source file */
+} brace_t;
 
 /* --- bstack interface ------------------------------------------------------*/
 
@@ -41,7 +41,7 @@ void free_stack(void);
  * @param[in] b
  *      The brace position to push onto the stack.
  */
-void push(Brace b);
+void push(brace_t b);
 
 /**
  * Pops the brace position from the top of the stack off of the stack.
@@ -49,7 +49,7 @@ void push(Brace b);
  * @param[out] out
  *      The position on the top of the stack.
  */
-void pop(Brace *out);
+void pop(brace_t *out);
 
 /**
  * Checks if the stack has any elements inside the container.
