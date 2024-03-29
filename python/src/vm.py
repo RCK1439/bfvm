@@ -60,7 +60,7 @@ class VirtualMachine:
         self.__instruction_ptr += 1
 
     def __write(self):
-        sys.__stdout__.write(self.__data_array[self.__data_ptr])
+        sys.__stdout__.write(chr(self.__data_array[self.__data_ptr]))
         self.__instruction_ptr += 1
 
     def __read(self):

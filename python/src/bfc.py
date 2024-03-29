@@ -18,13 +18,10 @@ class OpCode(Enum):
     END = 9
 
 
+@dataclass
 class ByteCode:
     op: OpCode
     val: int
-
-    def __init__(self, op: OpCode, val: int):
-        self.op = op
-        self.val = val
 
 
 class BFCompiler:
@@ -38,7 +35,6 @@ class BFCompiler:
         self.__currln = 0
 
     def compile(self) -> list[ByteCode]:
-        print("bfc: compiling...")
         code: list[ByteCode] = []
         
         self.__token = self.__lexer.next_token()
@@ -52,11 +48,10 @@ class BFCompiler:
                 case Token.COMMA: self.__parse_read(code)
                 case Token.BRACKET_LEFT: self.__parse_conditional(code)
                 case _:
-                    print("bfvm: error: unexpected \']\'")
+                    print("bfvm: error: unexpected token: \']\'")
                     exit(1)
 
         code.append(ByteCode(OpCode.END, 0))
-        print("bfc: compiled successfully")
         return code
 
     def __parse_add_byte(self, code: list[ByteCode]):
@@ -116,13 +111,12 @@ class BFCompiler:
         self.__currln += 1
 
         code.append(ByteCode(OpCode.JZ, 0))
-
-        self.__token == self.__lexer.next_token()
+        self.__token = self.__lexer.next_token()
         while braces:
             if self.__token == Token.END_OF_FILE:
                 print("bfvm: error: unbalanced braces")
                 exit(1)
-            
+
             match self.__token:
                 case Token.PLUS: self.__parse_add_byte(code)
                 case Token.MINUS: self.__parse_sub_byte(code)
@@ -143,7 +137,6 @@ class BFCompiler:
                     code[open].val = self.__currln
 
                     code.append(ByteCode(OpCode.JMP, open))
-
                     self.__token = self.__lexer.next_token()
                 case _:
                     print("bfvm: error: unreachable code")

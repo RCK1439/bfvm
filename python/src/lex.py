@@ -31,28 +31,24 @@ class BFLexer:
 
 
     def next_token(self) -> Token:
-        ch: str = self.__next_character()
-
-        while not self.__is_bf_cmd(ch):
-            ch = self.__next_character()
-            if ch == '\0':
+        while True:
+            ch: str = self.__next_character()
+            if self.__is_bf_cmd(ch):
+                match ch:
+                    case '+': return Token.PLUS
+                    case '-': return Token.MINUS
+                    case '<': return Token.ARROW_LEFT
+                    case '>': return Token.ARROW_RIGHT
+                    case '.': return Token.DOT
+                    case ',': return Token.COMMA
+                    case '[': return Token.BRACKET_LEFT
+                    case ']': return Token.BRACKET_RIGHT
+            elif ch == 'EOF':
                 return Token.END_OF_FILE
-
-        match ch:
-            case '+': return Token.PLUS
-            case '-': return Token.MINUS
-            case '<': return Token.ARROW_LEFT
-            case '>': return Token.ARROW_RIGHT
-            case '.': return Token.DOT
-            case ',': return Token.COMMA
-            case '[': return Token.BRACKET_LEFT
-            case ']': return Token.BRACKET_RIGHT
-
-        return Token.NONE
 
     def __next_character(self) -> str:        
         if self.__curr >= self.__size:
-            return '\0'
+            return 'EOF'
         
         ch: str = self.__content[self.__curr]
         self.__curr += 1
