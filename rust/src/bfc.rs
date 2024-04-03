@@ -1,9 +1,6 @@
-use crate::{lexer::{Lexer, Token}, log_error};
+use crate::{lexer::{Lexer, Token}, log_error, log_fatal};
 
-/* --- type definitions ---------------------------------------------------- */
-
-/// This represents the assembly instructions for the virtual machine.
-#[derive(PartialEq, Clone, Copy)]
+#[derive(PartialEq, Clone, Copy, Debug)]
 pub enum OpCode {
     AddB(u8),
     SubB(u8),
@@ -16,53 +13,36 @@ pub enum OpCode {
     End
 }
 
-/// This represents the JIT-compiler for the the virtual machine.
 pub struct Compiler {
-    token: Token, // The current token in the source file.
-    lexer: Lexer, // The lexical analyzer.
-    currln: usize // The current line in the assembly code.
+    token: Token,
+    lexer: Lexer,
+    currln: usize
 }
 
-/* --- implementations ----------------------------------------------------- */
-
 impl Compiler {
-    /// Creates and returns the compiler from `filepath`.
-    /// 
-    /// # Parameters
-    /// 
-    /// - `filepath` - The filepath to a Brainfuck source file.
     pub fn from_source(filepath: &str) -> Self {
-        let lex: Result<Lexer, std::io::Error> = Lexer::from_source(filepath);
-        if lex.is_err() {
-            log_error!("failed to open file or read from file");
+        if let Ok(lexer) = Lexer::from_source(filepath) {
+            Self {
+                token: Token::None,
+                lexer,
+                currln: 0usize
+            }
+        } else {
+            log_fatal!("failed to open file or read from file: {filepath}");
             std::process::exit(1);
-        }
-
-        Compiler {
-            token: Token::None,
-            lexer: lex.unwrap(),
-            currln: 0_usize
         }
     }
 
-    /// Compiles the Brainfuck source file from which this instance of the
-    /// compiler was created from and returns a vector of all the BFVM assembly
-    /// instructions.
     pub fn compile(&mut self) -> Vec<OpCode> {
         let mut code: Vec<OpCode> = Vec::<OpCode>::new();
 
+        self.token = self.lexer.next_token();
         self.parse_program(&mut code);
+
         code
     }
-    
-    /// Parses the entire Brainfuck program and appends to `code`.
-    /// 
-    /// # Parameters
-    /// 
-    /// - `code` - The vector containing the assembly instructions.
+
     fn parse_program(&mut self, code: &mut Vec<OpCode>) {
-        self.token = self.lexer.next_token();
-        
         while self.token != Token::EndOfFile {
             match self.token {
                 Token::Plus => self.parse_add_byte(code),
@@ -73,7 +53,7 @@ impl Compiler {
                 Token::Comma => self.parse_read(code),
                 Token::BracketLeft => self.parse_conditional(code),
                 _ => {
-                    log_error!("unexpected token");
+                    log_error!("unexpected token: {:?}", self.token);
                     std::process::exit(1);
                 }
             }
@@ -82,12 +62,6 @@ impl Compiler {
         code.push(OpCode::End);
     }
 
-    /// Parses the Brainfuck commands for adding to a byte and appends the
-    /// instructions to `code`.
-    /// 
-    /// # Parameters
-    /// 
-    /// - `code` - The vector containing the assembly instructions.
     fn parse_add_byte(&mut self, code: &mut Vec<OpCode>) {
         let mut operand: u8 = 0u8;
 
@@ -100,12 +74,6 @@ impl Compiler {
         self.currln += 1;
     }
 
-    /// Parses the Brainfuck commands for subtracting from a byte and appends
-    /// the instructions to `code`.
-    /// 
-    /// # Parameters
-    /// 
-    /// - `code` - The vector containing the assembly instructions.
     fn parse_sub_byte(&mut self, code: &mut Vec<OpCode>) {
         let mut operand: u8 = 0u8;
 
@@ -118,12 +86,6 @@ impl Compiler {
         self.currln += 1;
     }
 
-    /// Parses the Brainfuck commands for adding to the data pointer and
-    /// appends the instructions to `code`.
-    /// 
-    /// # Parameters
-    /// 
-    /// - `code` - The vector containing the assembly instructions.
     fn parse_add_ptr(&mut self, code: &mut Vec<OpCode>) {
         let mut offset: usize = 0usize;
 
@@ -136,12 +98,6 @@ impl Compiler {
         self.currln += 1;
     }
 
-    /// Parses the Brainfuck commands for subtracting from the data pointer and
-    /// appends the instructions to `code`.
-    /// 
-    /// # Parameters
-    /// 
-    /// - `code` - The vector containing the assembly instructions.
     fn parse_sub_ptr(&mut self, code: &mut Vec<OpCode>) {
         let mut offset: usize = 0usize;
 
@@ -154,12 +110,6 @@ impl Compiler {
         self.currln += 1;
     }
 
-    /// Parses the Brainfuck command to write a byte to `stdout` and appends
-    /// the instructions to `code`.
-    /// 
-    /// # Parameters
-    /// 
-    /// - `code` - The vector containing the assembly instructions.
     fn parse_write(&mut self, code: &mut Vec<OpCode>) {
         code.push(OpCode::Write);
         
@@ -167,12 +117,6 @@ impl Compiler {
         self.currln += 1;
     }
 
-    /// Parses the Brainfuck command to read a byte from `stdin` and appends
-    /// the instructions to `code`.
-    /// 
-    /// # Parameters
-    /// 
-    /// - `code` - The vector containing the assembly instructions.
     fn parse_read(&mut self, code: &mut Vec<OpCode>) {
         code.push(OpCode::Read);
 
@@ -180,19 +124,13 @@ impl Compiler {
         self.currln += 1;
     }
 
-    /// Pares the Brainfuck command for condtional statements and appends the
-    /// instructions to `code`.
-    /// 
-    /// # Parameters
-    /// 
-    /// - `code` - The vector containing the assembly instructions.
     fn parse_conditional(&mut self, code: &mut Vec<OpCode>) {
         let mut braces: Vec<usize> = Vec::<usize>::new();
 
         braces.push(self.currln);
         self.currln += 1;
 
-        code.push(OpCode::Jz(0_usize));
+        code.push(OpCode::Jz(0usize));
 
         self.token = self.lexer.next_token();
         while !braces.is_empty() {
@@ -212,22 +150,23 @@ impl Compiler {
                     braces.push(self.currln);
                     self.currln += 1;
 
-                    code.push(OpCode::Jz(0_usize));
+                    code.push(OpCode::Jz(0usize));
                     self.token = self.lexer.next_token();
                 },
                 Token::BracketRight => {
-                    let open: usize = braces
-                        .pop()
-                        .unwrap();
+                    if let Some(open) = braces.pop() {
+                        self.currln += 1;
+                        code[open] = OpCode::Jz(self.currln);
+                        code.push(OpCode::Jmp(open));
 
-                    self.currln += 1;
-                    code[open] = OpCode::Jz(self.currln);
-                    code.push(OpCode::Jmp(open));
-
-                    self.token = self.lexer.next_token();
+                        self.token = self.lexer.next_token();
+                    } else {
+                        log_fatal!("stack empty");
+                        std::process::exit(1);
+                    }
                 },
                 _ => {
-                    log_error!("unexpected token");
+                    log_error!("unexpected token: {:?}", self.token);
                     std::process::exit(1);
                 }
             }
