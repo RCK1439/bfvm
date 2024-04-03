@@ -1,9 +1,7 @@
+use crate::log_fatal;
 
-/* --- type definitions ---------------------------------------------------- */
 
-/// This represents the tokens that can be found in the Brainfuck source
-/// program.
-#[derive(PartialEq)]
+#[derive(PartialEq, Debug)]
 pub enum Token {
     None         = 0x00,
     Plus         = 0x2B,
@@ -17,31 +15,19 @@ pub enum Token {
     EndOfFile    = 0xFF
 }
 
-/// This represents the lexical analyzer used to retrieve tokens from the
-/// Brainfuck source program.
 pub struct Lexer {
-    src_buf: String,
+    source: String,
     curr: usize
 }
 
-/* --- implementations ----------------------------------------------------- */
-
 impl Lexer {
-    /// Attempts to create an instance of the lexical analyzer. `Ok` on
-    /// successful creation and `Err` if the source file does not exist
-    /// or if the file content could not be read.
-    /// 
-    /// # Parameters
-    /// 
-    /// - `filepath` - The path to a Brainfuck source file.
     pub fn from_source(filepath: &str) -> Result<Self, std::io::Error> {
-        Ok(Lexer {
-            src_buf: std::fs::read_to_string(filepath)?,
+        Ok(Self {
+            source: std::fs::read_to_string(filepath)?,
             curr: 0usize
         })
     }
 
-    /// Returns the next token from the source files' content.
     pub fn next_token(&mut self) -> Token {
         loop {
             if let Some(ch) = self.next_character() {
@@ -55,8 +41,11 @@ impl Lexer {
                         ',' => Token::Comma,
                         '[' => Token::BracketLeft,
                         ']' => Token::BracketRight,
-                        _ => Token::None // This should never happen
-                    }
+                        _ => {
+                            log_fatal!("unknown symbol: '{ch}'");
+                            std::process::exit(1);
+                        }
+                    };
                 }
             } else {
                 return Token::EndOfFile;
@@ -64,11 +53,8 @@ impl Lexer {
         }
     }
 
-    /// Returns the next character in the source files' content.
-    /// 
-    /// This will return `None` if the end of the file has been encountered.
     fn next_character(&mut self) -> Option<char> {
-        let ch: char = self.src_buf
+        let ch: char = self.source
             .chars()
             .nth(self.curr)?;
 
@@ -77,9 +63,7 @@ impl Lexer {
     }
 }
 
-/// Checks if `ch` is a Brainfuck command and returns `true` if it is. `false`
-/// otherwise.
-#[inline]
+#[inline(always)]
 fn is_bf_command(ch: char) -> bool {
     ch == '+' || ch == '-' || ch == '<' || ch == '>' ||
     ch == '.' || ch == ',' || ch == '[' || ch == ']'
