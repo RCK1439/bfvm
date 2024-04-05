@@ -1,4 +1,4 @@
-use crate::{lexer::{Lexer, Token}, log_error, log_fatal};
+use crate::lexer::{Lexer, Token};
 
 #[derive(PartialEq, Clone, Copy, Debug)]
 pub enum OpCode {
@@ -20,29 +20,24 @@ pub struct Compiler {
 }
 
 impl Compiler {
-    pub fn from_source(filepath: &str) -> Self {
-        if let Ok(lexer) = Lexer::from_source(filepath) {
-            Self {
-                token: Token::None,
-                lexer,
-                currln: 0usize
-            }
-        } else {
-            log_fatal!("failed to open file or read from file: {filepath}");
-            std::process::exit(1);
-        }
+    pub fn from_source(filepath: &str) -> Result<Self, std::io::Error> {
+        Ok(Self {
+            token: Token::None,
+            lexer: Lexer::from_source(filepath)?,
+            currln: 0usize
+        })
     }
 
-    pub fn compile(&mut self) -> Vec<OpCode> {
+    pub fn compile(&mut self) -> Result<Vec<OpCode>, String> {
         let mut code: Vec<OpCode> = Vec::<OpCode>::new();
 
         self.token = self.lexer.next_token();
-        self.parse_program(&mut code);
+        self.parse_program(&mut code)?;
 
-        code
+        Ok(code)
     }
 
-    fn parse_program(&mut self, code: &mut Vec<OpCode>) {
+    fn parse_program(&mut self, code: &mut Vec<OpCode>) -> Result<(), String> {
         while self.token != Token::EndOfFile {
             match self.token {
                 Token::Plus => self.parse_add_byte(code),
@@ -51,15 +46,13 @@ impl Compiler {
                 Token::ArrowRight => self.parse_add_ptr(code),
                 Token::Dot => self.parse_write(code),
                 Token::Comma => self.parse_read(code),
-                Token::BracketLeft => self.parse_conditional(code),
-                _ => {
-                    log_error!("unexpected token: {:?}", self.token);
-                    std::process::exit(1);
-                }
+                Token::BracketLeft => self.parse_conditional(code)?,
+                _ => return Err(format!("unexpected token: {:?}", self.token))
             }
         }
 
         code.push(OpCode::End);
+        Ok(())
     }
 
     fn parse_add_byte(&mut self, code: &mut Vec<OpCode>) {
@@ -124,7 +117,7 @@ impl Compiler {
         self.currln += 1;
     }
 
-    fn parse_conditional(&mut self, code: &mut Vec<OpCode>) {
+    fn parse_conditional(&mut self, code: &mut Vec<OpCode>) -> Result<(), String> {
         let mut braces: Vec<usize> = Vec::<usize>::new();
 
         braces.push(self.currln);
@@ -135,8 +128,7 @@ impl Compiler {
         self.token = self.lexer.next_token();
         while !braces.is_empty() {
             if self.token == Token::EndOfFile {
-                log_error!("no matching ']'");
-                std::process::exit(1);
+                return Err(String::from("no matching ']'"));
             }
 
             match self.token {
@@ -161,15 +153,13 @@ impl Compiler {
 
                         self.token = self.lexer.next_token();
                     } else {
-                        log_fatal!("stack empty");
-                        std::process::exit(1);
+                        return Err(String::from("stack empty"));
                     }
                 },
-                _ => {
-                    log_error!("unexpected token: {:?}", self.token);
-                    std::process::exit(1);
-                }
+                _ => return Err(format!("unexpected token: {:?}", self.token))
             }
         }
+
+        Ok(())
     }
 }
