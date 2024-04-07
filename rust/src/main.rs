@@ -1,4 +1,4 @@
-use std::process::ExitCode;
+use std::process;
 
 /// Entry point of the application. This will run the provided Brainfuck
 /// program by first compiling the source code and then sending the byte code
@@ -6,14 +6,14 @@ use std::process::ExitCode;
 /// 
 /// # Arguments
 /// To run the program: `bfvm path/to/brainfuck.b`
-fn main() -> ExitCode {
+fn main() -> process::ExitCode {
     let args: Vec<String> = std::env::args()
         .collect();
 
     if let Err(err) = bfvm::run(args) {
         println!("{err}");
-        return ExitCode::FAILURE;
+        return process::ExitCode::FAILURE;
     }
 
-    ExitCode::SUCCESS
+    process::ExitCode::SUCCESS
 }

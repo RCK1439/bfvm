@@ -1,5 +1,7 @@
 use crate::error::{BFVMError, BFVMErrSeverity};
 
+use std::fs;
+
 /// This enum represents the different kind of valid tokens to be found in a
 /// Brainfuck source file.
 #[derive(PartialEq, Debug)]
@@ -38,7 +40,7 @@ impl Lexer {
     /// - If the source file does not exist.
     /// - If the contents of the file could not be read.
     pub fn from_source(filepath: &str) -> Result<Self, BFVMError> {
-        if let Ok(source) = std::fs::read_to_string(filepath) {
+        if let Ok(source) = fs::read_to_string(filepath) {
             Ok(Self {
                 source,
                 curr: 0usize

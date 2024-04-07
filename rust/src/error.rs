@@ -1,5 +1,7 @@
 use colored::{ColoredString, Colorize};
 
+use std::fmt;
+
 /// This struct represents an error relevant to the Brainfuck Virtual Machine.
 #[derive(Debug, Clone)]
 pub struct BFVMError {
@@ -34,9 +36,9 @@ impl BFVMError {
     }
 }
 
-impl std::fmt::Display for BFVMError {
+impl fmt::Display for BFVMError {
     /// Formats the `BFVMError` according to the severity of the error.
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         const VM_NAME: &'static str = "bfvm";
         
         const SEVERITY_INFO: &'static str = "info";
