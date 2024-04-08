@@ -18,6 +18,42 @@ pub enum Token {
     EndOfFile    = 0xFF
 }
 
+/// This struct represents the lexer's current position in the source code.
+#[derive(Clone, Copy, Debug)]
+pub struct SourcePosition {
+    /// The current line position in the source code.
+    pub line: usize,
+
+    /// The current column position in the source code.
+    pub column: usize
+}
+
+impl SourcePosition {
+
+    /// Creates a new instance of the `SourcePosition` from the very start
+    /// or beginning of the source file.
+    #[inline(always)]
+    pub fn begin() -> Self {
+        Self {
+            line: 1,
+            column: 0
+        }
+    }
+
+    /// Proceeds to the next column of the source file.
+    #[inline(always)]
+    pub fn next_column(&mut self) {
+        self.column += 1;
+    }
+
+    /// Proceeds to the next line of the source file.
+    #[inline(always)]
+    pub fn next_line(&mut self) {
+        self.line += 1;
+        self.column = 1;
+    }
+}
+
 /// This struct represents the lexical analyzer for the JIT compiler used in
 /// BFVM.
 pub struct Lexer {
@@ -25,7 +61,10 @@ pub struct Lexer {
     source: String,
 
     /// The index of the current character in `source`.
-    curr: usize
+    curr: usize,
+
+    /// The current position of the lexer in `source`.
+    position: SourcePosition
 }
 
 impl Lexer {
@@ -43,7 +82,8 @@ impl Lexer {
         if let Ok(source) = fs::read_to_string(filepath) {
             Ok(Self {
                 source,
-                curr: 0usize
+                curr: 0usize,
+                position: SourcePosition::begin()
             })
         } else {
             Err(BFVMError::new(format!("failed reading from file: {filepath}"), BFVMErrSeverity::Error))
@@ -73,6 +113,12 @@ impl Lexer {
         }
     }
 
+    /// Gets the current position of the lexer in the source content.
+    #[inline(always)]
+    pub fn current_position(&self) -> SourcePosition {
+        self.position
+    }
+
     /// Retrieves the next character from the content of the source file.
     /// This will return `None` if the end of the file has been reached and
     /// `Some` otherwise.
@@ -82,6 +128,11 @@ impl Lexer {
             .nth(self.curr)?;
 
         self.curr += 1;
+        if ch == '\n' {
+            self.position.next_line();
+        } else {
+            self.position.next_column();
+        }
         Some(ch)
     }
 }

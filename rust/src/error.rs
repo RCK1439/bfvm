@@ -1,4 +1,5 @@
 use colored::{ColoredString, Colorize};
+use crate::lexer::SourcePosition;
 
 use std::fmt;
 
@@ -9,11 +10,16 @@ pub struct BFVMError {
     msg: String,
 
     /// The severity of the error.
-    severity: BFVMErrSeverity
+    severity: BFVMErrSeverity,
+
+    /// The position in the source code where the error occured.
+    /// This is only relevant when `severity` = `Error`, as this suggests that
+    /// it was a compilation error. 
+    position: SourcePosition
 }
 
 /// This enum represents the different severities of errors that can occur.
-#[derive(Debug, Clone)]
+#[derive(PartialEq, Debug, Clone)]
 pub enum BFVMErrSeverity {
     Info,
     Warn,
@@ -31,7 +37,23 @@ impl BFVMError {
     pub fn new(msg: String, severity: BFVMErrSeverity) -> Self {
         Self {
             msg,
-            severity
+            severity,
+            position: SourcePosition::begin()
+        }
+    }
+
+    /// Creates an instance of `BFVMError` from a `SourcePosition`
+    /// 
+    /// # Parameters
+    /// 
+    /// - `position` - The position in the source code where the error occured.
+    /// - `msg` - The error message.
+    /// - `severity` - The severity of the error.
+    pub fn from_position(position: SourcePosition, msg: String, severity: BFVMErrSeverity) -> Self {
+        Self {
+            msg,
+            severity,
+            position
         }
     }
 }
@@ -56,6 +78,14 @@ impl fmt::Display for BFVMError {
             BFVMErrSeverity::Fatal => ColoredString::from(SEVERITY_FATAL).red().bold(),
         };
 
-        write!(f, "{name}: {severity}: {}", self.msg)
+        
+        if self.severity == BFVMErrSeverity::Error {
+            let pos_str: ColoredString = ColoredString::from(format!("{}:{}", self.position.line, self.position.column))
+                .white()
+                .bold();
+            write!(f, "{name}:{pos_str}: {severity}: {}", self.msg)
+        } else {
+            write!(f, "{name}: {severity}: {}", self.msg)
+        }
     }
 }
