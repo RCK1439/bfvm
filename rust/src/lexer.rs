@@ -1,4 +1,4 @@
-use crate::error::{BFVMError, BFVMErrSeverity};
+use crate::error::BFVMError;
 
 use std::fs;
 
@@ -80,7 +80,7 @@ impl Lexer {
     /// - If the contents of the file could not be read.
     pub fn from_source(filepath: &str) -> Result<Self, BFVMError> {
         let source: String = fs::read_to_string(filepath)
-            .map_err(|_| BFVMError::new(format!("failed reading from file: {filepath}"), BFVMErrSeverity::Error))?;
+            .map_err(|_| BFVMError::Error(format!("failed reading from file: {filepath}")))?;
         
         Ok(Self {
             source,
@@ -90,6 +90,11 @@ impl Lexer {
     }
 
     /// Retrieves the next token from the content of the source file.
+    /// 
+    /// # Panics
+    /// 
+    /// If the current character somehow makes it to the catch-all end of the
+    /// match statement.
     pub fn next_token(&mut self) -> Token {
         loop {
             if let Some(ch) = self.next_character() {

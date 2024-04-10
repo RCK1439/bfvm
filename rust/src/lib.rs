@@ -4,7 +4,7 @@ mod error;
 mod lexer;
 
 use bfc::{Compiler, OpCode};
-use error::{BFVMError, BFVMErrSeverity};
+use error::BFVMError;
 
 use std::io::{self, Read};
 
@@ -20,7 +20,7 @@ use std::io::{self, Read};
 /// - If there was an error during runtime.
 pub fn run(args: Vec<String>) -> Result<(), BFVMError> {
     if args.len() < 2 {
-        return Err(BFVMError::new(String::from("no sources"), BFVMErrSeverity::Fatal));
+        return Err(BFVMError::Fatal(String::from("no sources")));
     }
     
     let mut vm: VirtualMachine = VirtualMachine::init(&args[1])?;
@@ -127,7 +127,7 @@ impl VirtualMachine {
     fn add_ptr(&mut self, offset: usize) -> Result<(), BFVMError> {
         self.data_ptr = self.data_ptr.wrapping_add(offset);
         if self.data_ptr >= DATA_SIZE {
-            return Err(BFVMError::new(String::from("data pointer out of range"), BFVMErrSeverity::Fatal));
+            return Err(BFVMError::Fatal(String::from("data pointer out of range")));
         }
 
         self.instr_ptr += 1;
@@ -147,7 +147,7 @@ impl VirtualMachine {
     fn sub_ptr(&mut self, offset: usize) -> Result<(), BFVMError> {
         self.data_ptr = self.data_ptr.wrapping_sub(offset);
         if self.data_ptr >= DATA_SIZE {
-            return Err(BFVMError::new(String::from("data pointer out of range"), BFVMErrSeverity::Fatal));
+            return Err(BFVMError::Fatal(String::from("data pointer out of range")));
         }
 
         self.instr_ptr += 1;
@@ -172,7 +172,7 @@ impl VirtualMachine {
         let mut read: [u8; 1] = [0; 1];
         io::stdin()
             .read(&mut read)
-            .map_err(|_| BFVMError::new(String::from("failed to read byte"), BFVMErrSeverity::Fatal))?;
+            .map_err(|_| BFVMError::Fatal(String::from("failed to read byte")))?;
 
         Ok(())
     }
