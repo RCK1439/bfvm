@@ -79,15 +79,14 @@ impl Lexer {
     /// - If the source file does not exist.
     /// - If the contents of the file could not be read.
     pub fn from_source(filepath: &str) -> Result<Self, BFVMError> {
-        if let Ok(source) = fs::read_to_string(filepath) {
-            Ok(Self {
-                source,
-                curr: 0usize,
-                position: SourcePosition::begin()
-            })
-        } else {
-            Err(BFVMError::new(format!("failed reading from file: {filepath}"), BFVMErrSeverity::Error))
-        }
+        let source: String = fs::read_to_string(filepath)
+            .map_err(|_| BFVMError::new(format!("failed reading from file: {filepath}"), BFVMErrSeverity::Error))?;
+        
+        Ok(Self {
+            source,
+            curr: 0usize,
+            position: SourcePosition::begin()
+        })
     }
 
     /// Retrieves the next token from the content of the source file.

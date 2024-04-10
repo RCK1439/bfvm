@@ -170,12 +170,9 @@ impl VirtualMachine {
     #[inline]
     fn read(&mut self) -> Result<(), BFVMError> {
         let mut read: [u8; 1] = [0; 1];
-        if let Ok(_bytes) = io::stdin().read(&mut read) {
-            self.data[self.data_ptr] = read[0];
-            self.instr_ptr += 1;
-        } else {
-            return Err(BFVMError::new(String::from("failed to read byte"), BFVMErrSeverity::Fatal));
-        }
+        io::stdin()
+            .read(&mut read)
+            .map_err(|_| BFVMError::new(String::from("failed to read byte"), BFVMErrSeverity::Fatal))?;
 
         Ok(())
     }
