@@ -81,8 +81,8 @@ impl Compiler {
                 Token::Comma => self.parse_read(code),
                 Token::BracketLeft => self.parse_conditional(code)?,
                 _ => {
-                    let pos: SourcePosition = self.lexer.current_position();
-                    return Err(BFVMError::ErrorPos(pos.line, pos.column, format!("unexpected token: {:?}", self.token)))
+                    let pos: SourcePosition = self.lexer.position();
+                    return Err(BFVMError::ErrorPos(pos.line, pos.column, format!("unexpected token: {}", self.token.lexeme())))
                 }
             }
         }
@@ -192,10 +192,15 @@ impl Compiler {
     /// # Errors
     /// 
     /// If there were any syntax errors in the source code.
+    /// 
+    /// # Panics
+    /// 
+    /// If `Token::None` was found during parsing the conditional.
     fn parse_conditional(&mut self, code: &mut Vec<OpCode>) -> Result<(), BFVMError> {
-        let mut braces: Vec<(usize, SourcePosition)> = Vec::<(usize, SourcePosition)>::new();
+        type Pair = (usize, SourcePosition);
+        let mut braces: Vec<Pair> = Vec::<Pair>::new();
 
-        braces.push((self.currln, self.lexer.current_position()));
+        braces.push((self.currln, self.lexer.position()));
         self.currln += 1;
 
         code.push(OpCode::Jz(0usize));
@@ -210,30 +215,29 @@ impl Compiler {
                 Token::Dot => self.parse_write(code),
                 Token::Comma => self.parse_read(code),
                 Token::BracketLeft => {
-                    braces.push((self.currln, self.lexer.current_position()));
+                    braces.push((self.currln, self.lexer.position()));
                     self.currln += 1;
 
                     code.push(OpCode::Jz(0usize));
                     self.token = self.lexer.next_token();
                 },
                 Token::BracketRight => {
-                    if let Some(open) = braces.pop() {
+                    if let Some((open, _)) = braces.pop() {
                         self.currln += 1;
-                        code[open.0] = OpCode::Jz(self.currln);
-                        code.push(OpCode::Jmp(open.0));
+                        code[open] = OpCode::Jz(self.currln);
+                        code.push(OpCode::Jmp(open));
 
                         self.token = self.lexer.next_token();
                     } else {
-                        let pos: SourcePosition = self.lexer.current_position();
-                        return Err(BFVMError::ErrorPos(pos.line, pos.column, String::from("stack empty")));
+                        let pos: SourcePosition = self.lexer.position();
+                        return Err(BFVMError::ErrorPos(pos.line, pos.column, format!("unexpected token: {}", self.token.lexeme())));
                     }
                 },
                 Token::EndOfFile => {
-                    if let Some(open) = braces.pop() {
-                        let pos: SourcePosition = open.1;
+                    if let Some((_, pos)) = braces.pop() {
                         return Err(BFVMError::ErrorPos(pos.line, pos.column, String::from("no matching ']'")));
                     } else {
-                        let pos: SourcePosition = self.lexer.current_position();
+                        let pos: SourcePosition = self.lexer.position();
                         return Err(BFVMError::ErrorPos(pos.line, pos.column, String::from("stack empty")));
                     }
                 },
