@@ -80,11 +80,11 @@ impl fmt::Display for BFVMError {
                 write!(f, "{name}:{line}:{column}: {severity}: {msg}")
             },
             BFVMError::FatalPos(line, column, msg) => {
-                    let severity: ColoredString = ColoredString::from(SEVERITY_FATAL)
-                        .bold()
-                        .red();
+                let severity: ColoredString = ColoredString::from(SEVERITY_FATAL)
+                    .bold()
+                    .red();
     
-                    write!(f, "{name}:{line}:{column}: {severity}: {msg}")
+                write!(f, "{name}:{line}:{column}: {severity}: {msg}")
             },
         }
     }
