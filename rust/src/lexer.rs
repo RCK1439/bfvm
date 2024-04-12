@@ -6,16 +6,35 @@ use std::fs;
 /// Brainfuck source file.
 #[derive(PartialEq, Debug)]
 pub enum Token {
-    None         = 0x00,
-    Plus         = 0x2B,
-    Minus        = 0x2D,
-    ArrowLeft    = 0x3C,
-    ArrowRight   = 0x3E,
-    Dot          = 0x2E,
-    Comma        = 0x2C,
-    BracketLeft  = 0x5B,
-    BracketRight = 0x5D,
-    EndOfFile    = 0xFF
+    None,
+    Plus,
+    Minus,
+    ArrowLeft,
+    ArrowRight,
+    Dot,
+    Comma,
+    BracketLeft,
+    BracketRight,
+    EndOfFile
+}
+
+impl Token {
+    /// Gets the lexeme represented by the token.
+    #[inline(always)]
+    pub fn lexeme(&self) -> char {
+        match self {
+            Token::None => 'N',
+            Token::Plus => '+',
+            Token::Minus => '-',
+            Token::ArrowLeft => '<',
+            Token::ArrowRight => '>',
+            Token::Dot => '.',
+            Token::Comma => ',',
+            Token::BracketLeft => '[',
+            Token::BracketRight => ']',
+            Token::EndOfFile => '$',
+        }
+    }
 }
 
 /// This struct represents the lexer's current position in the source code.
@@ -119,7 +138,7 @@ impl Lexer {
 
     /// Gets the current position of the lexer in the source content.
     #[inline(always)]
-    pub fn current_position(&self) -> SourcePosition {
+    pub fn position(&self) -> SourcePosition {
         self.position
     }
 
