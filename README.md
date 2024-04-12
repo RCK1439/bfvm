@@ -18,7 +18,7 @@ As mentioned before the performance differences were interesting to me. Note, th
 |:-------|:--------|
 | C      | 6.153   |
 | C++    | 6.295   |
-| Rust   | 7.571   |
+| Rust   | 7.134   |
 
 ## Building
 
