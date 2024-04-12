@@ -1,10 +1,10 @@
 
 mod bfc;
-mod error;
-mod lexer;
+mod err;
+mod lex;
 
 use bfc::{Compiler, OpCode};
-use error::BFVMError;
+use err::BFVMError;
 
 use std::io::{self, Read};
 

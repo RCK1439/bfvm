@@ -1,4 +1,4 @@
-use crate::error::BFVMError;
+use crate::err::BFVMError;
 
 use std::fs;
 
