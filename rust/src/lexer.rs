@@ -126,6 +126,7 @@ impl Lexer {
     /// Retrieves the next character from the content of the source file.
     /// This will return `None` if the end of the file has been reached and
     /// `Some` otherwise.
+    #[inline(always)]
     fn next_character(&mut self) -> Option<char> {
         let ch: char = self.source
             .chars()

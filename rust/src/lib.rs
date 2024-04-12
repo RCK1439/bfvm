@@ -97,7 +97,7 @@ impl VirtualMachine {
     /// # Parameters
     /// 
     /// - `operand` - The value to add to the byte.
-    #[inline]
+    #[inline(always)]
     fn add_byte(&mut self, operand: u8) {
         self.data[self.data_ptr] = self.data[self.data_ptr].wrapping_add(operand);
         self.instr_ptr += 1;
@@ -108,7 +108,7 @@ impl VirtualMachine {
     /// # Parameters
     /// 
     /// - `operand` - The value to subtract from the byte.
-    #[inline]
+    #[inline(always)]
     fn sub_byte(&mut self, operand: u8) {
         self.data[self.data_ptr] = self.data[self.data_ptr].wrapping_sub(operand);
         self.instr_ptr += 1;
@@ -123,7 +123,7 @@ impl VirtualMachine {
     /// # Errors
     /// 
     /// If the data pointer is larger than `DATA_SIZE` after the addition.
-    #[inline]
+    #[inline(always)]
     fn add_ptr(&mut self, offset: usize) -> Result<(), BFVMError> {
         self.data_ptr = self.data_ptr.wrapping_add(offset);
         if self.data_ptr >= DATA_SIZE {
@@ -143,7 +143,7 @@ impl VirtualMachine {
     /// # Errors
     /// 
     /// If the data pointer is larger than `DATA_SIZE` after the subtraction.
-    #[inline]
+    #[inline(always)]
     fn sub_ptr(&mut self, offset: usize) -> Result<(), BFVMError> {
         self.data_ptr = self.data_ptr.wrapping_sub(offset);
         if self.data_ptr >= DATA_SIZE {
@@ -155,7 +155,7 @@ impl VirtualMachine {
     }
 
     /// Writes the byte pointed to by the data pointer to `stdout`.
-    #[inline]
+    #[inline(always)]
     fn write(&mut self) {
         print!("{}", self.data[self.data_ptr] as char);
         self.instr_ptr += 1;
@@ -167,7 +167,7 @@ impl VirtualMachine {
     /// # Errors
     /// 
     /// If a byte could not be read from the user.
-    #[inline]
+    #[inline(always)]
     fn read(&mut self) -> Result<(), BFVMError> {
         let mut read: [u8; 1] = [0; 1];
         io::stdin()
@@ -183,7 +183,7 @@ impl VirtualMachine {
     /// # Parameters
     /// 
     /// - `line` - The line number of the instruction to jump to.
-    #[inline]
+    #[inline(always)]
     fn jmp_zero(&mut self, line: usize) {
         if self.data[self.data_ptr] != 0x00 {
             self.instr_ptr += 1;
@@ -197,7 +197,7 @@ impl VirtualMachine {
     /// # Parameters
     /// 
     /// - `line` - The line number of the instruction to jump to.
-    #[inline]
+    #[inline(always)]
     fn jmp(&mut self, line: usize) {
         self.instr_ptr = line;
     }
