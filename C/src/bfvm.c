@@ -127,7 +127,7 @@ inline static void read(void)
 
 inline static void jz(size_t line)
 {
-    ip = (data[dp] != 0) * (ip + 1) + (data[dp] == 0) * line;
+    ip = (data[dp] != 0) ? ip + 1 : line;
 }
 
 inline static void jmp(size_t line)
