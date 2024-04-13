@@ -55,7 +55,7 @@ void pop(brace_t *out);
  * Checks if the stack has any elements inside the container.
  * 
  * @return
- *      <code>true</code>, if the stack is empty.
+ *      `true`, if the stack is empty.
  */
 bool empty(void);
 
