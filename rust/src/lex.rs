@@ -117,19 +117,21 @@ impl Lexer {
     pub fn next_token(&mut self) -> Token {
         loop {
             if let Some(ch) = self.next_character() {
-                if is_bf_command(ch) {
-                    return match ch {
-                        '+' => Token::Plus,
-                        '-' => Token::Minus,
-                        '<' => Token::ArrowLeft,
-                        '>' => Token::ArrowRight,
-                        '.' => Token::Dot,
-                        ',' => Token::Comma,
-                        '[' => Token::BracketLeft,
-                        ']' => Token::BracketRight,
-                        _ => panic!("unknown symbol: '{ch}'")
-                    };
+                if !is_bf_command(ch) {
+                    continue;
                 }
+
+                return match ch {
+                    '+' => Token::Plus,
+                    '-' => Token::Minus,
+                    '<' => Token::ArrowLeft,
+                    '>' => Token::ArrowRight,
+                    '.' => Token::Dot,
+                    ',' => Token::Comma,
+                    '[' => Token::BracketLeft,
+                    ']' => Token::BracketRight,
+                    _ => panic!("unknown symbol: '{ch}'")
+                };
             } else {
                 return Token::EndOfFile;
             }
