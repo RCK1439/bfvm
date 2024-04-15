@@ -1,4 +1,5 @@
-use crate::err::BFVMError;
+use crate::prelude::*;
+use crate::error::BFVMError;
 
 use std::fs;
 
@@ -97,7 +98,7 @@ impl Lexer {
     /// 
     /// - If the source file does not exist.
     /// - If the contents of the file could not be read.
-    pub fn from_source(filepath: &str) -> Result<Self, BFVMError> {
+    pub fn from_source(filepath: &str) -> Result<Self> {
         let source: String = fs::read_to_string(filepath)
             .map_err(|_| BFVMError::Error(format!("failed reading from file: {filepath}")))?;
         

@@ -1,10 +1,10 @@
-
+mod prelude;
 mod bfc;
-mod err;
-mod lex;
+mod error;
 
+use prelude::*;
 use bfc::{Compiler, OpCode};
-use err::BFVMError;
+use error::BFVMError;
 
 use std::io::{self, Read};
 
@@ -18,7 +18,7 @@ use std::io::{self, Read};
 /// - If no source files were provided.
 /// - If there was an error during compilation.
 /// - If there was an error during runtime.
-pub fn run(args: Vec<String>) -> Result<(), BFVMError> {
+pub fn run(args: Vec<String>) -> Result<()> {
     if args.len() < 2 {
         return Err(BFVMError::Fatal(String::from("no sources")));
     }
@@ -58,7 +58,7 @@ impl VirtualMachine {
     /// 
     /// - If the source file was invalid.
     /// - If there was an error during compilation.
-    fn init(filepath: &str) -> Result<Self, BFVMError> {
+    fn init(filepath: &str) -> Result<Self> {
         let mut compiler: Compiler = Compiler::from_source(filepath)?;
         
         Ok(Self {
@@ -74,7 +74,7 @@ impl VirtualMachine {
     /// # Errors
     /// 
     /// If any errors occur during runtime.
-    fn run(&mut self) -> Result<(), BFVMError> {
+    fn run(&mut self) -> Result<()> {
         while self.instructions[self.instr_ptr] != OpCode::End {
             match self.instructions[self.instr_ptr] {
                 OpCode::AddB(operand) => self.add_byte(operand),
@@ -124,7 +124,7 @@ impl VirtualMachine {
     /// 
     /// If the data pointer is larger than `DATA_SIZE` after the addition.
     #[inline(always)]
-    fn add_ptr(&mut self, offset: usize) -> Result<(), BFVMError> {
+    fn add_ptr(&mut self, offset: usize) -> Result<()> {
         self.data_ptr = self.data_ptr.wrapping_add(offset);
         if self.data_ptr >= DATA_SIZE {
             return Err(BFVMError::Fatal(String::from("data pointer out of range")));
@@ -144,7 +144,7 @@ impl VirtualMachine {
     /// 
     /// If the data pointer is larger than `DATA_SIZE` after the subtraction.
     #[inline(always)]
-    fn sub_ptr(&mut self, offset: usize) -> Result<(), BFVMError> {
+    fn sub_ptr(&mut self, offset: usize) -> Result<()> {
         self.data_ptr = self.data_ptr.wrapping_sub(offset);
         if self.data_ptr >= DATA_SIZE {
             return Err(BFVMError::Fatal(String::from("data pointer out of range")));
@@ -168,7 +168,7 @@ impl VirtualMachine {
     /// 
     /// If a byte could not be read from the user.
     #[inline(always)]
-    fn read(&mut self) -> Result<(), BFVMError> {
+    fn read(&mut self) -> Result<()> {
         let mut read: [u8; 1] = [0; 1];
         io::stdin()
             .read(&mut read)
