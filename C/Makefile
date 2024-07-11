@@ -1,6 +1,6 @@
 CC = clang
 
-COMMON_FLAGS = -Wall -Werror -Wpedantic
+COMMON_FLAGS = -Wall -Werror -Wpedantic -Wextra -std=c99
 DEBUG_FLAGS = -ggdb -O0
 RELEASE_FLAGS = -O3
 
@@ -9,12 +9,9 @@ LOCALBIN = ~/.local/bin
 SRC = src/*.c
 EXE = $(BIN)/bfvm
 
-$(BIN):
-	mkdir $(BIN)
-
 .PHONY: all debug release install uninstall clean
 
-all: release
+all: debug
 
 debug: $(BIN) |
 	$(CC) $(DEBUG_FLAGS) $(COMMON_FLAGS) -o $(EXE) $(SRC)
@@ -31,3 +28,6 @@ uninstall:
 
 clean:
 	rm -f $(EXE)
+
+$(BIN):
+	mkdir $(BIN)

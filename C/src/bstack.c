@@ -30,27 +30,23 @@ static void ensure_space(void);
 
 /* --- bstack interface ------------------------------------------------------*/
 
-void init_stack(void)
-{
+void init_stack(void) {
     size = INIT_SIZE;
     stack = (brace_t*)emalloc(sizeof(brace_t) * size);
 
     sp = 0;
 }
 
-void free_stack(void)
-{
+void free_stack(void) {
     free(stack);
 }
 
-void push(brace_t val)
-{
+void push(brace_t val) {
     ensure_space();
     stack[sp++] = val;
 }
 
-void pop(brace_t *out)
-{
+void pop(brace_t *const out) {
     if (empty()) {
         log_err("stack underflow");
     }
@@ -58,15 +54,13 @@ void pop(brace_t *out)
     *out = stack[--sp];
 }
 
-bool empty(void)
-{
+bool empty(void) {
     return sp == 0;
 }
 
 /* --- utility functions ----------------------------------------------------*/
 
-static void ensure_space(void)
-{
+static void ensure_space(void) {
     if (sp < size) {
         return;
     }

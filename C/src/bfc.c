@@ -41,14 +41,12 @@ static void ensure_space(void);
 
 /* --- bfc interface --------------------------------------------------------*/
 
-bytecode_t *compile(const char *filepath)
-{
-    FILE *src;
-
+bytecode_t *compile(const char *filepath) {
     pos = 0;
     size = INIT_CODE_SIZE;
     code = (bytecode_t*)emalloc(sizeof(bytecode_t) * size);
 
+    FILE *src;
     if (filepath) {
         setprogname(filepath);
         if ((src = fopen(filepath, "r")) == NULL) {
@@ -72,8 +70,7 @@ bytecode_t *compile(const char *filepath)
 
 /* --- parser routines ------------------------------------------------------*/
 
-static void parse_program(void)
-{
+static void parse_program(void) {
     next_token(&token);
     while (token != TOK_EOF) {
         switch (token) {
@@ -92,87 +89,77 @@ static void parse_program(void)
     code[pos].op = BFVM_END;
 }
 
-static void parse_add_byte(void)
-{
+static void parse_add_byte(void) {
     ensure_space();
 
     code[pos].op = BFVM_ADDB;
-    code[pos].bval = 0;
+    code[pos].operands.bval = 0;
     
     while (token == TOK_ADD) {
-        code[pos].bval++;
+        code[pos].operands.bval++;
         next_token(&token);
     }
 
     pos++;
 }
 
-static void parse_sub_byte(void)
-{
+static void parse_sub_byte(void) {
     ensure_space();
 
     code[pos].op = BFVM_SUBB;
-    code[pos].bval = 0;
+    code[pos].operands.bval = 0;
 
     while (token == TOK_SUB) {
-        code[pos].bval++;
+        code[pos].operands.bval++;
         next_token(&token);
     }
 
     pos++;
 }
 
-static void parse_add_ptr(void)
-{
+static void parse_add_ptr(void) {
     ensure_space();
     
     code[pos].op = BFVM_ADDP;
-    code[pos].dval = 0;
+    code[pos].operands.dval = 0;
 
     while (token == TOK_ARROW_RIGHT) {
-        code[pos].dval++;
+        code[pos].operands.dval++;
         next_token(&token);
     }
 
     pos++;
 }
 
-static void parse_sub_ptr(void)
-{
+static void parse_sub_ptr(void) {
     ensure_space();
 
     code[pos].op = BFVM_SUBP;
-    code[pos].dval = 0;
+    code[pos].operands.dval = 0;
 
     while (token == TOK_ARROW_LEFT) {
-        code[pos].dval++;
+        code[pos].operands.dval++;
         next_token(&token);
     }
 
     pos++;
 }
 
-static void parse_write(void)
-{
+static void parse_write(void) {
     ensure_space();
 
     code[pos++].op = BFVM_WRITE;
     next_token(&token);
 }
 
-static void parse_read(void)
-{
+static void parse_read(void) {
     ensure_space();
 
     code[pos++].op = BFVM_READ;
     next_token(&token);
 }
 
-static void parse_conditional(void)
-{
-    brace_t brace;
-    size_t open;
-
+static void parse_conditional(void) {
     init_stack();
     push((brace_t){ pos, position });
 
@@ -182,6 +169,8 @@ static void parse_conditional(void)
     next_token(&token);
     while (!empty()) {
         if (token == TOK_EOF) {
+            brace_t brace;
+
             pop(&brace);
             position = brace.src_pos;
 
@@ -202,26 +191,28 @@ static void parse_conditional(void)
                 next_token(&token);
             } break;
             case TOK_BRACE_RIGHT: {
+                brace_t brace;
+                
                 pop(&brace);
-                open = brace.asm_pos;
+                const size_t open = brace.asm_pos;
 
-                code[open].line = pos + 1;
+                code[open].operands.line = pos + 1;
 
                 ensure_space();
                 code[pos].op = BFVM_JMP;
-                code[pos++].line = open;
+                code[pos++].operands.line = open;
 
                 next_token(&token);
             } break;
-            default: log_err("unknown command: %c", (char)token);
+            default:
+                log_err("unknown command: %c", (char)token);
         }
     }
     
     free_stack();
 }
 
-static void ensure_space(void)
-{
+static void ensure_space(void) {
     if (pos < size) {
         return;
     }

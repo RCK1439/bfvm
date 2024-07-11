@@ -47,45 +47,41 @@ static void jmp(size_t line);
  * @return
  *      The exit status of the program.
  */
-int main(int argc, char *argv[])
-{
-    bytecode_t *code = compile(argc < 2 ? NULL : argv[1]);
+int main(int argc, char *argv[]) {
+    const bytecode_t *const code = compile(argc < 2 ? NULL : argv[1]);
     ip = 0;
 
     while (code[ip].op != BFVM_END) {
         switch (code[ip].op) {
-            case BFVM_ADDB: addb(code[ip].bval); break;
-            case BFVM_SUBB: subb(code[ip].bval); break;
-            case BFVM_ADDP: addp(code[ip].dval); break;
-            case BFVM_SUBP: subp(code[ip].dval); break;
+            case BFVM_ADDB: addb(code[ip].operands.bval); break;
+            case BFVM_SUBB: subb(code[ip].operands.bval); break;
+            case BFVM_ADDP: addp(code[ip].operands.dval); break;
+            case BFVM_SUBP: subp(code[ip].operands.dval); break;
             case BFVM_WRITE: write(); break;
             case BFVM_READ: read(); break;
-            case BFVM_JZ: jz(code[ip].line); break;
-            case BFVM_JMP: jmp(code[ip].line); break;
+            case BFVM_JZ: jz(code[ip].operands.line); break;
+            case BFVM_JMP: jmp(code[ip].operands.line); break;
             default: log_err("unknown opcode %d\n", code[ip].op);
         }
     }
 
-    free(code);
+    free((void *)code);
     return EXIT_SUCCESS;
 }
 
 /* --- execution routines ---------------------------------------------------*/
 
-inline static void addb(uint8_t val)
-{
+inline static void addb(uint8_t val) {
     data[dp] += val;
     ip++;
 }
 
-inline static void subb(uint8_t val)
-{
+inline static void subb(uint8_t val) {
     data[dp] -= val;
     ip++;
 }
 
-inline static void addp(uint16_t val)
-{
+inline static void addp(uint16_t val) {
     dp += val;
     if (dp >= DATA_SIZE) {
         log_err("data pointer out of range");
@@ -94,8 +90,7 @@ inline static void addp(uint16_t val)
     ip++;
 }
 
-inline static void subp(uint16_t val)
-{
+inline static void subp(uint16_t val) {
     dp -= val;
     if (dp >= DATA_SIZE) {
         log_err("data pointer out of range");
@@ -104,8 +99,7 @@ inline static void subp(uint16_t val)
     ip++;
 }
 
-inline static void write(void)
-{
+inline static void write(void) {
     if (putchar(data[dp]) == EOF) {
         log_err("failed to output byte");
     }
@@ -113,9 +107,8 @@ inline static void write(void)
     ip++;
 }
 
-inline static void read(void)
-{
-    int ch;
+inline static void read(void) {
+    int32_t ch;
 
     if ((ch = fgetc(stdin)) == EOF) {
         log_err("failed to read byte");
@@ -125,12 +118,10 @@ inline static void read(void)
     ip++;
 }
 
-inline static void jz(size_t line)
-{
+inline static void jz(size_t line) {
     ip = (data[dp] != 0) ? ip + 1 : line;
 }
 
-inline static void jmp(size_t line)
-{
+inline static void jmp(size_t line) {
     ip = line;
 }
