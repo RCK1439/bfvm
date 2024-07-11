@@ -49,7 +49,7 @@ void push(brace_t b);
  * @param[out] out
  *      The position on the top of the stack.
  */
-void pop(brace_t *out);
+void pop(brace_t *const out);
 
 /**
  * Checks if the stack has any elements inside the container.

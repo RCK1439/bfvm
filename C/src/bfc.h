@@ -61,7 +61,7 @@ typedef struct bytecode_s {
         uint8_t bval;  /* the value to add to the byte */
         uint16_t dval; /* the offset on the data pointer */
         size_t line;   /* the instruction pointer to jump to */
-    };
+    } operands;
 } bytecode_t;
 
 /* --- bfc interface --------------------------------------------------------*/
