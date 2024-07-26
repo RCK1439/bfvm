@@ -9,8 +9,7 @@
 #define BSTACK_H
 
 #include "error.h"
-
-#include <stdbool.h>
+#include "types.h"
 
 /* --- type definitions -----------------------------------------------------*/
 
@@ -57,6 +56,6 @@ void pop(brace_t *const out);
  * @return
  *      `true`, if the stack is empty.
  */
-bool empty(void);
+bool_t empty(void);
 
 #endif /* BSTACK_H */

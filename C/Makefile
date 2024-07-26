@@ -1,12 +1,12 @@
 CC = clang
 
-COMMON_FLAGS = -Wall -Werror -Wpedantic -Wextra -std=c99
+COMMON_FLAGS = -Wall -Werror -Wpedantic -Wextra -std=c90
 DEBUG_FLAGS = -ggdb -O0
 RELEASE_FLAGS = -O3
 
 BIN = bin
 LOCALBIN = ~/.local/bin
-SRC = src/*.c
+SRC = $(wildcard src/*.c)
 EXE = $(BIN)/bfvm
 
 .PHONY: all debug release install uninstall clean

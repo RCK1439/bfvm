@@ -12,7 +12,7 @@
 
 /* --- constants ------------------------------------------------------------*/
 
-#define INIT_CODE_SIZE 32
+#define INIT_CODE_SIZE 32UL
 
 /* --- global variables -----------------------------------------------------*/
 
@@ -41,12 +41,14 @@ static void ensure_space(void);
 
 /* --- bfc interface --------------------------------------------------------*/
 
-bytecode_t *compile(const char *filepath) {
+bytecode_t *compile(const char *filepath)
+{
+    FILE *src;
+    
     pos = 0;
     size = INIT_CODE_SIZE;
     code = (bytecode_t*)emalloc(sizeof(bytecode_t) * size);
 
-    FILE *src;
     if (filepath) {
         setprogname(filepath);
         if ((src = fopen(filepath, "r")) == NULL) {
@@ -70,7 +72,8 @@ bytecode_t *compile(const char *filepath) {
 
 /* --- parser routines ------------------------------------------------------*/
 
-static void parse_program(void) {
+static void parse_program(void)
+{
     next_token(&token);
     while (token != TOK_EOF) {
         switch (token) {
@@ -89,7 +92,8 @@ static void parse_program(void) {
     code[pos].op = BFVM_END;
 }
 
-static void parse_add_byte(void) {
+static void parse_add_byte(void)
+{
     ensure_space();
 
     code[pos].op = BFVM_ADDB;
@@ -103,7 +107,8 @@ static void parse_add_byte(void) {
     pos++;
 }
 
-static void parse_sub_byte(void) {
+static void parse_sub_byte(void)
+{
     ensure_space();
 
     code[pos].op = BFVM_SUBB;
@@ -117,7 +122,8 @@ static void parse_sub_byte(void) {
     pos++;
 }
 
-static void parse_add_ptr(void) {
+static void parse_add_ptr(void)
+{
     ensure_space();
     
     code[pos].op = BFVM_ADDP;
@@ -131,7 +137,8 @@ static void parse_add_ptr(void) {
     pos++;
 }
 
-static void parse_sub_ptr(void) {
+static void parse_sub_ptr(void)
+{
     ensure_space();
 
     code[pos].op = BFVM_SUBP;
@@ -145,23 +152,32 @@ static void parse_sub_ptr(void) {
     pos++;
 }
 
-static void parse_write(void) {
+static void parse_write(void)
+{
     ensure_space();
 
     code[pos++].op = BFVM_WRITE;
     next_token(&token);
 }
 
-static void parse_read(void) {
+static void parse_read(void)
+{
     ensure_space();
 
     code[pos++].op = BFVM_READ;
     next_token(&token);
 }
 
-static void parse_conditional(void) {
+static void parse_conditional(void)
+{
+    brace_t brace;
+    size_t open;
+
     init_stack();
-    push((brace_t){ pos, position });
+    
+    brace.asm_pos = pos;
+    brace.src_pos = position;
+    push(brace);
 
     ensure_space();
     code[pos++].op = BFVM_JZ;
@@ -169,8 +185,6 @@ static void parse_conditional(void) {
     next_token(&token);
     while (!empty()) {
         if (token == TOK_EOF) {
-            brace_t brace;
-
             pop(&brace);
             position = brace.src_pos;
 
@@ -183,18 +197,18 @@ static void parse_conditional(void) {
             case TOK_DOT: parse_write(); break;
             case TOK_COMMA: parse_read(); break;
             case TOK_BRACE_LEFT: {
-                push((brace_t){ pos, position });
+                brace.asm_pos = pos;
+                brace.src_pos = position;
+                push(brace);
 
                 ensure_space();
                 code[pos++].op = BFVM_JZ;
 
                 next_token(&token);
             } break;
-            case TOK_BRACE_RIGHT: {
-                brace_t brace;
-                
+            case TOK_BRACE_RIGHT: { 
                 pop(&brace);
-                const size_t open = brace.asm_pos;
+                open = brace.asm_pos;
 
                 code[open].operands.line = pos + 1;
 
@@ -212,7 +226,8 @@ static void parse_conditional(void) {
     free_stack();
 }
 
-static void ensure_space(void) {
+static void ensure_space(void)
+{
     if (pos < size) {
         return;
     }

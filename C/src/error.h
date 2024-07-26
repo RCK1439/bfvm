@@ -8,7 +8,7 @@
 #ifndef ERROR_H
 #define ERROR_H
 
-#include <stddef.h>
+#include "types.h"
 
 /* --- type definitions -----------------------------------------------------*/
 

@@ -8,14 +8,13 @@
 #include "bfc.h"
 #include "error.h"
 
-#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
 
 /* --- constants ------------------------------------------------------------*/
 
-#define DATA_SIZE 30000
+#define DATA_SIZE 30000UL
 
 /* --- global variables -----------------------------------------------------*/
 
@@ -47,7 +46,8 @@ static void jmp(size_t line);
  * @return
  *      The exit status of the program.
  */
-int main(int argc, char *argv[]) {
+int main(int argc, char *argv[])
+{
     const bytecode_t *const code = compile(argc < 2 ? NULL : argv[1]);
     ip = 0;
 
@@ -71,17 +71,20 @@ int main(int argc, char *argv[]) {
 
 /* --- execution routines ---------------------------------------------------*/
 
-inline static void addb(uint8_t val) {
+static void addb(uint8_t val)
+{
     data[dp] += val;
     ip++;
 }
 
-inline static void subb(uint8_t val) {
+static void subb(uint8_t val)
+{
     data[dp] -= val;
     ip++;
 }
 
-inline static void addp(uint16_t val) {
+static void addp(uint16_t val)
+{
     dp += val;
     if (dp >= DATA_SIZE) {
         log_err("data pointer out of range");
@@ -90,7 +93,8 @@ inline static void addp(uint16_t val) {
     ip++;
 }
 
-inline static void subp(uint16_t val) {
+static void subp(uint16_t val)
+{
     dp -= val;
     if (dp >= DATA_SIZE) {
         log_err("data pointer out of range");
@@ -99,7 +103,8 @@ inline static void subp(uint16_t val) {
     ip++;
 }
 
-inline static void write(void) {
+static void write(void)
+{
     if (putchar(data[dp]) == EOF) {
         log_err("failed to output byte");
     }
@@ -107,7 +112,8 @@ inline static void write(void) {
     ip++;
 }
 
-inline static void read(void) {
+static void read(void)
+{
     int32_t ch;
 
     if ((ch = fgetc(stdin)) == EOF) {
@@ -118,10 +124,13 @@ inline static void read(void) {
     ip++;
 }
 
-inline static void jz(size_t line) {
+static void jz(size_t line)
+{
     ip = (data[dp] != 0) ? ip + 1 : line;
 }
 
-inline static void jmp(size_t line) {
+static void jmp(size_t line)
+{
     ip = line;
 }
+

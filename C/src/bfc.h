@@ -8,8 +8,7 @@
 #ifndef BFC_H
 #define BFC_H
 
-#include <stddef.h>
-#include <stdint.h>
+#include "types.h"
 
 /* --- type definitions -----------------------------------------------------*/
 
