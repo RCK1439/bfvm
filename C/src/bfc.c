@@ -170,14 +170,13 @@ static void parse_read(void)
 
 static void parse_conditional(void)
 {
-    brace_t brace;
-    size_t open;
-
     init_stack();
-    
-    brace.asm_pos = pos;
-    brace.src_pos = position;
-    push(brace);
+
+    const brace_t b_open = {
+        .asm_pos = pos,
+        .src_pos = position,
+    };
+    push(b_open);
 
     ensure_space();
     code[pos++].op = BFVM_JZ;
@@ -185,8 +184,10 @@ static void parse_conditional(void)
     next_token(&token);
     while (!empty()) {
         if (token == TOK_EOF) {
-            pop(&brace);
-            position = brace.src_pos;
+            brace_t b_err_open;
+            
+            pop(&b_err_open);
+            position = b_err_open.src_pos;
 
             log_errpos("no matching ']'");
         } else switch (token) {
@@ -197,9 +198,11 @@ static void parse_conditional(void)
             case TOK_DOT: parse_write(); break;
             case TOK_COMMA: parse_read(); break;
             case TOK_BRACE_LEFT: {
-                brace.asm_pos = pos;
-                brace.src_pos = position;
-                push(brace);
+                const brace_t b_open = {
+                    .asm_pos = pos,
+                    .src_pos = position,
+                };
+                push(b_open);
 
                 ensure_space();
                 code[pos++].op = BFVM_JZ;
@@ -207,14 +210,15 @@ static void parse_conditional(void)
                 next_token(&token);
             } break;
             case TOK_BRACE_RIGHT: { 
-                pop(&brace);
-                open = brace.asm_pos;
+                brace_t b_open;
+                pop(&b_open);
 
-                code[open].operands.line = pos + 1;
+                const size_t open_idx = b_open.asm_pos;
+                code[open_idx].operands.line = pos + 1;
 
                 ensure_space();
                 code[pos].op = BFVM_JMP;
-                code[pos++].operands.line = open;
+                code[pos++].operands.line = open_idx;
 
                 next_token(&token);
             } break;

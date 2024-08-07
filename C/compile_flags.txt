@@ -2,4 +2,4 @@
 -Werror
 -Wextra
 -Wpedantic
--std=c90
+-std=c99

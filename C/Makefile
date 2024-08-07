@@ -1,6 +1,6 @@
 CC = clang
 
-COMMON_FLAGS = -Wall -Werror -Wpedantic -Wextra -std=c90
+COMMON_FLAGS = -Wall -Werror -Wpedantic -Wextra -std=c99
 DEBUG_FLAGS = -ggdb -O0
 RELEASE_FLAGS = -O3
 
