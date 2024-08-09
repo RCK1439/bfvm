@@ -1,25 +1,14 @@
-/**
- * @file   Lexer.hpp
- * @brief  Interface for the lexical analyzer of the BFVM compiler.
- * @author Ruan C. Keet
- * @date   2023-11-14
- */
-
 #pragma once
 
 #include <cstdint>
+#include <fstream>
 #include <string_view>
 
 namespace bfc
 {
-
-    /* --- type definitions -------------------------------------------------*/
-
-    /**
-     * The available tokens of the Brainfuck programming language.
-     */
     enum class Token : int8_t
     {
+        NONE        = 0x00,
         PLUS        = 0x2B, // '+'
         MINUS       = 0x2D, // '-'
         ARROW_LEFT  = 0x3C, // '<'
@@ -31,27 +20,20 @@ namespace bfc
         END_OF_FILE = -1    // EOF
     };
 
-    /* --- lexer interface --------------------------------------------------*/
 
-    /**
-     * Initializes the lexer for token retrieval.
-     *
-     * @param[in] filepath
-     *      The path to the Brainfuck source file.
-     */
-    void InitLexer(std::string_view filepath) noexcept;
+    class Lexer
+    {
+    public:
+        explicit Lexer(std::string_view filepath) noexcept;
+        ~Lexer() noexcept;
 
-    /**
-     * Releases any resources used by the lexer.
-     */
-    void CloseLexer() noexcept;
+        Token GetToken() noexcept;
 
-    /**
-     * Gets the next token available in the source file.
-     *
-     * @return
-     *      The next token in the stream.
-     */
-    Token GetToken() noexcept;
+    private:
+        char NextCharacter() noexcept;
+
+    private:
+        std::ifstream m_SourceFile;
+    };
 
 } // namespace bfc

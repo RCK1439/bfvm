@@ -1,20 +1,10 @@
-/**
- * @file   Compiler.cpp
- * @brief  Implementation of the compiler for BFVM.
- * @author Ruan C. Keet
- * @date   2023-11-14
- */
-
 #include "Compiler.hpp"
 #include "Error.hpp"
 #include "Lexer.hpp"
 
 #include <stack>
 
-namespace bfc
-{
-
-    /* --- type definitions -------------------------------------------------*/
+namespace bfc {
 
     struct BracePosition
     {
@@ -22,172 +12,184 @@ namespace bfc
         std::size_t code;
     };
 
-    /* --- global variables -------------------------------------------------*/
-
-    static Token s_Token;
-    static std::size_t s_CurrentLine{ 0 };
-
-    /* --- parser routines --------------------------------------------------*/
-
-    static void ParseProgram(std::vector<ByteCode>& out) noexcept;
-    static void ParseAddByte(std::vector<ByteCode>& out) noexcept;
-    static void ParseSubByte(std::vector<ByteCode>& out) noexcept;
-    static void ParseAddPtr(std::vector<ByteCode>& out) noexcept;
-    static void ParseSubPtr(std::vector<ByteCode>& out) noexcept;
-    static void ParseWrite(std::vector<ByteCode>& out) noexcept;
-    static void ParseRead(std::vector<ByteCode>& out) noexcept;
-    static void ParseConditional(std::vector<ByteCode>& out) noexcept;
-
-    /* --- compiler interface -----------------------------------------------*/
-
-    void Compile(std::string_view filepath,
-        std::vector<ByteCode>& out) noexcept
+    Compiler::Compiler(std::string_view filepath) noexcept :
+        m_Lexer(filepath),
+        m_CurrentToken(Token::NONE),
+        m_CurrentLine(0)
     {
-        InitLexer(filepath);
         bfl::SetProgramName(filepath);
-
-        ParseProgram(out);
-        CloseLexer();
     }
 
-    /* --- parser routines --------------------------------------------------*/
-
-    static void ParseProgram(std::vector<ByteCode>& out) noexcept
+    std::vector<ByteCode> Compiler::Compile() noexcept
     {
-        s_Token = GetToken();
-        while (s_Token != Token::END_OF_FILE)
+        std::vector<ByteCode> out;
+        this->ParseProgram(out);
+
+        return out;
+    }
+
+    void Compiler::ParseProgram(std::vector<ByteCode>& out) noexcept
+    {
+        m_CurrentToken = m_Lexer.GetToken();
+        while (m_CurrentToken != Token::END_OF_FILE)
         {
-            switch (s_Token)
+            switch (m_CurrentToken)
             {
-                case Token::PLUS:        ParseAddByte(out);     break;
-                case Token::MINUS:       ParseSubByte(out);     break;
-                case Token::ARROW_LEFT:  ParseSubPtr(out);      break;
-                case Token::ARROW_RIGHT: ParseAddPtr(out);      break;
-                case Token::DOT:         ParseWrite(out);       break;
-                case Token::COMMA:       ParseRead(out);        break;
-                case Token::BRACE_LEFT:  ParseConditional(out); break;
-                default: bfl::LogErrorPosition("invalid token: %d",
-                    static_cast<int32_t>(s_Token));
+                case Token::PLUS:
+                    this->ParseAddByte(out);
+                    break;
+                case Token::MINUS:
+                    this->ParseSubByte(out);
+                    break;
+                case Token::ARROW_LEFT:
+                    this->ParseSubPtr(out);
+                    break;
+                case Token::ARROW_RIGHT:
+                    this->ParseAddPtr(out);
+                    break;
+                case Token::DOT:
+                    this->ParseWrite(out);
+                    break;
+                case Token::COMMA:
+                    this->ParseRead(out);
+                    break;
+                case Token::BRACE_LEFT:
+                    this->ParseConditional(out);
+                    break;
+                default:
+                    bfl::LogErrorPosition("invalid token: %d", static_cast<int32_t>(m_CurrentToken));
+                    break;
             }
         }
 
         out.emplace_back(OpCode::END);
     }
 
-    static void ParseAddByte(std::vector<ByteCode>& out) noexcept
+    void Compiler::ParseAddByte(std::vector<ByteCode>& out) noexcept
     {
         ByteCode& code = out.emplace_back(OpCode::ADDB);
 
-        while (s_Token == Token::PLUS)
+        while (m_CurrentToken == Token::PLUS)
         {
-            code.bval++;
-            s_Token = GetToken();
+            code.byte_offset++;
+            m_CurrentToken = m_Lexer.GetToken();
         }
 
-        s_CurrentLine++;
+        m_CurrentLine++;
     }
 
-    static void ParseSubByte(std::vector<ByteCode>& out) noexcept
+    void Compiler::ParseSubByte(std::vector<ByteCode>& out) noexcept
     {
         ByteCode& code = out.emplace_back(OpCode::SUBB);
 
-        while (s_Token == Token::MINUS)
+        while (m_CurrentToken == Token::MINUS)
         {
-            code.bval++;
-            s_Token = GetToken();
+            code.byte_offset++;
+            m_CurrentToken = m_Lexer.GetToken();
         }
 
-        s_CurrentLine++;
+        m_CurrentLine++;
     }
 
-    static void ParseAddPtr(std::vector<ByteCode>& out) noexcept
+    void Compiler::ParseAddPtr(std::vector<ByteCode>& out) noexcept
     {
         ByteCode& code = out.emplace_back(OpCode::ADDP);
 
-        while (s_Token == Token::ARROW_RIGHT)
+        while (m_CurrentToken == Token::ARROW_RIGHT)
         {
-            code.dval++;
-            s_Token = GetToken();
+            code.pointer_offset++;
+            m_CurrentToken = m_Lexer.GetToken();
         }
 
-        s_CurrentLine++;
+        m_CurrentLine++;
     }
 
-    static void ParseSubPtr(std::vector<ByteCode>& out) noexcept
+    void Compiler::ParseSubPtr(std::vector<ByteCode>& out) noexcept
     {
         ByteCode& code = out.emplace_back(OpCode::SUBP);
 
-        while (s_Token == Token::ARROW_LEFT)
+        while (m_CurrentToken == Token::ARROW_LEFT)
         {
-            code.dval++;
-            s_Token = GetToken();
+            code.pointer_offset++;
+            m_CurrentToken = m_Lexer.GetToken();
         }
 
-        s_CurrentLine++;
+        m_CurrentLine++;
     }
 
-    static void ParseWrite(std::vector<ByteCode>& out) noexcept
+    void Compiler::ParseWrite(std::vector<ByteCode>& out) noexcept
     {
         out.emplace_back(OpCode::WRITE);
-        s_Token = GetToken();
+        m_CurrentToken = m_Lexer.GetToken();
 
-        s_CurrentLine++;
+        m_CurrentLine++;
     }
 
-    static void ParseRead(std::vector<ByteCode>& out) noexcept
+    void Compiler::ParseRead(std::vector<ByteCode>& out) noexcept
     {
         out.emplace_back(OpCode::READ);
-        s_Token = GetToken();
+        m_CurrentToken = m_Lexer.GetToken();
 
-        s_CurrentLine++;
+        m_CurrentLine++;
     }
 
-    static void ParseConditional(std::vector<ByteCode>& out) noexcept
+    void Compiler::ParseConditional(std::vector<ByteCode>& out) noexcept
     {
         std::stack<BracePosition, std::vector<BracePosition>> braces;
 
-        braces.push({ bfl::g_Position, s_CurrentLine++ });
+        braces.push({ bfl::g_Position, m_CurrentLine++ });
         out.emplace_back(OpCode::JZ);
 
-        s_Token = GetToken();
+        m_CurrentToken = m_Lexer.GetToken();
         while (!braces.empty())
         {
-            if (s_Token == Token::END_OF_FILE)
+            if (m_CurrentToken == Token::END_OF_FILE)
             {
                 bfl::g_Position = braces.top().src;
                 bfl::LogErrorPosition("no matching ']'");
             }
-            switch (s_Token)
+
+            switch (m_CurrentToken)
             {
-                case Token::PLUS:        ParseAddByte(out); break;
-                case Token::MINUS:       ParseSubByte(out); break;
-                case Token::ARROW_LEFT:  ParseSubPtr(out);  break;
-                case Token::ARROW_RIGHT: ParseAddPtr(out);  break;
-                case Token::DOT:         ParseWrite(out);   break;
-                case Token::COMMA:       ParseRead(out);    break;
+                case Token::PLUS:
+                    this->ParseAddByte(out);
+                    break;
+                case Token::MINUS:
+                    this->ParseSubByte(out);
+                    break;
+                case Token::ARROW_LEFT:
+                    this->ParseSubPtr(out);
+                    break;
+                case Token::ARROW_RIGHT:
+                    this->ParseAddPtr(out);
+                    break;
+                case Token::DOT:
+                    this->ParseWrite(out);
+                    break;
+                case Token::COMMA:
+                    this->ParseRead(out);
+                    break;
                 case Token::BRACE_LEFT:
                 {
-                    braces.push({ bfl::g_Position, s_CurrentLine++ });
+                    braces.push({ bfl::g_Position, m_CurrentLine++ });
                     out.emplace_back(OpCode::JZ);
 
-                    s_Token = GetToken();
-                }
-                break;
+                    m_CurrentToken = m_Lexer.GetToken();
+                } break;
                 case Token::BRACE_RIGHT:
                 {
                     const std::size_t open = braces.top().code;
 
-                    out[open].line = ++s_CurrentLine;
+                    out[open].line = ++m_CurrentLine;
                     out.emplace_back(OpCode::JMP, open);
 
-                    s_Token = GetToken();
+                    m_CurrentToken = m_Lexer.GetToken();
                     braces.pop();
-                }
-                break;
-                default: bfl::LogErrorPosition("invalid token: %d",
-                    static_cast<int32_t>(s_Token));
+                } break;
+                default:
+                    bfl::LogErrorPosition("invalid token: %d", static_cast<int32_t>(m_CurrentToken));
+                    break;
             }
         }
     }
-
 } // namespace bfc

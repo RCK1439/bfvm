@@ -1,19 +1,16 @@
 CC = clang++
 
-COMMON_FLAGS = -std=c++17 -Wall -Werror -Wpedantic -fno-exceptions
+COMMON_FLAGS = -std=c++23 -Wall -Werror -Wextra -Wpedantic -fno-exceptions
 DEBUG_FLAGS = -g -O0
-RELEASE_FLAGS = -O3
+RELEASE_FLAGS = -O3 -DNDEBUG
 
 BIN = bin
 SRC = $(wildcard src/*.cpp)
 EXE = $(BIN)/bfvm
 
-$(BIN):
-	mkdir $(BIN)
-
 .PHONY: all debug release clean
 
-all: release
+all: debug
 
 release: $(BIN) |
 	$(CC) $(RELEASE_FLAGS) $(COMMON_FLAGS) -o $(EXE) $(SRC)
@@ -23,3 +20,6 @@ debug: $(BIN) |
 
 clean:
 	rm -f $(EXE)
+
+$(BIN):
+	mkdir $(BIN)
