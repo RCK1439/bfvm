@@ -1,10 +1,3 @@
-/**
- * @file   VirtualMachine.hpp
- * @brief  Interface for BFVM's execution engine.
- * @author Ruan C. Keet
- * @date   2023-11-14
- */
-
 #pragma once
 
 #include "Compiler.hpp"
@@ -18,7 +11,7 @@ namespace bfvm
 {
     static constexpr std::size_t DATA_SIZE = 30000;
 
-    class VirtualMachine
+    class VirtualMachine final
     {
     public:
         explicit VirtualMachine(std::string_view filepath) noexcept;

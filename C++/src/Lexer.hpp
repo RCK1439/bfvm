@@ -21,7 +21,7 @@ namespace bfc
     };
 
 
-    class Lexer
+    class Lexer final
     {
     public:
         explicit Lexer(std::string_view filepath) noexcept;

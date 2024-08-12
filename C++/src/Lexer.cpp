@@ -11,8 +11,8 @@ namespace bfc
 {
     Lexer::Lexer(std::string_view filepath) noexcept
     {
-        bfl::g_Position.line = 1;
-        bfl::g_Position.column = 0;
+        bfl::g_Position.Line = 1;
+        bfl::g_Position.Column = 0;
 
         m_SourceFile.open(filepath.data());
         if (m_SourceFile.fail())
@@ -43,8 +43,8 @@ namespace bfc
 
         if (last == '\n' && ret != EOF)
         {
-            bfl::g_Position.line++;
-            bfl::g_Position.column = 1;
+            bfl::g_Position.Line++;
+            bfl::g_Position.Column = 1;
         }
         else if (ret == EOF)
         {
@@ -52,7 +52,7 @@ namespace bfc
         }
         else
         {
-            bfl::g_Position.column++;
+            bfl::g_Position.Column++;
         }
 
         last = ret;

@@ -8,16 +8,19 @@ namespace bfc {
 
     struct BracePosition
     {
-        bfl::SourcePosition src;
-        std::size_t code;
+        bfl::SourcePosition SrcPosition;
+        std::size_t CodePosition;
+
+        BracePosition(bfl::SourcePosition src, std::size_t code) noexcept :
+            SrcPosition(src), CodePosition(code) {}
     };
 
-    Compiler::Compiler(std::string_view filepath) noexcept :
-        m_Lexer(filepath),
+    Compiler::Compiler(std::string_view filePath) noexcept :
+        m_Lexer(filePath),
         m_CurrentToken(Token::NONE),
         m_CurrentLine(0)
     {
-        bfl::SetProgramName(filepath);
+        bfl::SetProgramName(filePath);
     }
 
     std::vector<ByteCode> Compiler::Compile() noexcept
@@ -71,7 +74,7 @@ namespace bfc {
 
         while (m_CurrentToken == Token::PLUS)
         {
-            code.byte_offset++;
+            code.ByteOffset++;
             m_CurrentToken = m_Lexer.GetToken();
         }
 
@@ -84,7 +87,7 @@ namespace bfc {
 
         while (m_CurrentToken == Token::MINUS)
         {
-            code.byte_offset++;
+            code.ByteOffset++;
             m_CurrentToken = m_Lexer.GetToken();
         }
 
@@ -97,7 +100,7 @@ namespace bfc {
 
         while (m_CurrentToken == Token::ARROW_RIGHT)
         {
-            code.pointer_offset++;
+            code.PointerOffset++;
             m_CurrentToken = m_Lexer.GetToken();
         }
 
@@ -110,7 +113,7 @@ namespace bfc {
 
         while (m_CurrentToken == Token::ARROW_LEFT)
         {
-            code.pointer_offset++;
+            code.PointerOffset++;
             m_CurrentToken = m_Lexer.GetToken();
         }
 
@@ -137,7 +140,7 @@ namespace bfc {
     {
         std::stack<BracePosition, std::vector<BracePosition>> braces;
 
-        braces.push({ bfl::g_Position, m_CurrentLine++ });
+        braces.emplace(bfl::g_Position, m_CurrentLine++);
         out.emplace_back(OpCode::JZ);
 
         m_CurrentToken = m_Lexer.GetToken();
@@ -145,7 +148,7 @@ namespace bfc {
         {
             if (m_CurrentToken == Token::END_OF_FILE)
             {
-                bfl::g_Position = braces.top().src;
+                bfl::g_Position = braces.top().SrcPosition;
                 bfl::LogErrorPosition("no matching ']'");
             }
 
@@ -171,16 +174,16 @@ namespace bfc {
                     break;
                 case Token::BRACE_LEFT:
                 {
-                    braces.push({ bfl::g_Position, m_CurrentLine++ });
+                    braces.emplace(bfl::g_Position, m_CurrentLine++);
                     out.emplace_back(OpCode::JZ);
 
                     m_CurrentToken = m_Lexer.GetToken();
                 } break;
                 case Token::BRACE_RIGHT:
                 {
-                    const std::size_t open = braces.top().code;
+                    const std::size_t open = braces.top().CodePosition;
 
-                    out[open].line = ++m_CurrentLine;
+                    out[open].Line = ++m_CurrentLine;
                     out.emplace_back(OpCode::JMP, open);
 
                     m_CurrentToken = m_Lexer.GetToken();

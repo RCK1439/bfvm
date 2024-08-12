@@ -1,10 +1,3 @@
-/**
- * @file   Error.hpp
- * @brief  Interface for error logging for BFVM.
- * @author Ruan C. Keet
- * @date   2023-11-16
- */
-
 #pragma once
 
 #include <string_view>
@@ -19,8 +12,8 @@ namespace bfl
      */
     struct SourcePosition
     {
-        std::size_t line;
-        std::size_t column;
+        std::size_t Line;
+        std::size_t Column;
     };
 
     /* --- external variables -----------------------------------------------*/

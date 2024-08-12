@@ -4,6 +4,7 @@
 
 #include <array>
 #include <iostream>
+#include <print>
 
 namespace bfvm
 {
@@ -15,23 +16,23 @@ namespace bfvm
         
     void VirtualMachine::Run() noexcept
     {
-        while (m_ByteCode[m_InstructionPointer].op != bfc::OpCode::END)
+        while (m_ByteCode[m_InstructionPointer].Code != bfc::OpCode::END)
         {
             bfc::ByteCode& code = m_ByteCode[m_InstructionPointer];
 
-            switch (code.op)
+            switch (code.Code)
             {
                 case bfc::OpCode::ADDB:
-                    this->AddByte(code.byte_offset);
+                    this->AddByte(code.ByteOffset);
                     break;
                 case bfc::OpCode::SUBB:
-                    this->SubByte(code.byte_offset);
+                    this->SubByte(code.ByteOffset);
                     break;
                 case bfc::OpCode::ADDP:
-                    this->AddPtr(code.pointer_offset);
+                    this->AddPtr(code.PointerOffset);
                     break;
                 case bfc::OpCode::SUBP:
-                    this->SubPtr(code.pointer_offset);
+                    this->SubPtr(code.PointerOffset);
                     break;
                 case bfc::OpCode::WRITE:
                     this->Write();
@@ -40,13 +41,13 @@ namespace bfvm
                     this->Read();
                     break;
                 case bfc::OpCode::JZ:
-                    this->JumpZero(code.line);
+                    this->JumpZero(code.Line);
                     break;
                 case bfc::OpCode::JMP:
-                    this->Jump(code.line);
+                    this->Jump(code.Line);
                     break;
                 default:
-                    bfl::LogError("unknown opcode: %d", static_cast<int32_t>(code.op));
+                    bfl::LogError("unknown opcode: %d", static_cast<int32_t>(code.Code));
                     break;
             }
         }
@@ -84,7 +85,7 @@ namespace bfvm
 
     inline void VirtualMachine::Write() noexcept
     {
-        std::cout << m_DataArray[m_DataPointer];
+        std::cout << static_cast<char>(m_DataArray[m_DataPointer]);
         m_InstructionPointer++;
     }
 

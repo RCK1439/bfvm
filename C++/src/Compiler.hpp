@@ -1,10 +1,3 @@
-/**
- * @file   Compiler.hpp
- * @brief  Interface of the compiler for BFVM
- * @author Ruan C. Keet
- * @date   2023-11-14
- */
-
 #pragma once
 
 #include "Lexer.hpp"
@@ -17,7 +10,7 @@ namespace bfc
 {
     enum class OpCode
     {
-        ADDB,
+        ADDB = 0,
         SUBB,
         ADDP,
         SUBP,
@@ -28,25 +21,25 @@ namespace bfc
         END
     };
 
-    struct ByteCode
+    struct ByteCode final
     {
-        OpCode op;
+        OpCode Code;
         union
         {
-            uint8_t byte_offset;
-            uint16_t pointer_offset;
-            std::size_t line;
+            uint8_t ByteOffset;
+            uint16_t PointerOffset;
+            std::size_t Line;
         };
 
         ByteCode() = default;
         ByteCode(OpCode code, std::size_t operand = 0U) :
-            op(code), line(operand) {}
+            Code(code), Line(operand) {}
     };
 
-    class Compiler
+    class Compiler final
     {
     public:
-        explicit Compiler(std::string_view filepath) noexcept;
+        explicit Compiler(std::string_view filePath) noexcept;
 
         std::vector<ByteCode> Compile() noexcept;
 
