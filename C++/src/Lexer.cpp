@@ -17,21 +17,13 @@ namespace bfc
         m_SourceFile.open(filepath.data());
         if (m_SourceFile.fail())
             bfl::LogCritical("could not open file: %s", filepath.data());
-    }
-
-    Lexer::~Lexer() noexcept
-    {
-        m_SourceFile.close();
-    }
+    } 
 
     Token Lexer::GetToken() noexcept
     {
-        char ch;
-
-        do
-        {
-            ch = NextCharacter();
-        } while (!BF_CMD(ch) && ch != EOF);
+        char ch = this->NextCharacter();
+        while (!BF_CMD(ch) && ch != EOF)
+            ch = this->NextCharacter();
 
         return static_cast<Token>(ch);
     }
@@ -58,5 +50,4 @@ namespace bfc
         last = ret;
         return ret;
     }
-
 } // namespace bfc

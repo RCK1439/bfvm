@@ -38,7 +38,7 @@ namespace bfc
 
     class Compiler final
     {
-    public:
+    public: 
         explicit Compiler(std::string_view filePath) noexcept;
 
         std::vector<ByteCode> Compile() noexcept;

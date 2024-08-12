@@ -20,12 +20,10 @@ namespace bfc
         END_OF_FILE = -1    // EOF
     };
 
-
     class Lexer final
     {
     public:
         explicit Lexer(std::string_view filepath) noexcept;
-        ~Lexer() noexcept;
 
         Token GetToken() noexcept;
 
@@ -35,5 +33,4 @@ namespace bfc
     private:
         std::ifstream m_SourceFile;
     };
-
 } // namespace bfc

@@ -16,9 +16,7 @@ namespace bfc {
     };
 
     Compiler::Compiler(std::string_view filePath) noexcept :
-        m_Lexer(filePath),
-        m_CurrentToken(Token::NONE),
-        m_CurrentLine(0)
+        m_Lexer(filePath), m_CurrentToken(Token::NONE), m_CurrentLine(0)
     {
         bfl::SetProgramName(filePath);
     }
