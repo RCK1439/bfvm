@@ -29,15 +29,13 @@ static void nextch(void);
 
 /* --- lexer interface ------------------------------------------------------*/
 
-void init_lexer(FILE *src)
-{
+void init_lexer(FILE *src) {
     source = src;
     position.line = 1;
     position.column = 0;
 }
 
-void next_token(token_t *const token)
-{
+void next_token(token_t *const token) {
     do {
         nextch();
     } while (!BF_CMD(ch) && ch != EOF);
@@ -47,8 +45,7 @@ void next_token(token_t *const token)
 
 /* --- utility functions ----------------------------------------------------*/
 
-static void nextch(void)
-{
+static void nextch(void) {
     static char last = 0x00;
 
     ch = (char)fgetc(source);

@@ -18,69 +18,69 @@ pub enum BFVMError {
 impl fmt::Display for BFVMError {
     /// Formats the `BFVMError` according to the severity of the error.
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        const VM_NAME: &'static str = "bfvm";
+        const VM_NAME = "bfvm";
         
-        const SEVERITY_INFO: &'static str = "info";
-        const SEVERITY_WARN: &'static str = "warning";
-        const SEVERITY_ERROR: &'static str = "error";
-        const SEVERITY_FATAL: &'static str = "fatal error";
+        const SEVERITY_INFO = "info";
+        const SEVERITY_WARN = "warning";
+        const SEVERITY_ERROR = "error";
+        const SEVERITY_FATAL = "fatal error";
 
-        let name: ColoredString = ColoredString::from(VM_NAME)
+        let name = ColoredString::from(VM_NAME)
             .white()
             .bold();
         
         match self {
             BFVMError::Info(msg) => {
-                let severity: ColoredString = ColoredString::from(SEVERITY_INFO)
+                let severity = ColoredString::from(SEVERITY_INFO)
                     .bold()
                     .blue();
 
                 write!(f, "{name}: {severity}: {msg}")
             },
             BFVMError::Warn(msg) => {
-                let severity: ColoredString = ColoredString::from(SEVERITY_WARN)
+                let severity = ColoredString::from(SEVERITY_WARN)
                     .bold()
                     .yellow();
 
                 write!(f, "{name}: {severity}: {msg}")
             },
             BFVMError::Error(msg) => {
-                let severity: ColoredString = ColoredString::from(SEVERITY_ERROR)
+                let severity = ColoredString::from(SEVERITY_ERROR)
                     .bold()
                     .red();
 
                 write!(f, "{name}: {severity}: {msg}")
             },
             BFVMError::Fatal(msg) => {
-                let severity: ColoredString = ColoredString::from(SEVERITY_FATAL)
+                let severity = ColoredString::from(SEVERITY_FATAL)
                     .bold()
                     .red();
 
                 write!(f, "{name}: {severity}: {msg}")
             }
             BFVMError::InfoPos(line, column, msg) => {
-                let severity: ColoredString = ColoredString::from(SEVERITY_INFO)
+                let severity = ColoredString::from(SEVERITY_INFO)
                     .bold()
                     .blue();
 
                 write!(f, "{name}:{line}:{column}: {severity}: {msg}")
             },
             BFVMError::WarnPos(line, column, msg) => {
-                let severity: ColoredString = ColoredString::from(SEVERITY_WARN)
+                let severity = ColoredString::from(SEVERITY_WARN)
                     .bold()
                     .yellow();
 
                 write!(f, "{name}:{line}:{column}: {severity}: {msg}")
             },
             BFVMError::ErrorPos(line, column, msg) => {
-                let severity: ColoredString = ColoredString::from(SEVERITY_ERROR)
+                let severity = ColoredString::from(SEVERITY_ERROR)
                     .bold()
                     .red();
 
                 write!(f, "{name}:{line}:{column}: {severity}: {msg}")
             },
             BFVMError::FatalPos(line, column, msg) => {
-                let severity: ColoredString = ColoredString::from(SEVERITY_FATAL)
+                let severity = ColoredString::from(SEVERITY_FATAL)
                     .bold()
                     .red();
     

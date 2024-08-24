@@ -41,8 +41,7 @@ static void ensure_space(void);
 
 /* --- bfc interface --------------------------------------------------------*/
 
-bytecode_t *compile(const char *filepath)
-{
+bytecode_t *compile(const char *filepath) {
     FILE *src;
     
     pos = 0;
@@ -72,8 +71,7 @@ bytecode_t *compile(const char *filepath)
 
 /* --- parser routines ------------------------------------------------------*/
 
-static void parse_program(void)
-{
+static void parse_program(void) {
     next_token(&token);
     while (token != TOK_EOF) {
         switch (token) {
@@ -92,8 +90,7 @@ static void parse_program(void)
     code[pos].op = BFVM_END;
 }
 
-static void parse_add_byte(void)
-{
+static void parse_add_byte(void) {
     ensure_space();
 
     code[pos].op = BFVM_ADDB;
@@ -107,8 +104,7 @@ static void parse_add_byte(void)
     pos++;
 }
 
-static void parse_sub_byte(void)
-{
+static void parse_sub_byte(void) {
     ensure_space();
 
     code[pos].op = BFVM_SUBB;
@@ -122,8 +118,7 @@ static void parse_sub_byte(void)
     pos++;
 }
 
-static void parse_add_ptr(void)
-{
+static void parse_add_ptr(void) {
     ensure_space();
     
     code[pos].op = BFVM_ADDP;
@@ -137,8 +132,7 @@ static void parse_add_ptr(void)
     pos++;
 }
 
-static void parse_sub_ptr(void)
-{
+static void parse_sub_ptr(void) {
     ensure_space();
 
     code[pos].op = BFVM_SUBP;
@@ -152,24 +146,21 @@ static void parse_sub_ptr(void)
     pos++;
 }
 
-static void parse_write(void)
-{
+static void parse_write(void) {
     ensure_space();
 
     code[pos++].op = BFVM_WRITE;
     next_token(&token);
 }
 
-static void parse_read(void)
-{
+static void parse_read(void) {
     ensure_space();
 
     code[pos++].op = BFVM_READ;
     next_token(&token);
 }
 
-static void parse_conditional(void)
-{
+static void parse_conditional(void) {
     init_stack();
 
     const brace_t b_open = {
@@ -184,10 +175,8 @@ static void parse_conditional(void)
     next_token(&token);
     while (!empty()) {
         if (token == TOK_EOF) {
-            brace_t b_err_open;
-            
-            pop(&b_err_open);
-            position = b_err_open.src_pos;
+            const brace_t b_open = pop();
+            position = b_open.src_pos;
 
             log_errpos("no matching ']'");
         } else switch (token) {
@@ -210,8 +199,7 @@ static void parse_conditional(void)
                 next_token(&token);
             } break;
             case TOK_BRACE_RIGHT: { 
-                brace_t b_open;
-                pop(&b_open);
+                const brace_t b_open = pop();
 
                 const size_t open_idx = b_open.asm_pos;
                 code[open_idx].operands.line = pos + 1;
@@ -230,8 +218,7 @@ static void parse_conditional(void)
     free_stack();
 }
 
-static void ensure_space(void)
-{
+static void ensure_space(void) {
     if (pos < size) {
         return;
     }

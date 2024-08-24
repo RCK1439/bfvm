@@ -57,7 +57,7 @@ impl Compiler {
     /// 
     /// If there were any syntax errors in the source code.
     pub fn compile(&mut self) -> Result<Vec<OpCode>> {
-        let mut code: Vec<OpCode> = Vec::<OpCode>::new();
+        let mut code = Vec::<OpCode>::new();
 
         self.token = self.lexer.next_token();
         self.parse_program(&mut code)?;
@@ -101,7 +101,7 @@ impl Compiler {
     /// 
     /// - `code` - The generated output code.
     fn parse_add_byte(&mut self, code: &mut Vec<OpCode>) {
-        let mut operand: u8 = 0u8;
+        let mut operand = 0u8;
 
         while self.token == Token::Plus {
             operand += 1;
@@ -118,7 +118,7 @@ impl Compiler {
     /// 
     /// - `code` - The generated output code.
     fn parse_sub_byte(&mut self, code: &mut Vec<OpCode>) {
-        let mut operand: u8 = 0u8;
+        let mut operand = 0u8;
 
         while self.token == Token::Minus {
             operand += 1;
@@ -135,7 +135,7 @@ impl Compiler {
     /// 
     /// - `code` - The generated output code.
     fn parse_add_ptr(&mut self, code: &mut Vec<OpCode>) {
-        let mut offset: usize = 0usize;
+        let mut offset = 0usize;
 
         while self.token == Token::ArrowRight {
             offset += 1;
@@ -152,7 +152,7 @@ impl Compiler {
     /// 
     /// - `code` - The generated output code.
     fn parse_sub_ptr(&mut self, code: &mut Vec<OpCode>) {
-        let mut offset: usize = 0usize;
+        let mut offset = 0usize;
 
         while self.token == Token::ArrowLeft {
             offset += 1;
@@ -202,7 +202,7 @@ impl Compiler {
     /// If `Token::None` was found during parsing the conditional.
     fn parse_conditional(&mut self, code: &mut Vec<OpCode>) -> Result<()> {
         type Pair = (usize, SourcePosition);
-        let mut braces: Vec<Pair> = Vec::<Pair>::new();
+        let mut braces = Vec::<Pair>::new();
 
         braces.push((self.currln, self.lexer.position()));
         self.currln += 1;
@@ -233,7 +233,7 @@ impl Compiler {
 
                         self.token = self.lexer.next_token();
                     } else {
-                        let pos: SourcePosition = self.lexer.position();
+                        let pos = self.lexer.position();
                         return Err(BFVMError::ErrorPos(pos.line, pos.column, format!("unexpected token: {}", self.token.lexeme())));
                     }
                 },
@@ -241,7 +241,7 @@ impl Compiler {
                     if let Some((_, pos)) = braces.pop() {
                         return Err(BFVMError::ErrorPos(pos.line, pos.column, String::from("no matching ']'")));
                     } else {
-                        let pos: SourcePosition = self.lexer.position();
+                        let pos = self.lexer.position();
                         return Err(BFVMError::ErrorPos(pos.line, pos.column, String::from("stack empty")));
                     }
                 },

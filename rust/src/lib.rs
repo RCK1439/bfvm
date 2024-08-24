@@ -23,7 +23,7 @@ pub fn run(args: Vec<String>) -> Result<()> {
         return Err(BFVMError::Fatal(String::from("no sources")));
     }
     
-    let mut vm: VirtualMachine = VirtualMachine::init(&args[1])?;
+    let mut vm = VirtualMachine::init(&args[1])?;
     vm.run()
 }
 

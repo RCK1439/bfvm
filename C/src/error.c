@@ -50,8 +50,7 @@ static void cprintf(FILE *const stream, const char *prefix, const char *fmt,
 
 /* --- error interface ------------------------------------------------------*/
 
-void setprogname(const char *filename)
-{
+void setprogname(const char *filename) {
     char *c;
 
     if ((c = strrchr(filename, '/')) == NULL) {
@@ -63,13 +62,11 @@ void setprogname(const char *filename)
     progname = estrdup(c);
 }
 
-void freeprogname(void)
-{
+void freeprogname(void) {
     free(progname);
 }
 
-void log_norm(const char *fmt, ...)
-{
+void log_norm(const char *fmt, ...) {
     va_list args;
 
     va_start(args, fmt);
@@ -77,8 +74,7 @@ void log_norm(const char *fmt, ...)
     va_end(args);
 }
 
-void log_info(const char *fmt, ...)
-{
+void log_info(const char *fmt, ...) {
     const char *prefix = ASCII_BOLD_CYAN "info:" ASCII_RESET;
     va_list args;
 
@@ -87,8 +83,7 @@ void log_info(const char *fmt, ...)
     va_end(args);
 }
 
-void log_err(const char *fmt, ...)
-{
+void log_err(const char *fmt, ...) {
     const char *prefix = ASCII_BOLD_RED "error:" ASCII_RESET;
     va_list args;
 
@@ -99,8 +94,7 @@ void log_err(const char *fmt, ...)
     exit(EXIT_FAILURE);
 }
 
-void log_errpos(const char *fmt, ...)
-{
+void log_errpos(const char *fmt, ...) {
     const char *err = ASCII_BOLD_RED "error:" ASCII_RESET;    
     char prefix[MAX_PREFIX_SIZE+1];
     va_list args;
@@ -123,8 +117,7 @@ void log_errpos(const char *fmt, ...)
     exit(EXIT_FAILURE);
 }
 
-void *emalloc(size_t size)
-{
+void *emalloc(size_t size) {
     void *ptr;
 
     if ((ptr = malloc(size)) == NULL) {
@@ -134,8 +127,7 @@ void *emalloc(size_t size)
     return ptr;
 }
 
-void *erealloc(void *p, size_t size)
-{
+void *erealloc(void *p, size_t size) {
     void *ptr;
 
     if ((ptr = realloc(p, size)) == NULL) {
@@ -145,8 +137,7 @@ void *erealloc(void *p, size_t size)
     return ptr;
 }
 
-char *estrdup(const char *s)
-{
+char *estrdup(const char *s) {
     char *dup;
 
     const size_t size = strlen(s) + 1;
@@ -161,8 +152,7 @@ char *estrdup(const char *s)
 /* --- utility functions ----------------------------------------------------*/
 
 static void cprintf(FILE *const stream, const char *prefix, const char *fmt,
-va_list args)
-{
+va_list args) {
     fflush(stdout);
     fprintf(stream, "%sbfvm:%s ", ASCII_BOLD_WHITE, ASCII_RESET);
     if (prefix != NULL) {

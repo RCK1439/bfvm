@@ -99,7 +99,7 @@ impl Lexer {
     /// - If the source file does not exist.
     /// - If the contents of the file could not be read.
     pub fn from_source(filepath: &str) -> Result<Self> {
-        let source: String = fs::read_to_string(filepath)
+        let source = fs::read_to_string(filepath)
             .map_err(|_| BFVMError::Error(format!("failed reading from file: {filepath}")))?;
         
         Ok(Self {
@@ -150,7 +150,7 @@ impl Lexer {
     /// `Some` otherwise.
     #[inline(always)]
     fn next_character(&mut self) -> Option<char> {
-        let ch: char = self.source
+        let ch = self.source
             .chars()
             .nth(self.curr)?;
 

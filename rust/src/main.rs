@@ -8,7 +8,7 @@ use std::env;
 /// # Arguments
 /// To run the program: `bfvm path/to/brainfuck.b`
 fn main() -> process::ExitCode {
-    let args: Vec<String> = env::args()
+    let args = env::args()
         .collect();
 
     if let Err(err) = bfvm::run(args) {

@@ -48,7 +48,7 @@ void push(brace_t b);
  * @param[out] out
  *      The position on the top of the stack.
  */
-void pop(brace_t *const out);
+brace_t pop(void);
 
 /**
  * Checks if the stack has any elements inside the container.
@@ -56,6 +56,6 @@ void pop(brace_t *const out);
  * @return
  *      `true`, if the stack is empty.
  */
-bool_t empty(void);
+bool empty(void);
 
 #endif /* BSTACK_H */
