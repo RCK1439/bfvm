@@ -29,7 +29,7 @@ namespace bfc {
         return out;
     }
 
-    void Compiler::ParseProgram(std::vector<ByteCode>& out) noexcept
+    inline void Compiler::ParseProgram(std::vector<ByteCode>& out) noexcept
     {
         m_CurrentToken = m_Lexer.GetToken();
         while (m_CurrentToken != Token::END_OF_FILE)
@@ -66,59 +66,27 @@ namespace bfc {
         out.emplace_back(OpCode::END);
     }
 
-    void Compiler::ParseAddByte(std::vector<ByteCode>& out) noexcept
+    inline void Compiler::ParseAddByte(std::vector<ByteCode>& out) noexcept
     {
-        ByteCode& code = out.emplace_back(OpCode::ADDB);
-
-        while (m_CurrentToken == Token::PLUS)
-        {
-            code.ByteOffset++;
-            m_CurrentToken = m_Lexer.GetToken();
-        }
-
-        m_CurrentLine++;
+        this->ParseChain(Token::PLUS, OpCode::ADDB, out);
     }
 
-    void Compiler::ParseSubByte(std::vector<ByteCode>& out) noexcept
+    inline void Compiler::ParseSubByte(std::vector<ByteCode>& out) noexcept
     {
-        ByteCode& code = out.emplace_back(OpCode::SUBB);
-
-        while (m_CurrentToken == Token::MINUS)
-        {
-            code.ByteOffset++;
-            m_CurrentToken = m_Lexer.GetToken();
-        }
-
-        m_CurrentLine++;
+        this->ParseChain(Token::MINUS, OpCode::SUBB, out);
     }
 
-    void Compiler::ParseAddPtr(std::vector<ByteCode>& out) noexcept
+    inline void Compiler::ParseAddPtr(std::vector<ByteCode>& out) noexcept
     {
-        ByteCode& code = out.emplace_back(OpCode::ADDP);
-
-        while (m_CurrentToken == Token::ARROW_RIGHT)
-        {
-            code.PointerOffset++;
-            m_CurrentToken = m_Lexer.GetToken();
-        }
-
-        m_CurrentLine++;
+        this->ParseChain(Token::ARROW_RIGHT, OpCode::ADDP, out);
     }
 
-    void Compiler::ParseSubPtr(std::vector<ByteCode>& out) noexcept
+    inline void Compiler::ParseSubPtr(std::vector<ByteCode>& out) noexcept
     {
-        ByteCode& code = out.emplace_back(OpCode::SUBP);
-
-        while (m_CurrentToken == Token::ARROW_LEFT)
-        {
-            code.PointerOffset++;
-            m_CurrentToken = m_Lexer.GetToken();
-        }
-
-        m_CurrentLine++;
+        this->ParseChain(Token::ARROW_LEFT, OpCode::SUBP, out);
     }
 
-    void Compiler::ParseWrite(std::vector<ByteCode>& out) noexcept
+    inline void Compiler::ParseWrite(std::vector<ByteCode>& out) noexcept
     {
         out.emplace_back(OpCode::WRITE);
         m_CurrentToken = m_Lexer.GetToken();
@@ -126,7 +94,7 @@ namespace bfc {
         m_CurrentLine++;
     }
 
-    void Compiler::ParseRead(std::vector<ByteCode>& out) noexcept
+    inline void Compiler::ParseRead(std::vector<ByteCode>& out) noexcept
     {
         out.emplace_back(OpCode::READ);
         m_CurrentToken = m_Lexer.GetToken();
@@ -134,7 +102,7 @@ namespace bfc {
         m_CurrentLine++;
     }
 
-    void Compiler::ParseConditional(std::vector<ByteCode>& out) noexcept
+    inline void Compiler::ParseConditional(std::vector<ByteCode>& out) noexcept
     {
         std::stack<BracePosition, std::vector<BracePosition>> braces;
 
@@ -192,5 +160,18 @@ namespace bfc {
                     break;
             }
         }
+    }
+
+    inline void Compiler::ParseChain(Token token, OpCode op, std::vector<ByteCode>& out) noexcept
+    {
+        ByteCode& code = out.emplace_back(op);
+
+        while (m_CurrentToken == token)
+        {
+            code.PointerOffset++;
+            m_CurrentToken = m_Lexer.GetToken();
+        }
+
+        m_CurrentLine++;
     }
 } // namespace bfc

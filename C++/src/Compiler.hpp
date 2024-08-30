@@ -52,6 +52,7 @@ namespace bfc
         void ParseWrite(std::vector<ByteCode>& out) noexcept;
         void ParseRead(std::vector<ByteCode>& out) noexcept;
         void ParseConditional(std::vector<ByteCode>& out) noexcept;
+        void ParseChain(Token token, OpCode op, std::vector<ByteCode>& out) noexcept;
 
     private:
         Lexer m_Lexer;
