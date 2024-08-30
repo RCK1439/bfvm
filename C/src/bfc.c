@@ -31,6 +31,7 @@ static void parse_sub_ptr(void);
 static void parse_write(void);
 static void parse_read(void);
 static void parse_conditional(void);
+static void parse_chain(token_t tok, opcode_t op);
 
 /* --- utility functions ----------------------------------------------------*/
 
@@ -90,77 +91,37 @@ static void parse_program(void) {
     code[pos].op = BFVM_END;
 }
 
-static void parse_add_byte(void) {
-    ensure_space();
-
-    code[pos].op = BFVM_ADDB;
-    code[pos].operands.bval = 0;
-    
-    while (token == TOK_ADD) {
-        code[pos].operands.bval++;
-        next_token(&token);
-    }
-
-    pos++;
+inline static void parse_add_byte(void) {
+    parse_chain(TOK_ADD, BFVM_ADDB);
 }
 
-static void parse_sub_byte(void) {
-    ensure_space();
-
-    code[pos].op = BFVM_SUBB;
-    code[pos].operands.bval = 0;
-
-    while (token == TOK_SUB) {
-        code[pos].operands.bval++;
-        next_token(&token);
-    }
-
-    pos++;
+inline static void parse_sub_byte(void) {
+    parse_chain(TOK_SUB, BFVM_SUBB);
 }
 
-static void parse_add_ptr(void) {
-    ensure_space();
-    
-    code[pos].op = BFVM_ADDP;
-    code[pos].operands.dval = 0;
-
-    while (token == TOK_ARROW_RIGHT) {
-        code[pos].operands.dval++;
-        next_token(&token);
-    }
-
-    pos++;
+inline static void parse_add_ptr(void) {
+    parse_chain(TOK_ARROW_RIGHT, BFVM_ADDP);
 }
 
-static void parse_sub_ptr(void) {
-    ensure_space();
-
-    code[pos].op = BFVM_SUBP;
-    code[pos].operands.dval = 0;
-
-    while (token == TOK_ARROW_LEFT) {
-        code[pos].operands.dval++;
-        next_token(&token);
-    }
-
-    pos++;
+inline static void parse_sub_ptr(void) {
+    parse_chain(TOK_ARROW_LEFT, BFVM_SUBP);
 }
 
-static void parse_write(void) {
+inline static void parse_write(void) {
     ensure_space();
 
     code[pos++].op = BFVM_WRITE;
     next_token(&token);
 }
 
-static void parse_read(void) {
+inline static void parse_read(void) {
     ensure_space();
 
     code[pos++].op = BFVM_READ;
     next_token(&token);
 }
 
-static void parse_conditional(void) {
+inline static void parse_conditional(void) {
     init_stack();
 
     const brace_t b_open = {
@@ -218,7 +179,21 @@ static void parse_conditional(void) {
     free_stack();
 }
 
-static void ensure_space(void) {
+inline static void parse_chain(token_t tok, opcode_t op) {
+    ensure_space();
+
+    code[pos].op = op;
+    code[pos].operands.dval = 0;
+
+    while (token == tok) {
+        code[pos].operands.dval++;
+        next_token(&token);
+    }
+
+    pos++;
+}
+
+inline static void ensure_space(void) {
     if (pos < size) {
         return;
     }
