@@ -6,12 +6,13 @@ use prelude::*;
 use bfc::{Compiler, OpCode};
 use error::BFVMError;
 
-use std::io::{self, Read};
+use std::io::Read;
+
+// --- public interface to the BFVM ---------------------------------------------------------------
 
 /// Runs the Brainfuck Virtual Machine.
 /// 
-/// # Parameters
-/// 
+/// # Params
 /// - `args` - The arguments passed from the command line.
 /// 
 /// # Errors
@@ -20,15 +21,19 @@ use std::io::{self, Read};
 /// - If there was an error during runtime.
 pub fn run(args: Vec<String>) -> Result<()> {
     if args.len() < 2 {
-        return Err(BFVMError::Fatal(String::from("no sources")));
+        return Err(BFVMError::NoSources);
     }
     
-    let mut vm = VirtualMachine::init(&args[1])?;
+    let mut vm = VirtualMachine::new(&args[1])?;
     vm.run()
 }
 
+// --- constants ----------------------------------------------------------------------------------
+
 /// This is the size of the data array defined by a general Brainfuck standard
-const DATA_SIZE: usize = 30000usize;
+const DATA_SIZE: usize = 30000;
+
+// --- virtual machine definition -----------------------------------------------------------------
 
 /// This struct represents the actual virtual machine containing the data
 /// array, data pointer, compiled byte code and instruction pointer.
@@ -37,7 +42,7 @@ struct VirtualMachine {
     data: [u8; DATA_SIZE],
 
     /// The data pointer pointing into `data`.
-    data_ptr: usize,
+    data_ptr: u16,
 
     /// The compiled byte code instructions to be interpreted.
     instructions: Vec<OpCode>,
@@ -47,33 +52,29 @@ struct VirtualMachine {
 }
 
 impl VirtualMachine {
-    /// Initializes the virtual machine and returns an instance to the
-    /// ready-to-run virtual machine.
+    /// Initializes the virtual machine and returns an instance to the ready-to-run virtual machine
     /// 
-    /// # Parameters
-    /// 
-    /// - `filepath` - The path to a Brainfuck source file.
+    /// # Params
+    /// - `filepath` - The path to a Brainfuck source file
     /// 
     /// # Errors
-    /// 
-    /// - If the source file was invalid.
-    /// - If there was an error during compilation.
-    fn init(filepath: &str) -> Result<Self> {
-        let mut compiler: Compiler = Compiler::from_source(filepath)?;
+    /// - If the source file was invalid
+    /// - If there was an error during compilation
+    fn new(filepath: &str) -> Result<Self> {
+        let mut compiler = Compiler::new(filepath)?;
         
         Ok(Self {
             data: [0; DATA_SIZE],
-            data_ptr: 0usize,
+            data_ptr: 0,
             instructions: compiler.compile()?,
-            instr_ptr: 0usize
+            instr_ptr: 0
         })
     }
 
-    /// Runs the Brainfuck program through the virtual machine.
+    /// Runs the Brainfuck program through the virtual machine
     /// 
     /// # Errors
-    /// 
-    /// If any errors occur during runtime.
+    /// If any errors occur during runtime
     fn run(&mut self) -> Result<()> {
         while self.instructions[self.instr_ptr] != OpCode::End {
             match self.instructions[self.instr_ptr] {
@@ -92,112 +93,94 @@ impl VirtualMachine {
         Ok(())
     }
 
-    /// Adds `operand` to the byte pointed to by the data pointer.
+    /// Adds `operand` to the byte pointed to by the data pointer
     /// 
-    /// # Parameters
-    /// 
-    /// - `operand` - The value to add to the byte.
-    #[inline(always)]
+    /// # Params
+    /// - `operand` - The value to add to the byte
     fn add_byte(&mut self, operand: u8) {
-        self.data[self.data_ptr] = self.data[self.data_ptr].wrapping_add(operand);
+        self.data[self.data_ptr as usize] = self.data[self.data_ptr as usize].wrapping_add(operand);
         self.instr_ptr += 1;
     }
 
-    /// Subtracts `operand` from the byte pointed to by the data pointer.
+    /// Subtracts `operand` from the byte pointed to by the data pointer
     /// 
-    /// # Parameters
-    /// 
-    /// - `operand` - The value to subtract from the byte.
-    #[inline(always)]
+    /// # Params
+    /// - `operand` - The value to subtract from the byte
     fn sub_byte(&mut self, operand: u8) {
-        self.data[self.data_ptr] = self.data[self.data_ptr].wrapping_sub(operand);
+        self.data[self.data_ptr as usize] = self.data[self.data_ptr as usize].wrapping_sub(operand);
         self.instr_ptr += 1;
     }
 
-    /// Adds `offset` to the data pointer.
+    /// Adds `offset` to the data pointer
     /// 
-    /// # Parameters
-    /// 
-    /// - `offset` - The value to offset the data pointer by.
+    /// # Params
+    /// - `offset` - The value to offset the data pointer by
     /// 
     /// # Errors
-    /// 
-    /// If the data pointer is larger than `DATA_SIZE` after the addition.
-    #[inline(always)]
-    fn add_ptr(&mut self, offset: usize) -> Result<()> {
+    /// If the data pointer is larger than `DATA_SIZE` after the addition
+    fn add_ptr(&mut self, offset: u16) -> Result<()> {
         self.data_ptr = self.data_ptr.wrapping_add(offset);
-        if self.data_ptr >= DATA_SIZE {
-            return Err(BFVMError::Fatal(String::from("data pointer out of range")));
+        if self.data_ptr as usize >= DATA_SIZE {
+            return Err(BFVMError::DataPointerOutOfRange);
         }
 
         self.instr_ptr += 1;
         Ok(())
     }
 
-    /// Subtracts `offset` from the data pointer.
+    /// Subtracts `offset` from the data pointer
     /// 
-    /// # Parameters
-    /// 
-    /// - `offset` - The value to offset the data pointer by.
+    /// # Params
+    /// - `offset` - The value to offset the data pointer by
     /// 
     /// # Errors
-    /// 
-    /// If the data pointer is larger than `DATA_SIZE` after the subtraction.
-    #[inline(always)]
-    fn sub_ptr(&mut self, offset: usize) -> Result<()> {
+    /// If the data pointer is larger than `DATA_SIZE` after the subtraction
+    fn sub_ptr(&mut self, offset: u16) -> Result<()> {
         self.data_ptr = self.data_ptr.wrapping_sub(offset);
-        if self.data_ptr >= DATA_SIZE {
-            return Err(BFVMError::Fatal(String::from("data pointer out of range")));
+        if self.data_ptr as usize >= DATA_SIZE {
+            return Err(BFVMError::DataPointerOutOfRange);
         }
 
         self.instr_ptr += 1;
         Ok(())
     }
 
-    /// Writes the byte pointed to by the data pointer to `stdout`.
-    #[inline(always)]
+    /// Writes the byte pointed to by the data pointer to `stdout`
     fn write(&mut self) {
-        print!("{}", self.data[self.data_ptr] as char);
+        print!("{}", self.data[self.data_ptr as usize] as char);
         self.instr_ptr += 1;
     }
 
-    /// Reads a byte in from `sdtin` and saves said byte to the address in the
-    /// data array pointed by the data pointer.
+    /// Reads a byte in from `sdtin` and saves said byte to the address in the data array pointed
+    /// by the data pointer
     /// 
     /// # Errors
-    /// 
-    /// If a byte could not be read from the user.
-    #[inline(always)]
+    /// If a byte could not be read from the user
     fn read(&mut self) -> Result<()> {
         let mut read: [u8; 1] = [0; 1];
-        io::stdin()
+        std::io::stdin()
             .read(&mut read)
-            .map_err(|_| BFVMError::Fatal(String::from("failed to read byte")))?;
+            .map_err(|_| BFVMError::FailedToReadByte)?;
 
         Ok(())
     }
 
-    /// Jumps to the instruction at `line` if the byte pointed to by the data
-    /// pointer is `0`.
+    /// Jumps to the instruction at `line` if the byte pointed to by the data pointer is `0`
     /// 
-    /// # Parameters
-    /// 
-    /// - `line` - The line number of the instruction to jump to.
-    #[inline(always)]
+    /// # Params
+    /// - `line` - The line number of the instruction to jump to
     fn jmp_zero(&mut self, line: usize) {
-        if self.data[self.data_ptr] != 0x00 {
+        if self.data[self.data_ptr as usize] != 0x00 {
             self.instr_ptr += 1;
         } else {
             self.instr_ptr = line;
         }
     }
 
-    /// Jumps to the instruction at `line`.
+    /// Jumps to the instruction at `line`
     /// 
-    /// # Parameters
-    /// 
-    /// - `line` - The line number of the instruction to jump to.
-    #[inline(always)]
+    /// # Params
+    /// - `line` - The line number of the instruction to jump to
     fn jmp(&mut self, line: usize) {
         self.instr_ptr = line;
     }

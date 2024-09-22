@@ -1,91 +1,104 @@
+use crate::bfc::lexer::SourcePosition;
+use crate::bfc::lexer::token::Token;
+
 use colored::{ColoredString, Colorize};
 
-use std::fmt;
+use std::fmt::Display;
 
 /// This enum represents the different severities of errors that can occur.
-#[derive(PartialEq, Debug, Clone)]
+#[derive(Debug, Clone)]
 pub enum BFVMError {
-    Info(String),
-    Warn(String),
-    Error(String),
-    Fatal(String),
-    InfoPos(usize, usize, String),
-    WarnPos(usize, usize, String),
-    ErrorPos(usize, usize, String),
-    FatalPos(usize, usize, String)
+    // Lexer errors
+    NoSources,
+    FailedReadingFromFile(String),
+    NotABrainfuckOperator(char),
+
+    // Parser errors
+    UnexpectedToken(SourcePosition, Token),
+    LoopNotClosed(SourcePosition),
+    StackEmpty(SourcePosition),
+
+    // Runtime errors
+    FailedToReadByte,
+    DataPointerOutOfRange,
 }
 
-impl fmt::Display for BFVMError {
-    /// Formats the `BFVMError` according to the severity of the error.
-    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        const VM_NAME = "bfvm";
-        
-        const SEVERITY_INFO = "info";
-        const SEVERITY_WARN = "warning";
-        const SEVERITY_ERROR = "error";
-        const SEVERITY_FATAL = "fatal error";
+const VM_NAME: &str = "bfvm";
 
+const SEVERITY_ERROR: &str = "error";
+const SEVERITY_FATAL: &str = "fatal error";
+
+impl Display for BFVMError {
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
         let name = ColoredString::from(VM_NAME)
             .white()
             .bold();
         
         match self {
-            BFVMError::Info(msg) => {
-                let severity = ColoredString::from(SEVERITY_INFO)
-                    .bold()
-                    .blue();
-
-                write!(f, "{name}: {severity}: {msg}")
-            },
-            BFVMError::Warn(msg) => {
-                let severity = ColoredString::from(SEVERITY_WARN)
-                    .bold()
-                    .yellow();
-
-                write!(f, "{name}: {severity}: {msg}")
-            },
-            BFVMError::Error(msg) => {
-                let severity = ColoredString::from(SEVERITY_ERROR)
-                    .bold()
-                    .red();
-
-                write!(f, "{name}: {severity}: {msg}")
-            },
-            BFVMError::Fatal(msg) => {
+            Self::NoSources => {
                 let severity = ColoredString::from(SEVERITY_FATAL)
                     .bold()
                     .red();
 
-                write!(f, "{name}: {severity}: {msg}")
+                write!(f, "{name}: {severity}: no sources")
+            },
+            Self::FailedReadingFromFile(path) => {
+                let severity = ColoredString::from(SEVERITY_FATAL)
+                    .bold()
+                    .red();
+
+                write!(f, "{name}: {severity}: failed reading from file: {path}")
             }
-            BFVMError::InfoPos(line, column, msg) => {
-                let severity = ColoredString::from(SEVERITY_INFO)
+            Self::NotABrainfuckOperator(ch) => {
+                let severity = ColoredString::from(SEVERITY_FATAL)
                     .bold()
-                    .blue();
+                    .red();
 
-                write!(f, "{name}:{line}:{column}: {severity}: {msg}")
+                write!(f, "{name}: {severity}: {ch} is not a Brainfuck operator")
             },
-            BFVMError::WarnPos(line, column, msg) => {
-                let severity = ColoredString::from(SEVERITY_WARN)
+
+            Self::UnexpectedToken(pos, found) => {
+                let severity = ColoredString::from(SEVERITY_ERROR)
                     .bold()
-                    .yellow();
+                    .red();
+                let ln = pos.line;
+                let col = pos.column;
 
-                write!(f, "{name}:{line}:{column}: {severity}: {msg}")
+                write!(f, "{name}:{ln}:{col}: {severity}: unexpected operator: {}", found.lexeme())
             },
-            BFVMError::ErrorPos(line, column, msg) => {
+            Self::LoopNotClosed(pos) => {
+                let severity = ColoredString::from(SEVERITY_ERROR)
+                    .bold()
+                    .red();
+                let ln = pos.line;
+                let col = pos.column;
+
+                write!(f, "{name}:{ln}:{col}: {severity}: loop not closed")
+            },
+            Self::StackEmpty(pos) => {
+                let severity = ColoredString::from(SEVERITY_ERROR)
+                    .bold()
+                    .red();
+                let ln = pos.line;
+                let col = pos.column;
+
+                write!(f, "{name}:{ln}:{col}: {severity}: stack empty")
+            },
+
+            Self::FailedToReadByte => {
                 let severity = ColoredString::from(SEVERITY_ERROR)
                     .bold()
                     .red();
 
-                write!(f, "{name}:{line}:{column}: {severity}: {msg}")
+                write!(f, "{name}: {severity}: failed to read byte from stdin")
             },
-            BFVMError::FatalPos(line, column, msg) => {
-                let severity = ColoredString::from(SEVERITY_FATAL)
+            Self::DataPointerOutOfRange => {
+                let severity = ColoredString::from(SEVERITY_ERROR)
                     .bold()
                     .red();
-    
-                write!(f, "{name}:{line}:{column}: {severity}: {msg}")
-            },
+
+                write!(f, "{name}: {severity}: data pointer out of range")
+            }
         }
     }
 }
