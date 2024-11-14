@@ -6,6 +6,6 @@ int main(int argc, char* argv[])
     if (argc < 2)
         bfl::LogCritical("no sources");
 
-    bfvm::VirtualMachine vm(argv[1]);
-    vm.Run();
+    bfvm::Init(argv[1]);
+    return bfvm::Run();
 }

@@ -1,13 +1,10 @@
 #pragma once
 
-#include "Lexer.hpp"
-
 #include <cstdint>
 #include <string_view>
 #include <vector>
 
-namespace bfc
-{
+namespace bfc {
     enum class OpCode
     {
         ADDB = 0,
@@ -36,27 +33,7 @@ namespace bfc
             Code(code), Line(operand) {}
     };
 
-    class Compiler final
-    {
-    public: 
-        explicit Compiler(std::string_view filePath) noexcept;
+void Init(std::string_view filepath) noexcept;
+std::vector<ByteCode> Compile(void) noexcept;
 
-        std::vector<ByteCode> Compile() noexcept;
-
-    private:
-        void ParseProgram(std::vector<ByteCode>& out) noexcept;
-        void ParseAddByte(std::vector<ByteCode>& out) noexcept;
-        void ParseSubByte(std::vector<ByteCode>& out) noexcept;
-        void ParseAddPtr(std::vector<ByteCode>& out) noexcept;
-        void ParseSubPtr(std::vector<ByteCode>& out) noexcept;
-        void ParseWrite(std::vector<ByteCode>& out) noexcept;
-        void ParseRead(std::vector<ByteCode>& out) noexcept;
-        void ParseConditional(std::vector<ByteCode>& out) noexcept;
-        void ParseChain(Token token, OpCode op, std::vector<ByteCode>& out) noexcept;
-
-    private:
-        Lexer m_Lexer;
-        Token m_CurrentToken;
-        std::size_t m_CurrentLine;
-    };
 } // namespace bfc
