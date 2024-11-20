@@ -1,33 +1,39 @@
-CC = clang
+CC = cc
 
-COMMON_FLAGS = -Wall -Werror -Wpedantic -Wextra -std=c99
-DEBUG_FLAGS = -ggdb -O0
-RELEASE_FLAGS = -O3
+CFLAGS = -Wall -Werror -Wpedantic -Wextra -std=c99
+ifeq ($(MAKECMDGOALS), release)
+	CFLAGS += -O3 -DNDEBUG
+endif
 
-BIN = bin
+SRC_DIR = src
+BIN_DIR = bin
 LOCALBIN = ~/.local/bin
-SRC = $(wildcard src/*.c)
-EXE = $(BIN)/bfvm
 
-.PHONY: all debug release install uninstall clean
+SRC_FILES = $(wildcard $(SRC_DIR)/*.c)
+OBJ_FILES = $(patsubst %.c, $(BIN_DIR)/%.o, $(SRC_FILES))
 
-all: debug
+TARGET = $(BIN_DIR)/bfvm
 
-debug: $(BIN) |
-	$(CC) $(DEBUG_FLAGS) $(COMMON_FLAGS) -o $(EXE) $(SRC)
+.PHONY: all release install uninstall clean
 
-release: $(BIN) |
-	$(CC) $(RELEASE_FLAGS) $(COMMON_FLAGS) -o $(EXE) $(SRC)
+all: $(TARGET)
+
+release: all
+
+$(TARGET): $(OBJ_FILES)
+	$(CC) $(CFLAGS) -o $@ $^
+
+$(BIN_DIR)/%.o: %.c
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -c $< -o $@
 
 install:
 	mkdir -p $(LOCALBIN)
-	install $(EXE) $(LOCALBIN)
+	install $(TARGET) $(LOCALBIN)
 
 uninstall:
 	rm -f $(LOCALBIN)/bfvm
 
 clean:
-	rm -f $(EXE)
+	rm -f $(TARGET) $(OBJ_FILES)
 
-$(BIN):
-	mkdir $(BIN)

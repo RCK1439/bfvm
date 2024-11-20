@@ -145,7 +145,7 @@ char *estrdup(const char *s) {
         log_err("failed to duplicate string: out of memory");
     }
 
-    strncpy(dup, s, size - 1);
+    strncpy(dup, s, size);
     return dup;
 }
 

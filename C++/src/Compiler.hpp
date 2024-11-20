@@ -4,7 +4,8 @@
 #include <string_view>
 #include <vector>
 
-namespace bfc {
+namespace bfc
+{
     enum class OpCode
     {
         ADDB = 0,
@@ -33,7 +34,7 @@ namespace bfc {
             Code(code), Line(operand) {}
     };
 
-void Init(std::string_view filepath) noexcept;
-std::vector<ByteCode> Compile(void) noexcept;
+    void Init(std::string_view filepath);
+    std::vector<ByteCode> Compile();
 
 } // namespace bfc

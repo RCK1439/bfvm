@@ -1,25 +1,30 @@
 CC = c++
 
-COMMON_FLAGS = -std=c++23 -Wall -Werror -Wextra -pedantic -fno-exceptions
-DEBUG_FLAGS = -g -O0
-RELEASE_FLAGS = -O3 -DNDEBUG
+CFLAGS = -Wall -Werror -Wextra -Wpedantic -fno-exceptions -std=c++23
+ifeq ($(MAKECMDGOALS), release)
+	CFLAGS += -O3 -DNDEBUG
+endif
 
-BIN = bin
-SRC = $(wildcard src/*.cpp)
-EXE = $(BIN)/bfvm
+SRC_DIR = src
+BIN_DIR = bin
 
-.PHONY: all debug release clean
+SRC_FILES = $(wildcard $(SRC_DIR)/*.cpp)
+OBJ_FILES = $(patsubst %.cpp, $(BIN_DIR)/%.o, $(SRC_FILES))
 
-all: debug
+TARGET = $(BIN_DIR)/bfvm
 
-release: $(BIN) |
-	$(CC) $(RELEASE_FLAGS) $(COMMON_FLAGS) -o $(EXE) $(SRC)
+.PHONY: all release clean
 
-debug: $(BIN) |
-	$(CC) $(DEBUG_FLAGS) $(COMMON_FLAGS) -o $(EXE) $(SRC)
+all: $(TARGET)
+
+release: all
+
+$(TARGET): $(OBJ_FILES)
+	$(CC) $(CFLAGS) -o $@ $^
+
+$(BIN_DIR)/%.o: %.cpp
+	@mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -c $^ -o $@
 
 clean:
-	rm -f $(EXE)
-
-$(BIN):
-	mkdir $(BIN)
+	rm -f $(TARGET) $(OBJ_FILES)

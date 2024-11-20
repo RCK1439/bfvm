@@ -2,23 +2,22 @@
 
 #include <string_view>
 
-namespace bfl {
-    
-struct SourcePosition
+namespace bfl
 {
-    std::size_t Line;
-    std::size_t Column;
-};
+    struct SourcePosition
+    {
+        std::size_t Line;
+        std::size_t Column;
+    };
 
-extern SourcePosition g_Position;
+    extern SourcePosition g_Position;
 
-void SetProgramName(std::string_view filepath) noexcept;
+    void SetProgramName(std::string_view filepath);
 
-void LogInfo(std::string_view fmt, ...) noexcept;
-void LogWarn(std::string_view fmt, ...) noexcept;
-void LogError(std::string_view fmt, ...) noexcept;
-void LogCritical(std::string_view fmt, ...) noexcept;
+    void LogInfo(std::string_view fmt, ...);
+    void LogWarn(std::string_view fmt, ...);
+    void LogError(std::string_view fmt, ...);
+    void LogCritical(std::string_view fmt, ...);
     
-void LogErrorPosition(std::string_view fmt, ...) noexcept;
-
-} // namespace bflog
+    void LogErrorPosition(std::string_view fmt, ...);
+}
