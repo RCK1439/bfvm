@@ -8,17 +8,19 @@ use error::BFVMError;
 
 use std::io::Read;
 
-// --- public interface to the BFVM ---------------------------------------------------------------
+// --- public interface to the BFVM -------------------------------------------
 
-/// Runs the Brainfuck Virtual Machine.
+/// Runs the Brainfuck Virtual Machine
 /// 
 /// # Params
-/// - `args` - The arguments passed from the command line.
+/// 
+/// - `args` - The arguments passed from the command line
 /// 
 /// # Errors
-/// - If no source files were provided.
-/// - If there was an error during compilation.
-/// - If there was an error during runtime.
+/// 
+/// - If no source files were provided
+/// - If there was an error during compilation
+/// - If there was an error during runtime
 pub fn run(args: Vec<String>) -> Result<()> {
     if args.len() < 2 {
         return Err(BFVMError::NoSources);
@@ -28,36 +30,36 @@ pub fn run(args: Vec<String>) -> Result<()> {
     vm.run()
 }
 
-// --- constants ----------------------------------------------------------------------------------
+// --- constants --------------------------------------------------------------
 
 /// This is the size of the data array defined by a general Brainfuck standard
 const DATA_SIZE: usize = 30000;
 
-// --- virtual machine definition -----------------------------------------------------------------
+// --- virtual machine definition ---------------------------------------------
 
 /// This struct represents the actual virtual machine containing the data
-/// array, data pointer, compiled byte code and instruction pointer.
+/// array, data pointer, compiled byte code and instruction pointer
 struct VirtualMachine {
-    /// The data array.
+    /// The data array
     data: [u8; DATA_SIZE],
-
-    /// The data pointer pointing into `data`.
+    /// The data pointer pointing into `data`
     data_ptr: u16,
-
-    /// The compiled byte code instructions to be interpreted.
+    /// The compiled byte code instructions to be interpreted
     instructions: Vec<OpCode>,
-
-    /// The instruction pointer pointing into `instructions`.
+    /// The instruction pointer pointing into `instructions`
     instr_ptr: usize
 }
 
 impl VirtualMachine {
-    /// Initializes the virtual machine and returns an instance to the ready-to-run virtual machine
+    /// Initializes the virtual machine and returns an instance to the
+    /// ready-to-run virtual machine
     /// 
     /// # Params
+    /// 
     /// - `filepath` - The path to a Brainfuck source file
     /// 
     /// # Errors
+    /// 
     /// - If the source file was invalid
     /// - If there was an error during compilation
     fn new(filepath: &str) -> Result<Self> {
@@ -74,6 +76,7 @@ impl VirtualMachine {
     /// Runs the Brainfuck program through the virtual machine
     /// 
     /// # Errors
+    /// 
     /// If any errors occur during runtime
     fn run(&mut self) -> Result<()> {
         while self.instructions[self.instr_ptr] != OpCode::End {
@@ -96,6 +99,7 @@ impl VirtualMachine {
     /// Adds `operand` to the byte pointed to by the data pointer
     /// 
     /// # Params
+    /// 
     /// - `operand` - The value to add to the byte
     fn add_byte(&mut self, operand: u8) {
         self.data[self.data_ptr as usize] = self.data[self.data_ptr as usize].wrapping_add(operand);
@@ -105,6 +109,7 @@ impl VirtualMachine {
     /// Subtracts `operand` from the byte pointed to by the data pointer
     /// 
     /// # Params
+    /// 
     /// - `operand` - The value to subtract from the byte
     fn sub_byte(&mut self, operand: u8) {
         self.data[self.data_ptr as usize] = self.data[self.data_ptr as usize].wrapping_sub(operand);
@@ -114,9 +119,11 @@ impl VirtualMachine {
     /// Adds `offset` to the data pointer
     /// 
     /// # Params
+    /// 
     /// - `offset` - The value to offset the data pointer by
     /// 
     /// # Errors
+    /// 
     /// If the data pointer is larger than `DATA_SIZE` after the addition
     fn add_ptr(&mut self, offset: u16) -> Result<()> {
         self.data_ptr = self.data_ptr.wrapping_add(offset);
@@ -131,9 +138,11 @@ impl VirtualMachine {
     /// Subtracts `offset` from the data pointer
     /// 
     /// # Params
+    /// 
     /// - `offset` - The value to offset the data pointer by
     /// 
     /// # Errors
+    /// 
     /// If the data pointer is larger than `DATA_SIZE` after the subtraction
     fn sub_ptr(&mut self, offset: u16) -> Result<()> {
         self.data_ptr = self.data_ptr.wrapping_sub(offset);
@@ -151,10 +160,11 @@ impl VirtualMachine {
         self.instr_ptr += 1;
     }
 
-    /// Reads a byte in from `sdtin` and saves said byte to the address in the data array pointed
-    /// by the data pointer
+    /// Reads a byte in from `sdtin` and saves said byte to the address in the
+    /// data array pointed by the data pointer
     /// 
     /// # Errors
+    /// 
     /// If a byte could not be read from the user
     fn read(&mut self) -> Result<()> {
         let mut read: [u8; 1] = [0; 1];
@@ -165,9 +175,11 @@ impl VirtualMachine {
         Ok(())
     }
 
-    /// Jumps to the instruction at `line` if the byte pointed to by the data pointer is `0`
+    /// Jumps to the instruction at `line` if the byte pointed to by the data
+    /// pointer is `0`
     /// 
     /// # Params
+    /// 
     /// - `line` - The line number of the instruction to jump to
     fn jmp_zero(&mut self, line: usize) {
         if self.data[self.data_ptr as usize] != 0x00 {
@@ -180,6 +192,7 @@ impl VirtualMachine {
     /// Jumps to the instruction at `line`
     /// 
     /// # Params
+    /// 
     /// - `line` - The line number of the instruction to jump to
     fn jmp(&mut self, line: usize) {
         self.instr_ptr = line;

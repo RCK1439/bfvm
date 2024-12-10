@@ -1,7 +1,7 @@
 use crate::prelude::*;
 use crate::error::BFVMError;
 
-// --- token definition ---------------------------------------------------------------------------
+// --- token definition -------------------------------------------------------
 
 /// This enum represents the different kind of valid tokens to be found in a
 /// Brainfuck source file.
@@ -37,27 +37,18 @@ impl Token {
     }
 }
 
-// --- traits -------------------------------------------------------------------------------------
+impl TryFrom<char> for Token {
+    type Error = BFVMError;
 
-pub trait BrainfuckOperator {
-    /// Checks if `self` is a valid Brainfuck command.
-    fn is_bf_operator(&self) -> bool;
-
-    /// Creates a Brainfuck token from the value of `self`
+    /// Attempts to create a token from a `char`
+    /// 
+    /// Valid char's are: `+`, `-`, `<`, `>`, `.`, `,`, `[`, `]`
     /// 
     /// # Errors
-    /// If `self` is not a valid Brainfuck operator
-    fn bf_token(&self) -> Result<Token>;
-}
-
-impl BrainfuckOperator for char {
-    fn is_bf_operator(&self) -> bool {
-        *self == '+' || *self == '-' || *self == '<' || *self == '>' ||
-        *self == '.' || *self == ',' || *self == '[' || *self == ']'
-    }
-    
-    fn bf_token(&self) -> Result<Token> {
-        match self {
+    /// 
+    /// If a valid char was not given as an argument
+    fn try_from(ch: char) -> Result<Self> {
+        match ch {
             '+' => Ok(Token::Plus),
             '-' => Ok(Token::Minus),
             '<' => Ok(Token::ArrowLeft),
@@ -66,7 +57,7 @@ impl BrainfuckOperator for char {
             ',' => Ok(Token::Comma),
             '[' => Ok(Token::BracketLeft),
             ']' => Ok(Token::BracketRight),
-            _ => Err(BFVMError::NotABrainfuckOperator(*self))
+            _ => Err(BFVMError::NotABrainfuckOperator(ch))
         }
     }
 }
