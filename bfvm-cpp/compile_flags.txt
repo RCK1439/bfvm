@@ -1,6 +1,8 @@
--std=c++23
 -Wall
 -Werror
 -Wextra
--pedantic
+-Wpedantic
+-std=c++23
 -fno-exceptions
+
+-Isrc/

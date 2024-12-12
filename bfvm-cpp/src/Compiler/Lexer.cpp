@@ -3,10 +3,14 @@
 
 #include <fstream>
 
+#define IS_BF_COMMAND(ch)\
+((ch) == '+' || (ch) == '-' || (ch) == '<' ||\
+(ch) == '>' || (ch) == '.' || (ch) == ',' ||\
+(ch) == '[' || (ch) == ']')
+
 namespace bfc
 {
     static char NextCharacter();
-    static bool IsBrainfuckCommand(char ch);
 
     static std::ifstream s_SourceFile;
 
@@ -17,14 +21,23 @@ namespace bfc
 
         s_SourceFile.open(filepath.data());
         if (s_SourceFile.fail())
-            bfl::LogCritical("could not open file: %s", filepath.data());
+            bfl::LogFatal("could not open file: %s", filepath.data());
     }
 
     Token GetToken()
     {
         char ch = NextCharacter();
-        while (!IsBrainfuckCommand(ch) && ch != EOF)
-            ch = NextCharacter();
+        do
+        {
+            if (IS_BF_COMMAND(ch))
+            {
+                return static_cast<Token>(ch);
+            }
+            else if (ch != EOF)
+            {
+                ch = NextCharacter();
+            }
+        } while (ch != EOF);
 
         return static_cast<Token>(ch);
     }
@@ -50,12 +63,5 @@ namespace bfc
 
         last = ret;
         return ret;
-    }
-
-    static bool IsBrainfuckCommand(char ch)
-    {
-        return ch == '+' || ch == '-' || ch == '<' ||
-            ch == '>' || ch == '.' || ch == ',' ||
-            ch == '[' || ch == ']';
     }
 }

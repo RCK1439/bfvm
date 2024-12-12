@@ -1,6 +1,6 @@
 #include "VirtualMachine.hpp"
-#include "Compiler.hpp"
 #include "Error.hpp"
+#include "Compiler/Compiler.hpp"
 
 #include <array>
 #include <iostream>

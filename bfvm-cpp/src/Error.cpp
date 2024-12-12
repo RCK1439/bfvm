@@ -61,7 +61,7 @@ namespace bfl
         std::exit(EXIT_FAILURE);
     }
 
-    void LogCritical(std::string_view fmt, ...)
+    void LogFatal(std::string_view fmt, ...)
     {
         va_list args;
 
