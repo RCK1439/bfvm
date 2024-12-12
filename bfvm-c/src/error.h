@@ -10,7 +10,7 @@
 
 #include "types.h"
 
-/* --- type definitions -----------------------------------------------------*/
+/* --- type definitions ---------------------------------------------------- */
 
 /**
  * The current position in the source file.
@@ -23,7 +23,7 @@ typedef struct sourcepos_s {
 extern sourcepos_t position; /* the position in the source file being
                                    compiled */
 
-/* --- error interface ------------------------------------------------------*/
+/* --- error interface ----------------------------------------------------- */
 
 /**
  * Sets the program name for the error system. This will be used to indicate

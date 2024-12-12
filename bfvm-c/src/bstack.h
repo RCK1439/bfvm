@@ -11,18 +11,18 @@
 #include "error.h"
 #include "types.h"
 
-/* --- type definitions -----------------------------------------------------*/
+/* --- type definitions ---------------------------------------------------- */
 
 /**
  * The position of the brace, both in the assembly code and in the source
  * file.
  */
 typedef struct brace_s {
-    size_t asm_pos;      /* the position in the assembly code */
+    size_t      asm_pos; /* the position in the assembly code */
     sourcepos_t src_pos; /* the position in the source file */
 } brace_t;
 
-/* --- bstack interface ------------------------------------------------------*/
+/* --- bstack interface ----------------------------------------------------- */
 
 /**
  * Initializes and allocates the stack.

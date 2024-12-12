@@ -51,16 +51,18 @@ typedef enum opcode_s {
     BFVM_END
 } opcode_t;
 
+typedef union operand_s {
+    uint8_t  byte_offset; /* the value to add/subtract from the byte */
+    uint16_t data_offset; /* the offset on the data pointer */
+    size_t   instr_line;  /* the value to set the instruction pointer to */
+} operand_t;
+
 /**
  * Combination of opcode and operand (if necessary).
  */
 typedef struct bytecode_s {
-    opcode_t op;    /* the opcode to execute */
-    union {
-        uint8_t bval;  /* the value to add to the byte */
-        uint16_t dval; /* the offset on the data pointer */
-        size_t line;   /* the instruction pointer to jump to */
-    } operands;
+    opcode_t  op;       /* the opcode to execute */
+    operand_t operands; /* the operands for the opcode */
 } bytecode_t;
 
 /* --- bfc interface --------------------------------------------------------*/

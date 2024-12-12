@@ -3,3 +3,5 @@
 -Wextra
 -Wpedantic
 -std=c99
+
+-Isrc/

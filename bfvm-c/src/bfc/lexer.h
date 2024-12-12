@@ -10,7 +10,7 @@
 
 #include <stdio.h>
 
-/* --- type definitions -----------------------------------------------------*/
+/* --- type definitions ---------------------------------------------------- */
 
 /**
  * Describes the tokens that can be read from the src
@@ -28,7 +28,7 @@ typedef enum token_s {
     TOK_BRACE_RIGHT = 0x5D  /* ] */
 } token_t;
 
-/* --- lexer interface ------------------------------------------------------*/
+/* --- lexer interface ----------------------------------------------------- */
 
 /**
  * Initializes the lexer.

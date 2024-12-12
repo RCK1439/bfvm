@@ -13,7 +13,7 @@
 #include <string.h>
 #include <unistd.h>
 
-/* --- ASCII colors ---------------------------------------------------------*/
+/* --- ASCII colors -------------------------------------------------------- */
 
 #define ASCII_BOLD_CYAN "\033[1;36m"
 #define ASCII_BOLD_WHITE "\033[1;37m"
@@ -21,17 +21,17 @@
 
 #define ASCII_RESET "\033[m"
 
-/* --- constants ------------------------------------------------------------*/
+/* --- constants ----------------------------------------------------------- */
 
 #define MAX_PREFIX_SIZE 512UL
 
-/* --- global variables -----------------------------------------------------*/
+/* --- global variables ---------------------------------------------------- */
 
 sourcepos_t position;  /* the current position in the source file being
                           compiled */
 static char *progname; /* the name of the program being compiled */
 
-/* --- function prototypes --------------------------------------------------*/
+/* --- function prototypes ------------------------------------------------- */
 
 /**
  * Prints the arguments as a formatted string to the output stream.
@@ -48,7 +48,7 @@ static char *progname; /* the name of the program being compiled */
 static void cprintf(FILE *const stream, const char *prefix, const char *fmt,
     va_list args);
 
-/* --- error interface ------------------------------------------------------*/
+/* --- error interface ----------------------------------------------------- */
 
 void setprogname(const char *filename) {
     char *c;
@@ -141,7 +141,7 @@ char *estrdup(const char *s) {
     char *dup;
 
     const size_t size = strlen(s) + 1;
-    if ((dup = (char*)malloc(sizeof(char) * size)) == NULL) {
+    if ((dup = (char *)malloc(sizeof(char) * size)) == NULL) {
         log_err("failed to duplicate string: out of memory");
     }
 
@@ -149,7 +149,7 @@ char *estrdup(const char *s) {
     return dup;
 }
 
-/* --- utility functions ----------------------------------------------------*/
+/* --- utility functions --------------------------------------------------- */
 
 static void cprintf(FILE *const stream, const char *prefix, const char *fmt,
 va_list args) {

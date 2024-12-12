@@ -10,17 +10,17 @@
 
 #include <stdlib.h>
 
-/* --- constants ------------------------------------------------------------*/
+/* --- constants ----------------------------------------------------------- */
 
 #define INIT_SIZE 32UL
 
-/* --- global variables -----------------------------------------------------*/
+/* --- global variables ---------------------------------------------------- */
 
 static brace_t *stack; /* the stack */
 static size_t sp;      /* the stack pointer */
 static size_t size;    /* the current size of the stack */
 
-/* --- function prototypes --------------------------------------------------*/
+/* --- function prototypes ------------------------------------------------- */
 
 /**
  * Ensures that there is enough space in the stack for a new element to be
@@ -28,7 +28,7 @@ static size_t size;    /* the current size of the stack */
  */
 static void ensure_space(void);
 
-/* --- bstack interface ------------------------------------------------------*/
+/* --- bstack interface ----------------------------------------------------- */
 
 void init_stack(void) {
     size = INIT_SIZE;
@@ -58,7 +58,7 @@ bool empty(void) {
     return sp == 0;
 }
 
-/* --- utility functions ----------------------------------------------------*/
+/* --- utility functions --------------------------------------------------- */
 
 static void ensure_space(void) {
     if (sp < size) {
@@ -66,5 +66,5 @@ static void ensure_space(void) {
     }
 
     size = size + (size / 2);
-    stack = (brace_t*)erealloc(stack, sizeof(brace_t) * size);
+    stack = (brace_t *)erealloc(stack, sizeof(brace_t) * size);
 }
