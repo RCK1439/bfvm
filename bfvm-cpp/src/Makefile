@@ -17,6 +17,9 @@ OBJ_FILES = $(patsubst %.cpp, $(BIN_DIR)/%.o, $(SRC_FILES))
 INCL = -I$(SRC_DIR)
 
 TARGET = $(BIN_DIR)/bfvm
+ifeq ($(OS), Windows_NT)
+	TARGET = $(BIN_DIR)/bfvm.exe
+endif
 
 .PHONY: all release clean
 
