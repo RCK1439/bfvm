@@ -26,8 +26,8 @@ namespace bfc
         OpCode Code;
         union
         {
-            uint8_t ByteOffset;
-            uint16_t PointerOffset;
+            uint8_t     ByteOffset;
+            uint16_t    PointerOffset;
             std::size_t Line;
         };
 

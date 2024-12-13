@@ -8,11 +8,11 @@ namespace bfc
 {
     struct BracePosition
     {
-        bfl::SourcePosition SrcPosition;
-        std::size_t CodePosition;
+        bfl::SourcePosition SourcePosition;
+        std::size_t         CodePosition;
 
         BracePosition(bfl::SourcePosition src, std::size_t code) :
-            SrcPosition(src), CodePosition(code) {}
+            SourcePosition(src), CodePosition(code) {}
     };
 
     Compiler::Compiler(std::string_view filepath) :
@@ -58,7 +58,7 @@ namespace bfc
                     ParseConditional(out);
                     break;
                 default:
-                    bfl::LogErrorPosition("invalid token: %d", static_cast<int32_t>(m_CurrentToken));
+                    bfl::LogErrorPosition("unexpected token: %c", static_cast<int32_t>(m_CurrentToken));
                     break;
             }
         }
@@ -114,7 +114,7 @@ namespace bfc
         {
             if (m_CurrentToken == Token::END_OF_FILE)
             {
-                bfl::g_Position = braces.top().SrcPosition;
+                bfl::g_Position = braces.top().SourcePosition;
                 bfl::LogErrorPosition("no matching ']'");
             }
 
@@ -156,7 +156,7 @@ namespace bfc
                     braces.pop();
                 } break;
                 default:
-                    bfl::LogErrorPosition("invalid token: %d", static_cast<int32_t>(m_CurrentToken));
+                    bfl::LogErrorPosition("unexpected token: %c", static_cast<int32_t>(m_CurrentToken));
                     break;
             }
         }
