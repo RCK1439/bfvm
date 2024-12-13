@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <fstream>
 #include <string_view>
 
 namespace bfc
@@ -19,6 +20,18 @@ namespace bfc
         END_OF_FILE = -1    // EOF
     };
 
-    void LexerInit(std::string_view filepath);
-    Token GetToken();
+    class LexicalAnalyzer final
+    {
+    public:
+        LexicalAnalyzer() = default;
+        LexicalAnalyzer(std::string_view filepath);
+
+        Token GetToken();
+
+    private:
+        char NextCharacter();
+
+    private:
+        std::ifstream m_SourceFile;
+    };
 }

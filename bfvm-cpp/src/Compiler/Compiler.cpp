@@ -25,12 +25,13 @@ namespace bfc
     static void ParseConditional(std::vector<ByteCode>& out);
     static void ParseChain(Token token, OpCode op, std::vector<ByteCode>& out);
 
+    static LexicalAnalyzer s_Lexer;
     static Token s_CurrentToken = Token::NONE;
     static std::size_t s_CurrentLine = 0;
 
     void Init(std::string_view filepath)
     {
-        LexerInit(filepath);
+        s_Lexer = LexicalAnalyzer(filepath);
         bfl::SetProgramName(filepath);
     }
 
@@ -44,7 +45,7 @@ namespace bfc
 
     static void ParseProgram(std::vector<ByteCode>& out)
     {
-        s_CurrentToken = GetToken();
+        s_CurrentToken = s_Lexer.GetToken();
         while (s_CurrentToken != Token::END_OF_FILE)
         {
             switch (s_CurrentToken)
@@ -102,7 +103,7 @@ namespace bfc
     static void ParseWrite(std::vector<ByteCode>& out)
     {
         out.emplace_back(OpCode::WRITE);
-        s_CurrentToken = GetToken();
+        s_CurrentToken = s_Lexer.GetToken();
 
         s_CurrentLine++;
     }
@@ -110,7 +111,7 @@ namespace bfc
     static void ParseRead(std::vector<ByteCode>& out)
     {
         out.emplace_back(OpCode::READ);
-        s_CurrentToken = GetToken();
+        s_CurrentToken = s_Lexer.GetToken();
 
         s_CurrentLine++;
     }
@@ -122,7 +123,7 @@ namespace bfc
         braces.emplace(bfl::g_Position, s_CurrentLine++);
         out.emplace_back(OpCode::JZ);
 
-        s_CurrentToken = GetToken();
+        s_CurrentToken = s_Lexer.GetToken();
         while (!braces.empty())
         {
             if (s_CurrentToken == Token::END_OF_FILE)
@@ -156,7 +157,7 @@ namespace bfc
                     braces.emplace(bfl::g_Position, s_CurrentLine++);
                     out.emplace_back(OpCode::JZ);
 
-                    s_CurrentToken = GetToken();
+                    s_CurrentToken = s_Lexer.GetToken();
                 } break;
                 case Token::BRACE_RIGHT:
                 {
@@ -165,7 +166,7 @@ namespace bfc
                     out[open].Line = ++s_CurrentLine;
                     out.emplace_back(OpCode::JMP, open);
 
-                    s_CurrentToken = GetToken();
+                    s_CurrentToken = s_Lexer.GetToken();
                     braces.pop();
                 } break;
                 default:
@@ -182,7 +183,7 @@ namespace bfc
         while (s_CurrentToken == token)
         {
             code.PointerOffset++;
-            s_CurrentToken = GetToken();
+            s_CurrentToken = s_Lexer.GetToken();
         }
 
         s_CurrentLine++;

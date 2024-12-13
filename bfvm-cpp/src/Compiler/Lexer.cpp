@@ -10,21 +10,17 @@
 
 namespace bfc
 {
-    static char NextCharacter();
-
-    static std::ifstream s_SourceFile;
-
-    void LexerInit(std::string_view filepath)
+    LexicalAnalyzer::LexicalAnalyzer(std::string_view filepath) :
+        m_SourceFile(filepath.data())
     {
         bfl::g_Position.Line = 1;
         bfl::g_Position.Column = 0;
 
-        s_SourceFile.open(filepath.data());
-        if (s_SourceFile.fail())
+        if (m_SourceFile.fail())
             bfl::LogFatal("could not open file: %s", filepath.data());
     }
 
-    Token GetToken()
+    Token LexicalAnalyzer::GetToken()
     {
         char ch = NextCharacter();
         do
@@ -42,10 +38,10 @@ namespace bfc
         return static_cast<Token>(ch);
     }
 
-    static char NextCharacter()
+    char LexicalAnalyzer::NextCharacter()
     {
         static char last = '\0';
-        const char ret = static_cast<char>(s_SourceFile.get());
+        const char ret = static_cast<char>(m_SourceFile.get());
 
         if (last == '\n' && ret != EOF)
         {
