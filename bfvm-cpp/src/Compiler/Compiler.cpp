@@ -15,27 +15,13 @@ namespace bfc
             SrcPosition(src), CodePosition(code) {}
     };
 
-    static void ParseProgram(std::vector<ByteCode>& out);
-    static void ParseAddByte(std::vector<ByteCode>& out);
-    static void ParseSubByte(std::vector<ByteCode>& out);
-    static void ParseAddPtr(std::vector<ByteCode>& out);
-    static void ParseSubPtr(std::vector<ByteCode>& out);
-    static void ParseWrite(std::vector<ByteCode>& out);
-    static void ParseRead(std::vector<ByteCode>& out);
-    static void ParseConditional(std::vector<ByteCode>& out);
-    static void ParseChain(Token token, OpCode op, std::vector<ByteCode>& out);
-
-    static LexicalAnalyzer s_Lexer;
-    static Token s_CurrentToken = Token::NONE;
-    static std::size_t s_CurrentLine = 0;
-
-    void Init(std::string_view filepath)
+    Compiler::Compiler(std::string_view filepath) :
+        m_Lexer(filepath)
     {
-        s_Lexer = LexicalAnalyzer(filepath);
         bfl::SetProgramName(filepath);
     }
 
-    std::vector<ByteCode> Compile()
+    std::vector<ByteCode> Compiler::Compile()
     {
         std::vector<ByteCode> out;
         ParseProgram(out);
@@ -43,12 +29,12 @@ namespace bfc
         return out;
     }
 
-    static void ParseProgram(std::vector<ByteCode>& out)
+    void Compiler::ParseProgram(std::vector<ByteCode>& out)
     {
-        s_CurrentToken = s_Lexer.GetToken();
-        while (s_CurrentToken != Token::END_OF_FILE)
+        m_CurrentToken = m_Lexer.GetToken();
+        while (m_CurrentToken != Token::END_OF_FILE)
         {
-            switch (s_CurrentToken)
+            switch (m_CurrentToken)
             {
                 case Token::PLUS:
                     ParseAddByte(out);
@@ -72,7 +58,7 @@ namespace bfc
                     ParseConditional(out);
                     break;
                 default:
-                    bfl::LogErrorPosition("invalid token: %d", static_cast<int32_t>(s_CurrentToken));
+                    bfl::LogErrorPosition("invalid token: %d", static_cast<int32_t>(m_CurrentToken));
                     break;
             }
         }
@@ -80,59 +66,59 @@ namespace bfc
         out.emplace_back(OpCode::END);
     }
 
-    static void ParseAddByte(std::vector<ByteCode>& out)
+    void Compiler::ParseAddByte(std::vector<ByteCode>& out)
     {
         ParseChain(Token::PLUS, OpCode::ADDB, out);
     }
 
-    static void ParseSubByte(std::vector<ByteCode>& out)
+    void Compiler::ParseSubByte(std::vector<ByteCode>& out)
     {
         ParseChain(Token::MINUS, OpCode::SUBB, out);
     }
 
-    static void ParseAddPtr(std::vector<ByteCode>& out)
+    void Compiler::ParseAddPtr(std::vector<ByteCode>& out)
     {
         ParseChain(Token::ARROW_RIGHT, OpCode::ADDP, out);
     }
 
-    static void ParseSubPtr(std::vector<ByteCode>& out)
+    void Compiler::ParseSubPtr(std::vector<ByteCode>& out)
     {
         ParseChain(Token::ARROW_LEFT, OpCode::SUBP, out);
     }
 
-    static void ParseWrite(std::vector<ByteCode>& out)
+    void Compiler::ParseWrite(std::vector<ByteCode>& out)
     {
         out.emplace_back(OpCode::WRITE);
-        s_CurrentToken = s_Lexer.GetToken();
+        m_CurrentToken = m_Lexer.GetToken();
 
-        s_CurrentLine++;
+        m_CurrentLine++;
     }
 
-    static void ParseRead(std::vector<ByteCode>& out)
+    void Compiler::ParseRead(std::vector<ByteCode>& out)
     {
         out.emplace_back(OpCode::READ);
-        s_CurrentToken = s_Lexer.GetToken();
+        m_CurrentToken = m_Lexer.GetToken();
 
-        s_CurrentLine++;
+        m_CurrentLine++;
     }
 
-    static void ParseConditional(std::vector<ByteCode>& out)
+    void Compiler::ParseConditional(std::vector<ByteCode>& out)
     {
         std::stack<BracePosition, std::vector<BracePosition>> braces;
 
-        braces.emplace(bfl::g_Position, s_CurrentLine++);
+        braces.emplace(bfl::g_Position, m_CurrentLine++);
         out.emplace_back(OpCode::JZ);
 
-        s_CurrentToken = s_Lexer.GetToken();
+        m_CurrentToken = m_Lexer.GetToken();
         while (!braces.empty())
         {
-            if (s_CurrentToken == Token::END_OF_FILE)
+            if (m_CurrentToken == Token::END_OF_FILE)
             {
                 bfl::g_Position = braces.top().SrcPosition;
                 bfl::LogErrorPosition("no matching ']'");
             }
 
-            switch (s_CurrentToken)
+            switch (m_CurrentToken)
             {
                 case Token::PLUS:
                     ParseAddByte(out);
@@ -154,38 +140,38 @@ namespace bfc
                     break;
                 case Token::BRACE_LEFT:
                 {
-                    braces.emplace(bfl::g_Position, s_CurrentLine++);
+                    braces.emplace(bfl::g_Position, m_CurrentLine++);
                     out.emplace_back(OpCode::JZ);
 
-                    s_CurrentToken = s_Lexer.GetToken();
+                    m_CurrentToken = m_Lexer.GetToken();
                 } break;
                 case Token::BRACE_RIGHT:
                 {
                     const std::size_t open = braces.top().CodePosition;
 
-                    out[open].Line = ++s_CurrentLine;
+                    out[open].Line = ++m_CurrentLine;
                     out.emplace_back(OpCode::JMP, open);
 
-                    s_CurrentToken = s_Lexer.GetToken();
+                    m_CurrentToken = m_Lexer.GetToken();
                     braces.pop();
                 } break;
                 default:
-                    bfl::LogErrorPosition("invalid token: %d", static_cast<int32_t>(s_CurrentToken));
+                    bfl::LogErrorPosition("invalid token: %d", static_cast<int32_t>(m_CurrentToken));
                     break;
             }
         }
     }
 
-    static inline void ParseChain(Token token, OpCode op, std::vector<ByteCode>& out)
+    void Compiler::ParseChain(Token token, OpCode op, std::vector<ByteCode>& out)
     {
         ByteCode& code = out.emplace_back(op);
 
-        while (s_CurrentToken == token)
+        while (m_CurrentToken == token)
         {
             code.PointerOffset++;
-            s_CurrentToken = s_Lexer.GetToken();
+            m_CurrentToken = m_Lexer.GetToken();
         }
 
-        s_CurrentLine++;
+        m_CurrentLine++;
     }
 }

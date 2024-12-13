@@ -26,8 +26,8 @@ namespace bfvm
 
     void Init(std::string_view filepath)
     {
-        bfc::Init(filepath);
-        s_ByteCode = bfc::Compile();
+        bfc::Compiler compiler(filepath);
+        s_ByteCode = compiler.Compile();
     }
 
     int32_t Run()
