@@ -2,39 +2,22 @@
 #include "Error.hpp"
 #include "Compiler/Compiler.hpp"
 
-#include <array>
 #include <iostream>
 #include <print>
 
 namespace bfvm
 {
-    static constexpr std::size_t DATA_SIZE = 30000;
-
-    static void AddByte(uint8_t offset);
-    static void SubByte(uint8_t offset);
-    static void AddPtr(uint16_t offset);
-    static void SubPtr(uint16_t offset);
-    static void Write();
-    static void Read();
-    static void JumpZero(std::size_t line);
-    static void Jump(std::size_t line);
-
-    static std::array<uint8_t, DATA_SIZE> s_DataArray{ 0 };
-    static std::vector<bfc::ByteCode> s_ByteCode;
-    static uint16_t s_DataPointer{ 0 };
-    static std::size_t s_InstructionPointer{ 0 };
-
-    void Init(std::string_view filepath)
+    VirtualMachine::VirtualMachine(std::string_view filepath)
     {
         bfc::Compiler compiler(filepath);
-        s_ByteCode = compiler.Compile();
+        m_ByteCode = compiler.Compile();
     }
 
-    int32_t Run()
+    int32_t VirtualMachine::Run()
     {
-        while (s_ByteCode[s_InstructionPointer].Code != bfc::OpCode::END)
+        while (m_ByteCode[m_InstructionPointer].Code != bfc::OpCode::END)
         {
-            bfc::ByteCode& code = s_ByteCode[s_InstructionPointer];
+            bfc::ByteCode& code = m_ByteCode[m_InstructionPointer];
             switch (code.Code)
             {
                 case bfc::OpCode::ADDB:
@@ -70,55 +53,59 @@ namespace bfvm
         return EXIT_SUCCESS;
     }
 
-    static inline void AddByte(uint8_t offset)
+    void VirtualMachine::AddByte(uint8_t offset)
     {
-        s_DataArray[s_DataPointer] += offset;
-        s_InstructionPointer++;
+        m_DataArray[m_DataPointer] += offset;
+        m_InstructionPointer++;
     }
 
-    static inline void SubByte(uint8_t offset)
+    void VirtualMachine::SubByte(uint8_t offset)
     {
-        s_DataArray[s_DataPointer] -= offset;
-        s_InstructionPointer++;
+        m_DataArray[m_DataPointer] -= offset;
+        m_InstructionPointer++;
     }
 
-    static inline void AddPtr(uint16_t offset)
+    void VirtualMachine::AddPtr(uint16_t offset)
     {
-        s_DataPointer += offset;
-        if (s_DataPointer >= DATA_SIZE)
+        m_DataPointer += offset;
+        if (m_DataPointer >= DATA_SIZE)
+        {
             bfl::LogError("data pointer out of range");
+        }
         
-        s_InstructionPointer++;
+        m_InstructionPointer++;
     }
 
-    static inline void SubPtr(uint16_t offset)
+    void VirtualMachine::SubPtr(uint16_t offset)
     {
-        s_DataPointer -= offset;
-        if (s_DataPointer >= DATA_SIZE)
+        m_DataPointer -= offset;
+        if (m_DataPointer >= DATA_SIZE)
+        {
             bfl::LogError("data pointer out of range");
+        }
         
-        s_InstructionPointer++;
+        m_InstructionPointer++;
     }
 
-    static inline void Write()
+    void VirtualMachine::Write()
     {
-        std::cout << static_cast<char>(s_DataArray[s_DataPointer]);
-        s_InstructionPointer++;
+        std::print("{}", static_cast<char>(m_DataArray[m_DataPointer]));
+        m_InstructionPointer++;
     }
 
-    static inline void Read()
+    void VirtualMachine::Read()
     {
-        std::cin >> s_DataArray[s_DataPointer];
-        s_InstructionPointer++;
+        std::cin >> m_DataArray[m_DataPointer];
+        m_InstructionPointer++;
     }
 
-    static inline void JumpZero(std::size_t line)
+    void VirtualMachine::JumpZero(std::size_t line)
     {
-        s_InstructionPointer = (s_DataArray[s_DataPointer] != 0x00) ? s_InstructionPointer + 1 : line;
+        m_InstructionPointer = (m_DataArray[m_DataPointer] != 0x00) ? m_InstructionPointer + 1 : line;
     }
 
-    static inline void Jump(std::size_t line)
+    void VirtualMachine::Jump(std::size_t line)
     {
-        s_InstructionPointer = line;
+        m_InstructionPointer = line;
     }
 }
