@@ -1,7 +1,7 @@
 package main
 
-import "core:fmt"
+import "bfvm"
 
 main :: proc() {
-    fmt.println("Hello, World!");
+    bfvm.run()
 }
