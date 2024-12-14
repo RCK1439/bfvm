@@ -49,8 +49,6 @@ close_compiler :: proc(compiler: ^Compiler) {
 }
 
 compile :: proc(compiler: ^Compiler) -> [dynamic]Byte_Code {
-    debug_start("<compile>")
-
     code := make_dynamic_array([dynamic]Byte_Code, context.allocator)
 
     compiler.curr_token = get_token(&compiler.lexer)
@@ -63,10 +61,10 @@ compile :: proc(compiler: ^Compiler) -> [dynamic]Byte_Code {
                 parse_sub_byte(compiler, &code)
                 break
             case .Arrow_Left:
-                parse_add_ptr(compiler, &code)
+                parse_sub_ptr(compiler, &code)
                 break
             case .Arrow_Right:
-                parse_sub_ptr(compiler, &code)
+                parse_add_ptr(compiler, &code)
                 break
             case .Bracket_Left:
                 parse_conditional(compiler, &code)
@@ -80,12 +78,13 @@ compile :: proc(compiler: ^Compiler) -> [dynamic]Byte_Code {
         }
     }
 
-    debug_end("</compile>")
+    append_elem(&code, create_bytecode(Op_Code.End, cast(u8)0))
+    compiler.curr_line += 1
+
     return code
 }
 
 parse_add_byte :: proc(compiler: ^Compiler, code: ^[dynamic]Byte_Code) {
-    debug_start("<add_byte>")
     offset := 0
 
     for compiler.curr_token == Token.Plus {
@@ -93,15 +92,11 @@ parse_add_byte :: proc(compiler: ^Compiler, code: ^[dynamic]Byte_Code) {
         compiler.curr_token = get_token(&compiler.lexer)
     }
 
-    bytecode := create_bytecode(Op_Code.Addb, cast(u8)offset)
-    append_elem(code, bytecode)
-
+    append_elem(code, create_bytecode(Op_Code.Addb, cast(u8)offset))
     compiler.curr_line += 1
-    debug_end("</add_byte>")
 }
 
 parse_sub_byte :: proc(compiler: ^Compiler, code: ^[dynamic]Byte_Code) {
-    debug_start("<sub_byte>")
     offset := 0
 
     for compiler.curr_token == Token.Minus {
@@ -109,15 +104,11 @@ parse_sub_byte :: proc(compiler: ^Compiler, code: ^[dynamic]Byte_Code) {
         compiler.curr_token = get_token(&compiler.lexer)
     }
 
-    bytecode := create_bytecode(Op_Code.Subb, cast(u8)offset)
-    append_elem(code, bytecode)
-
+    append_elem(code, create_bytecode(Op_Code.Subb, cast(u8)offset))
     compiler.curr_line += 1
-    debug_end("</sub_byte>")
 }
 
 parse_add_ptr :: proc(compiler: ^Compiler, code: ^[dynamic]Byte_Code) {
-    debug_start("<add_ptr>")
     offset := 0
 
     for compiler.curr_token == Token.Arrow_Right {
@@ -125,15 +116,11 @@ parse_add_ptr :: proc(compiler: ^Compiler, code: ^[dynamic]Byte_Code) {
         compiler.curr_token = get_token(&compiler.lexer)
     }
 
-    bytecode := create_bytecode(Op_Code.Addp, cast(u16)offset)
-    append_elem(code, bytecode)
-
+    append_elem(code, create_bytecode(Op_Code.Addp, cast(u16)offset))
     compiler.curr_line += 1
-    debug_end("</add_ptr>")
 }
 
 parse_sub_ptr :: proc(compiler: ^Compiler, code: ^[dynamic]Byte_Code) {
-    debug_start("<sub_ptr>")
     offset := 0
 
     for compiler.curr_token == Token.Arrow_Left {
@@ -141,41 +128,32 @@ parse_sub_ptr :: proc(compiler: ^Compiler, code: ^[dynamic]Byte_Code) {
         compiler.curr_token = get_token(&compiler.lexer)
     }
 
-    bytecode := create_bytecode(Op_Code.Subp, cast(u16)offset)
-    append_elem(code, bytecode)
-
+    append_elem(code, create_bytecode(Op_Code.Subp, cast(u16)offset))
     compiler.curr_line += 1
-    debug_end("</sub_ptr>")
 }
 
 parse_read :: proc(compiler: ^Compiler, code: ^[dynamic]Byte_Code) {
-    debug_start("<read>")
-    bytecode := create_bytecode(Op_Code.Read, cast(u8)0)
-    append_elem(code, bytecode)
+    append_elem(code, create_bytecode(Op_Code.Read, cast(u8)0))
+    compiler.curr_line += 1
 
     compiler.curr_token = get_token(&compiler.lexer)
-    compiler.curr_line += 1
-    debug_end("</read>")
 }
 
 parse_write :: proc(compiler: ^Compiler, code: ^[dynamic]Byte_Code) {
-    debug_start("<write>")
-    bytecode := create_bytecode(Op_Code.Write, cast(u8)0)
-    append_elem(code, bytecode)
+    append_elem(code, create_bytecode(Op_Code.Write, cast(u8)0))
+    compiler.curr_line += 1
 
     compiler.curr_token = get_token(&compiler.lexer)
-    compiler.curr_line += 1
-    debug_end("</write>")
 }
 
 parse_conditional :: proc(compiler: ^Compiler, code: ^[dynamic]Byte_Code) {
-    debug_start("<conditional>")
-    append_elem(code, create_bytecode(Op_Code.Jz, cast(u8)0))
+    open_pos := compiler.curr_line
 
-    compiler.curr_token = get_token(&compiler.lexer)
+    append_elem(code, create_bytecode(Op_Code.Jz, cast(u8)0))
     compiler.curr_line += 1
 
-    opening_line := compiler.curr_line - 1;
+    compiler.curr_token = get_token(&compiler.lexer)
+
     for compiler.curr_token != Token.Bracket_Right {
         #partial switch compiler.curr_token {
 	        case .Plus:
@@ -205,12 +183,8 @@ parse_conditional :: proc(compiler: ^Compiler, code: ^[dynamic]Byte_Code) {
     }
 
     compiler.curr_token = get_token(&compiler.lexer)
+    code[open_pos].operand = compiler.curr_line + 1;
+
+    append_elem(code, create_bytecode(Op_Code.Jmp, open_pos))
     compiler.curr_line += 1
-
-    code[opening_line].operand = compiler.curr_line
-
-    bytecode := create_bytecode(Op_Code.Jmp, opening_line)
-    append_elem(code, bytecode)
-
-    debug_end("</conditional>")
 }

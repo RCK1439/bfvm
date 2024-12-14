@@ -29,14 +29,14 @@ Lexer :: struct {
 }
 
 create_lexer :: proc(filepath: string) -> Lexer {
-    data, ok := os.read_entire_file(filepath, context.allocator)
-    defer delete(data, context.allocator)
+    data, ok := os.read_entire_file_from_filename(filepath)
+    defer delete(data)
     
     if !ok {
         fmt.printf("Failed to open file: %s\n", filepath)
     }
 
-    content := string(data)
+    content := strings.clone_from_bytes(data)
     return Lexer {
         content,
         0,
@@ -48,7 +48,7 @@ create_lexer :: proc(filepath: string) -> Lexer {
 }
 
 close_lexer :: proc(lexer: ^Lexer) {
-    delete(lexer.source_content, context.allocator)
+    delete(lexer.source_content)
 }
 
 get_token :: proc(lexer: ^Lexer) -> Token {
