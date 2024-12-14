@@ -5,8 +5,8 @@ import "core:mem"
 
 import "bfc"
 
-run :: proc() {
-    vm := create_vm("main.odin")
+run :: proc(filepath: string) {
+    vm := create_vm(filepath)
     defer close_vm(&vm)
     
     run_vm(&vm)
@@ -39,20 +39,35 @@ close_vm :: proc(vm: ^Virtual_Machine) {
 }
 
 run_vm :: proc(vm: ^Virtual_Machine) {
-    for vm.instructions[vm.instruction_ptr].opcode != bfc.Op_Code.Op_Code {
+    for vm.instructions[vm.instruction_ptr].opcode != bfc.Op_Code.End {
         opcode := vm.instructions[vm.instruction_ptr].opcode
         operand := vm.instructions[vm.instruction_ptr].operand;
 
         #partial switch opcode {
-            case .ADDB:
-                
-            case .SUBB:
-            case .ADDP:
-            case .SUBP:
-            case .READ:
-            case .WRITE:
-            case .JMP:
-            case .JZ:
+            case .Addb:
+                addb(vm, operand.(u8))
+                break
+            case .Subb:
+                subb(vm, operand.(u8))
+                break
+            case .Addp:
+                addp(vm, operand.(u16))
+                break
+            case .Subp:
+                subp(vm, operand.(u16))
+                break
+            case .Read:
+                read(vm)
+                break
+            case .Write:
+                write(vm)
+                break
+            case .Jmp:
+                jmp(vm, operand.(u64))
+                break
+            case .Jz:
+                jz(vm, operand.(u64))
+                break
         }
     }
 }
@@ -69,24 +84,20 @@ subb :: proc(vm: ^Virtual_Machine, offset: u8) {
 
 addp :: proc(vm: ^Virtual_Machine, offset: u16) {
     vm.data_ptr += offset
-    if vm.data_ptr >= DATA_SIZE {
-        // TODO: Error here
-    }
+    assert(vm.instruction_ptr < DATA_SIZE, "data pointer out of range")
 
     vm.instruction_ptr += 1
 }
 
 subp :: proc(vm: ^Virtual_Machine, offset: u16) {
     vm.data_ptr -= offset
-    if vm.data_ptr >= DATA_SIZE {
-        // TODO: Error here
-    }
+    assert(vm.instruction_ptr < DATA_SIZE, "data pointer out of range")
 
     vm.instruction_ptr += 1
 }
 
 read :: proc(vm: ^Virtual_Machine) {
-    // TODO: Figure out how to read from stdin
+    assert(false, "not yet implemented")
 }
 
 write :: proc(vm: ^Virtual_Machine) {
