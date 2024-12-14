@@ -101,7 +101,7 @@ read :: proc(vm: ^Virtual_Machine) {
 }
 
 write :: proc(vm: ^Virtual_Machine) {
-    fmt.printf("%c", vm.data[vm.data_ptr])
+    fmt.print(rune(vm.data[vm.data_ptr]))
     vm.instruction_ptr += 1
 }
 
