@@ -8,16 +8,26 @@ mkdir bin
 ```
 
 2. Compiling
-
+ * LINUX
  - Compiling without optimizations
 ```bash
 odin build src/ -out:bin/bfvm
 ```
-
-- Compiling with optimizations
+ - Compiling with optimizations
 ```bash
 odin build src/ -out:bin/bfvm -o:aggressive
 ```
+
+ * Windows
+ - Compiling without optimizations
+```bash
+odin build src/ -out:bin/bfvm.exe
+```
+ - Compiling with optimizations
+```bash
+odin build src/ -out:bin/bfvm.exe -o:aggressive
+```
+
 
 ## Running
 
