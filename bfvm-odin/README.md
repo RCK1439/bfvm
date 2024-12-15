@@ -2,13 +2,13 @@
 
 ## Building
 
+### Linux
 1. Create a `bin` directory
 ```bash
 mkdir bin
 ```
 
 2. Compiling
- * LINUX
  - Compiling without optimizations
 ```bash
 odin build src/ -out:bin/bfvm
@@ -18,7 +18,7 @@ odin build src/ -out:bin/bfvm
 odin build src/ -out:bin/bfvm -o:aggressive
 ```
 
- * Windows
+### Windows
  - Compiling without optimizations
 ```bash
 odin build src/ -out:bin/bfvm.exe
@@ -31,14 +31,12 @@ odin build src/ -out:bin/bfvm.exe -o:aggressive
 
 ## Running
 
-Running is as easy as follows:
-
-- Linux
+### Linux
 ```bash
 ./bin/bfvm <filepath>
 ```
 
-- Windows
+### Windows
 ```bash
 .\bin\bfvm.exe <filepath>
 ```
