@@ -1,11 +1,11 @@
-package bfvm
+package main
 
 import "core:fmt"
 import "core:mem"
 
 import "bfc"
 
-run :: proc(filepath: string) {
+bfvm_invoke :: proc(filepath: string) {
     vm := create_vm(filepath)
     defer close_vm(&vm)
     
