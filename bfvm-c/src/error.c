@@ -6,12 +6,26 @@
  */
 
 #include "error.h"
+#include "platform.h"
 
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#ifdef BFVM_LINUX
 #include <unistd.h>
+#endif
+
+/* --- constants ----------------------------------------------------------- */
+
+#if defined(BFVM_LINUX)
+#   define LOG_FMT_PROG "%s%s%s:%s%lu:%lu%s: %s"
+#   define LOG_FMT_NO_PROG "%s%lu:%lu%s: %s"
+#elif defined(BFVM_WINDOWS)
+#   define LOG_FMT_PROG "%s%s%s:%s%llu:%llu%s: %s"
+#   define LOG_FMT_NO_PROG "%s%llu:%llu%s: %s"
+#endif
 
 /* --- ASCII colors -------------------------------------------------------- */
 
@@ -54,7 +68,7 @@ void setprogname(const char *filename) {
     char *c;
 
     if ((c = strrchr(filename, '/')) == NULL) {
-        c = (char*)filename;
+        c = (char *)filename;
     } else {
         c++;
     }
@@ -100,12 +114,12 @@ void log_errpos(const char *fmt, ...) {
     va_list args;
 
     if (progname) {
-        sprintf(prefix, "%s%s%s:%s%lu:%lu%s: %s",
+        sprintf(prefix, LOG_FMT_PROG,
             ASCII_BOLD_WHITE, progname, ASCII_RESET,
             ASCII_BOLD_WHITE, position.line, position.column, ASCII_RESET,
             err);
     } else {
-        sprintf(prefix, "%s%lu:%lu%s: %s",
+        sprintf(prefix, LOG_FMT_NO_PROG,
             ASCII_BOLD_WHITE, position.line, position.column, ASCII_RESET,
             err);
     }
@@ -138,14 +152,15 @@ void *erealloc(void *p, size_t size) {
 }
 
 char *estrdup(const char *s) {
-    char *dup;
-
     const size_t size = strlen(s) + 1;
-    if ((dup = (char *)malloc(sizeof(char) * size)) == NULL) {
-        log_err("failed to duplicate string: out of memory");
-    }
-
+    char *dup = BFVM_MALLOC(char, size);
+    
+#if defined(BFVM_LINUX)
     strncpy(dup, s, size);
+#elif defined(BFVM_WINDOWS)
+    strcpy_s(dup, sizeof(char) * size, s);
+#endif
+
     return dup;
 }
 

@@ -1,6 +1,0 @@
-# Output directories
-
-bin/
-target/
-.vscode/
-__pycache__/

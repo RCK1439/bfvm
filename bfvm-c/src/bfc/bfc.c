@@ -8,7 +8,7 @@
 #include "bfc.h"
 #include "error.h"
 #include "lexer.h"
-#include "bstack.h"
+#include "platform.h"
 
 /* --- constants ----------------------------------------------------------- */
 
@@ -58,13 +58,19 @@ bytecode_t *compile(const char *filepath) {
     
     pos = 0;
     size = INIT_CODE_SIZE;
-    code = (bytecode_t*)emalloc(sizeof(bytecode_t) * size);
+    code = BFVM_MALLOC(bytecode_t, size);
 
     if (filepath) {
         setprogname(filepath);
+#if defined(BFVM_LINUX)
         if ((src = fopen(filepath, "r")) == NULL) {
             log_err("could not open file: %s", filepath);
         }
+#elif defined (BFVM_WINDOWS)
+        if (fopen_s(&src, filepath, "r") != 0) {
+            log_err("could not open file: %s", filepath);
+        }
+#endif
     } else {
         log_info("enter commands:");
         src = stdin;
@@ -133,61 +139,36 @@ static void parse_read(void) {
 }
 
 static void parse_conditional(void) {
-    init_stack();
-
-    const brace_t b_open = {
-        .asm_pos = pos,
-        .src_pos = position,
-    };
-    push(b_open);
+    const size_t open_pos = pos;
+    const sourcepos_t open_src_position = position;
 
     ensure_space();
     code[pos++].op = BFVM_JZ;
 
     next_token(&token);
-    while (!empty()) {
-        if (token == TOK_EOF) {
-            const brace_t b_open = pop();
-            position = b_open.src_pos;
-
-            log_errpos("no matching ']'");
-        } else switch (token) {
+    while (token != TOK_BRACE_RIGHT) {
+        switch (token) {
             case TOK_ADD: parse_add_byte(); break;
             case TOK_SUB: parse_sub_byte(); break;
             case TOK_ARROW_RIGHT: parse_add_ptr(); break;
             case TOK_ARROW_LEFT: parse_sub_ptr(); break;
             case TOK_DOT: parse_write(); break;
             case TOK_COMMA: parse_read(); break;
-            case TOK_BRACE_LEFT: {
-                const brace_t b_open = {
-                    .asm_pos = pos,
-                    .src_pos = position,
-                };
-                push(b_open);
-
-                ensure_space();
-                code[pos++].op = BFVM_JZ;
-
-                next_token(&token);
-            } break;
-            case TOK_BRACE_RIGHT: { 
-                const brace_t b_open = pop();
-
-                const size_t open_idx = b_open.asm_pos;
-                code[open_idx].operands.instr_line = pos + 1;
-
-                ensure_space();
-                code[pos].op = BFVM_JMP;
-                code[pos++].operands.instr_line = open_idx;
-
-                next_token(&token);
-            } break;
-            default:
-                log_err("unknown command: %c", (char)token);
+            case TOK_BRACE_LEFT: parse_conditional(); break;
+            case TOK_EOF:
+                position = open_src_position;
+                log_err("no matching ']'");
+                break;
+            default: log_err("unknown command: %c", (char)token);
         }
     }
-    
-    free_stack();
+
+    next_token(&token);
+    code[open_pos].operands.instr_line = pos + 1;
+
+    ensure_space();
+    code[pos].op = BFVM_JMP;
+    code[pos++].operands.instr_line = open_pos;
 }
 
 static void ensure_space(void) {
@@ -196,5 +177,5 @@ static void ensure_space(void) {
     }
 
     size = size + (size / 2);
-    code = (bytecode_t *)erealloc(code, sizeof(bytecode_t) * size);
+    code = BFVM_REALLOC(bytecode_t, code, size);
 }
