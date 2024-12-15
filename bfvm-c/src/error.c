@@ -6,12 +6,26 @@
  */
 
 #include "error.h"
+#include "platform.h"
 
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+
+#ifdef BFVM_LINUX
 #include <unistd.h>
+#endif
+
+/* --- constants ----------------------------------------------------------- */
+
+#if defined(BFVM_LINUX)
+#   define LOG_FMT_PROG "%s%s%s:%s%lu:%lu%s: %s"
+#   define LOG_FMT_NO_PROG "%s%lu:%lu%s: %s"
+#elif defined(BFVM_WINDOWS)
+#   define LOG_FMT_PROG "%s%s%s:%s%llu:%llu%s: %s"
+#   define LOG_FMT_NO_PROG "%s%llu:%llu%s: %s"
+#endif
 
 /* --- ASCII colors -------------------------------------------------------- */
 
@@ -100,12 +114,12 @@ void log_errpos(const char *fmt, ...) {
     va_list args;
 
     if (progname) {
-        sprintf(prefix, "%s%s%s:%s%lu:%lu%s: %s",
+        sprintf(prefix, LOG_FMT_PROG,
             ASCII_BOLD_WHITE, progname, ASCII_RESET,
             ASCII_BOLD_WHITE, position.line, position.column, ASCII_RESET,
             err);
     } else {
-        sprintf(prefix, "%s%lu:%lu%s: %s",
+        sprintf(prefix, LOG_FMT_NO_PROG,
             ASCII_BOLD_WHITE, position.line, position.column, ASCII_RESET,
             err);
     }
@@ -145,7 +159,12 @@ char *estrdup(const char *s) {
         log_err("failed to duplicate string: out of memory");
     }
 
+#if defined(BFVM_LINUX)
     strncpy(dup, s, size);
+#elif defined(BFVM_WINDOWS)
+    strcpy_s(dup, size, s);
+#endif
+
     return dup;
 }
 

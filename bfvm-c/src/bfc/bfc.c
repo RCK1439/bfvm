@@ -8,6 +8,7 @@
 #include "bfc.h"
 #include "error.h"
 #include "lexer.h"
+#include "platform.h"
 
 /* --- constants ----------------------------------------------------------- */
 
@@ -61,9 +62,15 @@ bytecode_t *compile(const char *filepath) {
 
     if (filepath) {
         setprogname(filepath);
+#if defined(BFVM_LINUX)
         if ((src = fopen(filepath, "r")) == NULL) {
             log_err("could not open file: %s", filepath);
         }
+#elif defined (BFVM_WINDOWS)
+        if (fopen_s(&src, filepath, "r") != 0) {
+            log_err("could not open file: %s", filepath);
+        }
+#endif
     } else {
         log_info("enter commands:");
         src = stdin;
