@@ -8,7 +8,7 @@
 mkdir bin
 ```
 
-2. Compiling
+2. Compile:
  - Compiling without optimizations
 ```bash
 odin build src/ -out:bin/bfvm
@@ -19,6 +19,12 @@ odin build src/ -out:bin/bfvm -o:aggressive
 ```
 
 ### Windows
+1. Create a `bin` directory
+```bash
+mkdir bin
+```
+
+2. Compile:
  - Compiling without optimizations
 ```bash
 odin build src/ -out:bin/bfvm.exe
