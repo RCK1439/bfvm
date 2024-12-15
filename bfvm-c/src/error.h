@@ -10,6 +10,12 @@
 
 #include "types.h"
 
+/* --- macros -------------------------------------------------------------- */
+
+#define BFVM_MALLOC(T, N) (T *)emalloc(sizeof(T) * (N))
+#define BFVM_REALLOC(T, P, N) (T *)erealloc(P, sizeof(T) * (N))
+#define BFVM_FREE(P) free((void *)P)
+
 /* --- type definitions ---------------------------------------------------- */
 
 /**

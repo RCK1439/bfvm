@@ -64,7 +64,7 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    free((void *)code);
+    BFVM_FREE(code);
     return EXIT_SUCCESS;
 }
 

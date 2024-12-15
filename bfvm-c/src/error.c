@@ -68,7 +68,7 @@ void setprogname(const char *filename) {
     char *c;
 
     if ((c = strrchr(filename, '/')) == NULL) {
-        c = (char*)filename;
+        c = (char *)filename;
     } else {
         c++;
     }
@@ -152,17 +152,13 @@ void *erealloc(void *p, size_t size) {
 }
 
 char *estrdup(const char *s) {
-    char *dup;
-
     const size_t size = strlen(s) + 1;
-    if ((dup = (char *)malloc(sizeof(char) * size)) == NULL) {
-        log_err("failed to duplicate string: out of memory");
-    }
-
+    char *dup = BFVM_MALLOC(char, size);
+    
 #if defined(BFVM_LINUX)
     strncpy(dup, s, size);
 #elif defined(BFVM_WINDOWS)
-    strcpy_s(dup, size, s);
+    strcpy_s(dup, sizeof(char) * size, s);
 #endif
 
     return dup;

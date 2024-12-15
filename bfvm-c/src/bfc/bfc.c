@@ -58,7 +58,7 @@ bytecode_t *compile(const char *filepath) {
     
     pos = 0;
     size = INIT_CODE_SIZE;
-    code = (bytecode_t*)emalloc(sizeof(bytecode_t) * size);
+    code = BFVM_MALLOC(bytecode_t, size);
 
     if (filepath) {
         setprogname(filepath);
@@ -177,5 +177,5 @@ static void ensure_space(void) {
     }
 
     size = size + (size / 2);
-    code = (bytecode_t *)erealloc(code, sizeof(bytecode_t) * size);
+    code = BFVM_REALLOC(bytecode_t, code, size);
 }
