@@ -15,9 +15,9 @@ bfvm_invoke :: proc(filepath: string) {
 DATA_SIZE :: 30000
 
 Virtual_Machine :: struct {
-    data_ptr: u16,
-    data: [DATA_SIZE]u8,
-    instructions: [dynamic]bfc.Byte_Code,
+    data:            [DATA_SIZE]u8,
+    data_ptr:        u16,
+    instructions:    [dynamic]bfc.Byte_Code,
     instruction_ptr: u64
 }
 
@@ -26,8 +26,8 @@ create_vm :: proc(filepath: string) -> Virtual_Machine {
     defer bfc.close_compiler(&compiler)
     
     vm := Virtual_Machine{}
-    vm.data_ptr = 0
     vm.data = [DATA_SIZE]u8{}
+    vm.data_ptr = 0
     vm.instructions = bfc.compile(&compiler)
     vm.instruction_ptr = 0
 

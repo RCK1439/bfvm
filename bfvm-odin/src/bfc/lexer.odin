@@ -5,27 +5,27 @@ import "core:strings"
 import "core:fmt"
 
 Token :: enum {
-    None = 0,
-    Plus,
-    Minus,
-    Arrow_Left,
-    Arrow_Right,
-    Dot,
-    Comma,
-    Bracket_Left,
-    Bracket_Right,
-    End_Of_File,
+    NONE = 0,
+    PLUS,
+    MINUS,
+    ARROW_LEFT,
+    ARROW_RIGHT,
+    DOT,
+    COMMA,
+    BRACKET_LEFT,
+    BRACKET_RIGHT,
+    END_OF_FILE,
 }
 
 Source_Position :: struct {
-    line: u64,
+    line:   u64,
     column: u64
 }
 
 Lexer :: struct {
     source_content: string,
-    curr_idx: u64,
-    position: Source_Position
+    curr_idx:       u64,
+    position:       Source_Position
 }
 
 create_lexer :: proc(filepath: string) -> Lexer {
@@ -56,7 +56,7 @@ get_token :: proc(lexer: ^Lexer) -> Token {
 
     for {
         if lexer.curr_idx >= size {
-            return Token.End_Of_File
+            return Token.END_OF_FILE
         }
         
         ch := lexer.source_content[lexer.curr_idx]
@@ -67,14 +67,14 @@ get_token :: proc(lexer: ^Lexer) -> Token {
         }
 
         switch ch {
-            case '+': return Token.Plus
-            case '-': return Token.Minus
-            case '<': return Token.Arrow_Left
-            case '>': return Token.Arrow_Right
-            case '.': return Token.Dot
-            case ',': return Token.Comma
-            case '[': return Token.Bracket_Left
-            case ']': return Token.Bracket_Right
+            case '+': return Token.PLUS
+            case '-': return Token.MINUS
+            case '<': return Token.ARROW_LEFT
+            case '>': return Token.ARROW_RIGHT
+            case '.': return Token.DOT
+            case ',': return Token.COMMA
+            case '[': return Token.BRACKET_LEFT
+            case ']': return Token.BRACKET_RIGHT
         }
     }
 }
