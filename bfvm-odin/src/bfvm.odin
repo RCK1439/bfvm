@@ -46,30 +46,14 @@ run_vm :: proc(vm: ^Virtual_Machine) {
         operand := vm.instructions[vm.instruction_ptr].operand;
 
         #partial switch opcode {
-            case .ADDB:
-                addb(vm, operand.(u8))
-                break
-            case .SUBB:
-                subb(vm, operand.(u8))
-                break
-            case .ADDP:
-                addp(vm, operand.(u16))
-                break
-            case .SUBP:
-                subp(vm, operand.(u16))
-                break
-            case .READ:
-                read(vm)
-                break
-            case .WRITE:
-                write(vm)
-                break
-            case .JMP:
-                jmp(vm, operand.(u64))
-                break
-            case .JZ:
-                jz(vm, operand.(u64))
-                break
+            case .ADDB: addb(vm, operand.(u8))
+            case .SUBB: subb(vm, operand.(u8))
+            case .ADDP: addp(vm, operand.(u16))
+            case .SUBP: subp(vm, operand.(u16))
+            case .READ: read(vm)
+            case .WRITE: write(vm)
+            case .JMP: jmp(vm, operand.(u64))
+            case .JZ: jz(vm, operand.(u64))
         }
     }
 }
