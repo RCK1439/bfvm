@@ -39,33 +39,35 @@ close_vm :: proc(vm: ^Virtual_Machine) {
 }
 
 run_vm :: proc(vm: ^Virtual_Machine) {
-    for vm.instructions[vm.instruction_ptr].opcode != bfc.Op_Code.End {
+    using bfc
+
+    for vm.instructions[vm.instruction_ptr].opcode != Op_Code.END {
         opcode := vm.instructions[vm.instruction_ptr].opcode
         operand := vm.instructions[vm.instruction_ptr].operand;
 
         #partial switch opcode {
-            case .Addb:
+            case .ADDB:
                 addb(vm, operand.(u8))
                 break
-            case .Subb:
+            case .SUBB:
                 subb(vm, operand.(u8))
                 break
-            case .Addp:
+            case .ADDP:
                 addp(vm, operand.(u16))
                 break
-            case .Subp:
+            case .SUBP:
                 subp(vm, operand.(u16))
                 break
-            case .Read:
+            case .READ:
                 read(vm)
                 break
-            case .Write:
+            case .WRITE:
                 write(vm)
                 break
-            case .Jmp:
+            case .JMP:
                 jmp(vm, operand.(u64))
                 break
-            case .Jz:
+            case .JZ:
                 jz(vm, operand.(u64))
                 break
         }
