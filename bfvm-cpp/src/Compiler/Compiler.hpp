@@ -8,7 +8,7 @@
 
 namespace bfc
 {
-    enum class OpCode
+    enum class OpCode : uint8_t
     {
         ADDB = 0,
         SUBB,
@@ -21,19 +21,21 @@ namespace bfc
         END
     };
 
+    union Operand
+    {
+        std::size_t Line;
+        uint16_t    PointerOffset;
+        uint8_t     ByteOffset;
+    };
+
     struct ByteCode final
     {
+        Operand Operand;
         OpCode Code;
-        union
-        {
-            uint8_t     ByteOffset;
-            uint16_t    PointerOffset;
-            std::size_t Line;
-        };
 
         ByteCode() = default;
         ByteCode(OpCode code, std::size_t operand = 0U) :
-            Code(code), Line(operand) {}
+            Operand(operand), Code(code) {}
     };
 
     class Compiler final
@@ -57,8 +59,8 @@ namespace bfc
     
     private:
         LexicalAnalyzer m_Lexer;
-        Token           m_CurrentToken = Token::NONE;
         std::size_t     m_CurrentLine = 0;
+        Token           m_CurrentToken = Token::NONE;
     };
 
 } // namespace bfc

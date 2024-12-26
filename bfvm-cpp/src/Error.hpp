@@ -4,7 +4,7 @@
 
 namespace bfl
 {
-    struct SourcePosition
+    struct SourcePosition final
     {
         std::size_t Line;
         std::size_t Column;

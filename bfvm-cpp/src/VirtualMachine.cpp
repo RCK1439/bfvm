@@ -21,16 +21,16 @@ namespace bfvm
             switch (code.Code)
             {
                 case bfc::OpCode::ADDB:
-                    AddByte(code.ByteOffset);
+                    AddByte(code.Operand.ByteOffset);
                     break;
                 case bfc::OpCode::SUBB:
-                    SubByte(code.ByteOffset);
+                    SubByte(code.Operand.ByteOffset);
                     break;
                 case bfc::OpCode::ADDP:
-                    AddPtr(code.PointerOffset);
+                    AddPtr(code.Operand.PointerOffset);
                     break;
                 case bfc::OpCode::SUBP:
-                    SubPtr(code.PointerOffset);
+                    SubPtr(code.Operand.PointerOffset);
                     break;
                 case bfc::OpCode::WRITE:
                     Write();
@@ -39,10 +39,10 @@ namespace bfvm
                     Read();
                     break;
                 case bfc::OpCode::JZ:
-                    JumpZero(code.Line);
+                    JumpZero(code.Operand.Line);
                     break;
                 case bfc::OpCode::JMP:
-                    Jump(code.Line);
+                    Jump(code.Operand.Line);
                     break;
                 default:
                     bfl::LogError("unknown opcode: %d", static_cast<int32_t>(code.Code));

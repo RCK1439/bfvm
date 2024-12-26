@@ -29,7 +29,7 @@ namespace bfvm
     private:
         std::array<uint8_t, DATA_SIZE> m_DataArray{ 0 };
         std::vector<bfc::ByteCode>     m_ByteCode;
-        uint16_t                       m_DataPointer{ 0 };
         std::size_t                    m_InstructionPointer{ 0 };
+        uint16_t                       m_DataPointer{ 0 };
     };
 }

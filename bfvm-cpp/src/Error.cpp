@@ -10,7 +10,7 @@ namespace bfl
 {
     constexpr std::string_view TITLE = "\033[1;37mbfvm: \033[m";
 
-    enum class Level
+    enum class Level : uint8_t
     {
         INFO = 0,
         WARN,
