@@ -59,13 +59,13 @@ static char *progname; /* the name of the program being compiled */
  * @param[in] args
  *      The arguments passed in to print out.
  */
-static void cprintf(FILE *const stream, const char *prefix, const char *fmt,
+static void cprintf(FILE *stream, const char *prefix, const char *fmt,
     va_list args);
 
 /* --- error interface ----------------------------------------------------- */
 
 void setprogname(const char *filename) {
-    char *c;
+    char *c = NULL;
 
     if ((c = strrchr(filename, '/')) == NULL) {
         c = (char *)filename;
@@ -132,7 +132,7 @@ void log_errpos(const char *fmt, ...) {
 }
 
 void *emalloc(size_t size) {
-    void *ptr;
+    void *ptr = NULL;
 
     if ((ptr = malloc(size)) == NULL) {
         log_err("out of memory");
@@ -142,7 +142,7 @@ void *emalloc(size_t size) {
 }
 
 void *erealloc(void *p, size_t size) {
-    void *ptr;
+    void *ptr = NULL;
 
     if ((ptr = realloc(p, size)) == NULL) {
         log_err("out of memory");
@@ -153,7 +153,7 @@ void *erealloc(void *p, size_t size) {
 
 char *estrdup(const char *s) {
     const size_t size = strlen(s) + 1;
-    char *dup = BFVM_MALLOC(char, size);
+    char *const dup = BFVM_MALLOC(char, size);
     
 #if defined(BFVM_LINUX)
     strncpy(dup, s, size);
@@ -166,7 +166,7 @@ char *estrdup(const char *s) {
 
 /* --- utility functions --------------------------------------------------- */
 
-static void cprintf(FILE *const stream, const char *prefix, const char *fmt,
+static void cprintf(FILE *stream, const char *prefix, const char *fmt,
 va_list args) {
     fflush(stdout);
     fprintf(stream, "%sbfvm:%s ", ASCII_BOLD_WHITE, ASCII_RESET);

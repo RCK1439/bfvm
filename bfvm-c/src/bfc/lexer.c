@@ -35,12 +35,12 @@ void init_lexer(FILE *src) {
     position.column = 0;
 }
 
-void next_token(token_t *const token) {
+void next_token(token_t *token) {
     do {
         nextch();
     } while (!BF_CMD(ch) && ch != EOF);
 
-    *token = ch;
+    *token = (token_t)ch;
 }
 
 /* --- utility functions ----------------------------------------------------*/

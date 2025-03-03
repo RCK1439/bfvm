@@ -79,6 +79,6 @@ typedef struct bytecode_s {
  *      An array of instructions to be executed by the virtual machine.
  *      The array has a terminating value at the end (BFVM_END)
  */
-bytecode_t *compile(const char *filepath);
+const bytecode_t *compile(const char *filepath);
 
 #endif /* BFC_H */

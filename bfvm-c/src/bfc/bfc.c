@@ -53,7 +53,7 @@ static void ensure_space(void);
 
 /* --- bfc interface ------------------------------------------------------- */
 
-bytecode_t *compile(const char *filepath) {
+const bytecode_t *compile(const char *filepath) {
     FILE *src;
     
     pos = 0;

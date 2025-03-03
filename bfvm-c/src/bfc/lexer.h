@@ -44,6 +44,6 @@ void init_lexer(FILE *src);
  * @param[out] token
  *      The token read from the stream.
  */
-void next_token(token_t *const token);
+void next_token(token_t *token);
 
 #endif /* LEXER_H */
