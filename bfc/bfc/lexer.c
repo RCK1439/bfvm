@@ -4,55 +4,68 @@
 #include "core/memory.h"
 
 #include <stdio.h>
-#include <stdlib.h>
+#include <string.h>
 
-#define BF_CMD(ch) (ch == '+' || ch == '-' || ch == '>' ||\
-                    ch == '<' || ch == '.' || ch == ',' ||\
-                    ch == ']' || ch == '[')
+#define IS_BF_CMD(ch)                      \
+    (ch == '+' || ch == '-' || ch == '>' ||\
+     ch == '<' || ch == '.' || ch == ',' ||\
+     ch == ']' || ch == '[')               \
 
 struct BFLexer
 {
-    FILE       *source;
-    BFErrorSink sink;
-    char        currentCharacter;
+    BFSourcePosition position;
+    char            *programName;
+    FILE            *source;
+    char             currentCharacter;
 };
 
 static void bfcNextCharacter(BFLexer *lexer);
 
 BFLexer *bfcInitLexer(const char *filepath)
 {
-    const BFErrorSink sink = bfcInitErrorSink(filepath);
-    
     FILE *source = NULL;
+    char *programName = NULL;
+
     if (filepath)
     {
 #if defined(BFC_PLATFORM_LINUX)
         if ((source = fopen(filepath, "r")) == NULL)
         {
-            bfcPrintError(sink, "could not open file: %s", filepath);
-            bfcCloseErrorSink(sink);
+            bfcPrintError("could not open file: %s", filepath);
             return NULL;
         }
 #elif defined (BFC_PLATFORM_WINDOWS)
         if (fopen_s(&source, filepath, "r") != 0)
         {
-            bfcPrintError(sink, "could not open file: %s", filepath);
-            bfcCloseErrorSink(sink);
+            bfcPrintError("could not open file: %s", filepath);
             return NULL;
         }
 #endif
+
+        const char *c = strchr(filepath, '/');
+        if (!c)
+        {
+            c = (char *)filepath;
+        }
+        else
+        {
+            c++;
+        }
+        programName = bfcCloneString(c);
     }
     else
     {
-        bfcPrintInfo(sink, "enter commands:");
+        bfcPrintInfo("enter commands:");
         source = stdin;
     }
 
     BFLexer *const lexer = BFC_MALLOC(BFLexer, 1);
+    lexer->position.line = 1;
+    lexer->position.column = 0;
+    lexer->programName = programName;
     lexer->source = source;
     lexer->currentCharacter = 0x00;
-    lexer->sink = sink;
-    
+
     return lexer;
 }
 
@@ -63,7 +76,11 @@ void bfcCloseLexer(BFLexer *lexer)
         fclose(lexer->source);
     }
 
-    bfcCloseErrorSink(lexer->sink);
+    if (lexer->programName)
+    {
+        BFC_FREE(lexer->programName);
+    }
+
     BFC_FREE(lexer);
 }
 
@@ -72,19 +89,19 @@ void bfcNextToken(BFLexer *lexer, BFToken *token)
     do
     {
         bfcNextCharacter(lexer);
-    } while (!BF_CMD(lexer->currentCharacter) && lexer->currentCharacter != EOF);
+    } while (!IS_BF_CMD(lexer->currentCharacter) && lexer->currentCharacter != EOF);
 
     *token = (BFToken)lexer->currentCharacter;
 }
 
-BFErrorSink bfcGetErrorSink(const BFLexer *lexer)
-{
-    return lexer->sink;
-}
-
 BFSourcePosition bfcGetCurrentSourcePosition(const BFLexer *lexer)
 {
-    return lexer->sink.position;
+    return lexer->position;
+}
+
+const char *bfcGetProgramName(const BFLexer *lexer)
+{
+    return lexer->programName;
 }
 
 static void bfcNextCharacter(BFLexer *lexer)
@@ -94,8 +111,8 @@ static void bfcNextCharacter(BFLexer *lexer)
     lexer->currentCharacter = (char)fgetc(lexer->source);
     if (last == 0x0A && lexer->currentCharacter != EOF)
     {
-        lexer->sink.position.line++;
-        lexer->sink.position.column = 1;
+        lexer->position.line++;
+        lexer->position.column = 1;
     }
     else if (lexer->currentCharacter == EOF)
     {
@@ -103,7 +120,7 @@ static void bfcNextCharacter(BFLexer *lexer)
     }
     else
     {
-        lexer->sink.position.column++;
+        lexer->position.column++;
     }
 
     last = lexer->currentCharacter;

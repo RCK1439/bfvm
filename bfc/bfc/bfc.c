@@ -92,9 +92,12 @@ static void bfcParseProgram(BFCompiler *compiler)
                 bfcParseConditional(compiler);
                 break;
             default:
-                bfcPrintErrorPos(bfcGetErrorSink(compiler->lexer), "unknown command: %c", (char)compiler->currToken);
+            {
+                const char *const progName = bfcGetProgramName(compiler->lexer);
+                const BFSourcePosition pos = bfcGetCurrentSourcePosition(compiler->lexer);
+                bfcPrintErrorPos(progName, pos.line, pos.column, "unknown token: %c", (char)compiler->currToken);
                 bfcDefer(compiler);
-                return;
+            } return;
         }
     }
 
@@ -181,7 +184,7 @@ static void bfcParseConditional(BFCompiler *compiler)
     }
 
     const size_t openPos = compiler->pos;
-    const BFSourcePosition openSrcPosition = bfcGetCurrentSourcePosition(compiler->lexer);
+    const BFSourcePosition openSrcPos = bfcGetCurrentSourcePosition(compiler->lexer);
 
     bfcEnsureCodeSpace(compiler);
     compiler->code[compiler->pos++].instr = BFC_JZ;
@@ -214,15 +217,17 @@ static void bfcParseConditional(BFCompiler *compiler)
                 break;
             case TOK_EOF:
             {
-                BFErrorSink sink = bfcGetErrorSink(compiler->lexer);
-                sink.position = openSrcPosition;
-                bfcPrintErrorPos(sink, "no matching ']'");
+                const char *const progName = bfcGetProgramName(compiler->lexer);
+                bfcPrintErrorPos(progName, openSrcPos.line, openSrcPos.column, "no matching ']'");
                 bfcDefer(compiler);
             } return;
             default:
-                bfcPrintErrorPos(bfcGetErrorSink(compiler->lexer), "unknown command: %c", (char)compiler->currToken);
+            {
+                const char *const progName = bfcGetProgramName(compiler->lexer);
+                const BFSourcePosition pos = bfcGetCurrentSourcePosition(compiler->lexer);
+                bfcPrintErrorPos(progName, pos.line, pos.column, "unknown token: %c", (char)compiler->currToken);
                 bfcDefer(compiler);
-                return;
+            } return;
         }
     }
 

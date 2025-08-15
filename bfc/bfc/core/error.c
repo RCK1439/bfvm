@@ -1,5 +1,4 @@
 #include "error.h"
-#include "memory.h"
 
 #include <stdarg.h>
 #include <stdio.h>
@@ -18,44 +17,8 @@
 
 static void bfcPrintInternal(FILE *out, const char *prefix, const char *fmt, va_list args);
 
-BFErrorSink bfcInitErrorSink(const char *filename)
+void bfcPrintNormal(const char *fmt, ...)
 {
-    BFErrorSink sink = { 0 };
-
-    if (filename)
-    {
-        char *c = strchr(filename, '/');
-        if (!c)
-        {
-            c = (char *)filename;
-        }
-        else
-        {
-            c++;
-        }
-        
-        sink.programName = bfcCloneString(c);
-    }
-    else
-    {
-        sink.programName = NULL;
-    }
-
-    sink.position.line = 1;
-    sink.position.column = 0;
-
-    return sink;
-}
-
-void bfcCloseErrorSink(BFErrorSink sink)
-{
-    BFC_FREE(sink.programName);
-}
-
-void bfcPrintNormal(BFErrorSink sink, const char *fmt, ...)
-{
-    (void)sink; // Unused
-
     va_list args = { 0 };
 
     va_start(args, fmt);
@@ -63,10 +26,8 @@ void bfcPrintNormal(BFErrorSink sink, const char *fmt, ...)
     va_end(args);
 }
 
-void bfcPrintInfo(BFErrorSink sink, const char *fmt, ...)
+void bfcPrintInfo(const char *fmt, ...)
 {
-    (void)sink; // Unused
-
     const char *prefix = BFC_ASCII_BOLD_CYAN "info:" BFC_ASCII_RESET;
     va_list args = { 0 };
 
@@ -75,10 +36,8 @@ void bfcPrintInfo(BFErrorSink sink, const char *fmt, ...)
     va_end(args);
 }
 
-void bfcPrintError(BFErrorSink sink, const char *fmt, ...)
+void bfcPrintError(const char *fmt, ...)
 {
-    (void)sink; // Unused
-
     const char *prefix = BFC_ASCII_BOLD_RED "error:" BFC_ASCII_RESET;
     va_list args = { 0 };
 
@@ -87,24 +46,24 @@ void bfcPrintError(BFErrorSink sink, const char *fmt, ...)
     va_end(args);
 }
 
-void bfcPrintErrorPos(BFErrorSink sink, const char *fmt, ...)
+void bfcPrintErrorPos(const char *progName, size_t line, size_t column, const char *fmt, ...)
 {
     const char *err = BFC_ASCII_BOLD_RED "error:" BFC_ASCII_RESET;    
     char prefix[BFC_MAX_PREFIX_SIZE+1] = { 0 };
     va_list args = { 0 };
 
-    if (sink.programName)
+    if (progName)
     {
         sprintf(prefix, BFC_FMT_PROG,
-            BFC_ASCII_BOLD_WHITE, sink.programName, BFC_ASCII_RESET,
-            BFC_ASCII_BOLD_WHITE, sink.position.line, sink.position.column, BFC_ASCII_RESET,
+            BFC_ASCII_BOLD_WHITE, progName, BFC_ASCII_RESET,
+            BFC_ASCII_BOLD_WHITE, line, column, BFC_ASCII_RESET,
             err
         );
     }
     else
     {
         sprintf(prefix, BFC_FMT_NO_PROG,
-            BFC_ASCII_BOLD_WHITE, sink.position.line, sink.position.column, BFC_ASCII_RESET,
+            BFC_ASCII_BOLD_WHITE, line, column, BFC_ASCII_RESET,
             err
         );
     }

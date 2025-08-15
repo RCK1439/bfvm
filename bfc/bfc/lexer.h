@@ -1,9 +1,15 @@
 #ifndef LEXER_H
 #define LEXER_H
 
-#include "core/error.h"
+#include "core/types.h"
 
 typedef struct BFLexer BFLexer;
+
+typedef struct BFSourcePosition
+{
+    size_t line;
+    size_t column;
+} BFSourcePosition;
 
 typedef enum BFToken
 {
@@ -23,7 +29,7 @@ void bfcCloseLexer(BFLexer *lexer);
 
 void bfcNextToken(BFLexer *lexer, BFToken *token);
 
-BFErrorSink bfcGetErrorSink(const BFLexer *lexer);
 BFSourcePosition bfcGetCurrentSourcePosition(const BFLexer *lexer);
+const char *bfcGetProgramName(const BFLexer *lexer);
 
 #endif /* LEXER_H */
