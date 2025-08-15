@@ -3,7 +3,7 @@
 
 #include "core/types.h"
 
-typedef enum BfcInstr
+typedef enum BFInstr
 {
     BFC_ADDB,
     BFC_SUBB,
@@ -14,21 +14,21 @@ typedef enum BfcInstr
     BFC_JZ,
     BFC_JMP,
     BFC_END
-} BfcInstr;
+} BFInstr;
 
-typedef union BfcOperand
+typedef union BFOperand
 {
     size_t instrLine;
     u16    dataOffset;
     u8     byteOffset;
-} BfcOperand;
+} BFOperand;
 
-typedef struct BfcOpCode
+typedef struct BFOpCode
 {
-    BfcOperand operands;
-    BfcInstr   instr;
-} BfcOpCode;
+    BFOperand operands;
+    BFInstr   instr;
+} BFOpCode;
 
-const BfcOpCode *bfcCompile(const char *filepath);
+const BFOpCode *bfcCompile(const char *filepath);
 
 #endif /* BFC_H */

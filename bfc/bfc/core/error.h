@@ -13,25 +13,25 @@
 #   define BFC_ASSERT(expr, ...) (void)0
 #endif
 
-typedef struct BfcSourcePosition
+typedef struct BFSourcePosition
 {
     size_t line;
     size_t column;
-} BfcSourcePosition;
+} BFSourcePosition;
 
-typedef struct BfcErrorSink
+typedef struct BFErrorSink
 {
-    char             *programName;
-    BfcSourcePosition position;
-} BfcErrorSink;
+    char            *programName;
+    BFSourcePosition position;
+} BFErrorSink;
 
-BfcErrorSink bfcInitErrorSink(const char *filename);
-void bfcCloseErrorSink(BfcErrorSink sink);
+BFErrorSink bfcInitErrorSink(const char *filename);
+void bfcCloseErrorSink(BFErrorSink sink);
 
-void bfcPrintNormal(BfcErrorSink sink, const char *fmt, ...);
-void bfcPrintInfo(BfcErrorSink sink, const char *fmt, ...);
-void bfcPrintError(BfcErrorSink sink, const char *fmt, ...);
-void bfcPrintErrorPos(BfcErrorSink sink, const char *fmt, ...);
+void bfcPrintNormal(BFErrorSink sink, const char *fmt, ...);
+void bfcPrintInfo(BFErrorSink sink, const char *fmt, ...);
+void bfcPrintError(BFErrorSink sink, const char *fmt, ...);
+void bfcPrintErrorPos(BFErrorSink sink, const char *fmt, ...);
 
 void bfcPanic(const char *fmt, ...);
 

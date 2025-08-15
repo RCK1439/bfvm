@@ -18,9 +18,9 @@
 
 static void bfcPrintInternal(FILE *out, const char *prefix, const char *fmt, va_list args);
 
-BfcErrorSink bfcInitErrorSink(const char *filename)
+BFErrorSink bfcInitErrorSink(const char *filename)
 {
-    BfcErrorSink sink = { 0 };
+    BFErrorSink sink = { 0 };
 
     if (filename)
     {
@@ -47,12 +47,12 @@ BfcErrorSink bfcInitErrorSink(const char *filename)
     return sink;
 }
 
-void bfcCloseErrorSink(BfcErrorSink sink)
+void bfcCloseErrorSink(BFErrorSink sink)
 {
     BFC_FREE(sink.programName);
 }
 
-void bfcPrintNormal(BfcErrorSink sink, const char *fmt, ...)
+void bfcPrintNormal(BFErrorSink sink, const char *fmt, ...)
 {
     (void)sink; // Unused
 
@@ -63,7 +63,7 @@ void bfcPrintNormal(BfcErrorSink sink, const char *fmt, ...)
     va_end(args);
 }
 
-void bfcPrintInfo(BfcErrorSink sink, const char *fmt, ...)
+void bfcPrintInfo(BFErrorSink sink, const char *fmt, ...)
 {
     (void)sink; // Unused
 
@@ -75,7 +75,7 @@ void bfcPrintInfo(BfcErrorSink sink, const char *fmt, ...)
     va_end(args);
 }
 
-void bfcPrintError(BfcErrorSink sink, const char *fmt, ...)
+void bfcPrintError(BFErrorSink sink, const char *fmt, ...)
 {
     (void)sink; // Unused
 
@@ -87,7 +87,7 @@ void bfcPrintError(BfcErrorSink sink, const char *fmt, ...)
     va_end(args);
 }
 
-void bfcPrintErrorPos(BfcErrorSink sink, const char *fmt, ...)
+void bfcPrintErrorPos(BFErrorSink sink, const char *fmt, ...)
 {
     const char *err = BFC_ASCII_BOLD_RED "error:" BFC_ASCII_RESET;    
     char prefix[BFC_MAX_PREFIX_SIZE+1] = { 0 };

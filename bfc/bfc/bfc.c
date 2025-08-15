@@ -17,43 +17,43 @@
     }                                                       \
     compiler->pos++                                         \
 
-typedef struct BfcCompiler
+typedef struct BFCompiler
 {
-    BfcLexer  *lexer;
-    BfcOpCode *code;
-    size_t     pos;
-    size_t     size;
-    BfcToken   currToken;
-} BfcCompiler;
+    BFLexer  *lexer;
+    BFOpCode *code;
+    size_t    pos;
+    size_t    size;
+    BFToken   currToken;
+} BFCompiler;
 
-static void bfcParseProgram(BfcCompiler *compiler);
-static void bfcParseAddByte(BfcCompiler *compiler);
-static void bfcParseSubByte(BfcCompiler *compiler);
-static void bfcParseAddPtr(BfcCompiler *compiler);
-static void bfcParseSubPtr(BfcCompiler *compiler);
-static void bfcParseWrite(BfcCompiler *compiler);
-static void bfcParseRead(BfcCompiler *compiler);
-static void bfcParseConditional(BfcCompiler *compiler);
+static void bfcParseProgram(BFCompiler *compiler);
+static void bfcParseAddByte(BFCompiler *compiler);
+static void bfcParseSubByte(BFCompiler *compiler);
+static void bfcParseAddPtr(BFCompiler *compiler);
+static void bfcParseSubPtr(BFCompiler *compiler);
+static void bfcParseWrite(BFCompiler *compiler);
+static void bfcParseRead(BFCompiler *compiler);
+static void bfcParseConditional(BFCompiler *compiler);
 
-static void bfcEnsureCodeSpace(BfcCompiler *compiler);
-static void bfcDefer(BfcCompiler *compiler);
+static void bfcEnsureCodeSpace(BFCompiler *compiler);
+static void bfcDefer(BFCompiler *compiler);
 
-const BfcOpCode *bfcCompile(const char *filepath)
+const BFOpCode *bfcCompile(const char *filepath)
 {
-    BfcLexer *const lexer = bfcInitLexer(filepath);
+    BFLexer *const lexer = bfcInitLexer(filepath);
     if (!lexer)
     {
         return NULL;
     }
 
-    BfcCompiler *const compiler = BFC_MALLOC(BfcCompiler, 1);
+    BFCompiler *const compiler = BFC_MALLOC(BFCompiler, 1);
     compiler->lexer = lexer;
-    compiler->code = BFC_MALLOC(BfcOpCode, INIT_CODE_SIZE);
+    compiler->code = BFC_MALLOC(BFOpCode, INIT_CODE_SIZE);
     compiler->pos = 0;
     compiler->size = INIT_CODE_SIZE;
 
     bfcParseProgram(compiler);
-    BfcOpCode *const code = compiler->code;
+    BFOpCode *const code = compiler->code;
 
     bfcCloseLexer(compiler->lexer);
     BFC_FREE(compiler);
@@ -63,7 +63,7 @@ const BfcOpCode *bfcCompile(const char *filepath)
 
 /* --- parser routines ------------------------------------------------------*/
 
-static void bfcParseProgram(BfcCompiler *compiler)
+static void bfcParseProgram(BFCompiler *compiler)
 {
     bfcNextToken(compiler->lexer, &compiler->currToken);
     while (compiler->currToken != TOK_EOF)
@@ -107,7 +107,7 @@ static void bfcParseProgram(BfcCompiler *compiler)
     compiler->code[compiler->pos].instr = BFC_END;
 }
 
-static void bfcParseAddByte(BfcCompiler *compiler)
+static void bfcParseAddByte(BFCompiler *compiler)
 {
     if (!compiler->code)
     {
@@ -117,7 +117,7 @@ static void bfcParseAddByte(BfcCompiler *compiler)
     PARSE_CHAIN(TOK_ADD, BFC_ADDB, compiler->code[compiler->pos].operands.byteOffset);
 }
 
-static void bfcParseSubByte(BfcCompiler *compiler)
+static void bfcParseSubByte(BFCompiler *compiler)
 {
     if (!compiler->code)
     {
@@ -127,7 +127,7 @@ static void bfcParseSubByte(BfcCompiler *compiler)
     PARSE_CHAIN(TOK_SUB, BFC_SUBB, compiler->code[compiler->pos].operands.byteOffset);
 }
 
-static void bfcParseAddPtr(BfcCompiler *compiler)
+static void bfcParseAddPtr(BFCompiler *compiler)
 {
     if (!compiler->code)
     {
@@ -137,7 +137,7 @@ static void bfcParseAddPtr(BfcCompiler *compiler)
     PARSE_CHAIN(TOK_ARROW_RIGHT, BFC_ADDP, compiler->code[compiler->pos].operands.dataOffset);
 }
 
-static void bfcParseSubPtr(BfcCompiler *compiler)
+static void bfcParseSubPtr(BFCompiler *compiler)
 {
     if (!compiler->code)
     {
@@ -147,7 +147,7 @@ static void bfcParseSubPtr(BfcCompiler *compiler)
     PARSE_CHAIN(TOK_ARROW_LEFT, BFC_SUBP, compiler->code[compiler->pos].operands.dataOffset);
 }
 
-static void bfcParseWrite(BfcCompiler *compiler)
+static void bfcParseWrite(BFCompiler *compiler)
 {
     if (!compiler->code)
     {
@@ -160,7 +160,7 @@ static void bfcParseWrite(BfcCompiler *compiler)
     bfcNextToken(compiler->lexer, &compiler->currToken);
 }
 
-static void bfcParseRead(BfcCompiler *compiler)
+static void bfcParseRead(BFCompiler *compiler)
 {
     if (!compiler->code)
     {
@@ -173,7 +173,7 @@ static void bfcParseRead(BfcCompiler *compiler)
     bfcNextToken(compiler->lexer, &compiler->currToken);
 }
 
-static void bfcParseConditional(BfcCompiler *compiler)
+static void bfcParseConditional(BFCompiler *compiler)
 {
     if (!compiler->code)
     {
@@ -181,7 +181,7 @@ static void bfcParseConditional(BfcCompiler *compiler)
     }
 
     const size_t openPos = compiler->pos;
-    const BfcSourcePosition openSrcPosition = bfcGetCurrentSourcePosition(compiler->lexer);
+    const BFSourcePosition openSrcPosition = bfcGetCurrentSourcePosition(compiler->lexer);
 
     bfcEnsureCodeSpace(compiler);
     compiler->code[compiler->pos++].instr = BFC_JZ;
@@ -214,7 +214,7 @@ static void bfcParseConditional(BfcCompiler *compiler)
                 break;
             case TOK_EOF:
             {
-                BfcErrorSink sink = bfcGetErrorSink(compiler->lexer);
+                BFErrorSink sink = bfcGetErrorSink(compiler->lexer);
                 sink.position = openSrcPosition;
                 bfcPrintErrorPos(sink, "no matching ']'");
                 bfcDefer(compiler);
@@ -234,7 +234,7 @@ static void bfcParseConditional(BfcCompiler *compiler)
     compiler->code[compiler->pos++].operands.instrLine = openPos;
 }
 
-static void bfcEnsureCodeSpace(BfcCompiler *compiler)
+static void bfcEnsureCodeSpace(BFCompiler *compiler)
 {
     if (compiler->pos < compiler->size)
     {
@@ -242,10 +242,10 @@ static void bfcEnsureCodeSpace(BfcCompiler *compiler)
     }
 
     compiler->size = compiler->size + (compiler->size / 2);
-    compiler->code = BFC_REALLOC(BfcOpCode, compiler->code, compiler->size);
+    compiler->code = BFC_REALLOC(BFOpCode, compiler->code, compiler->size);
 }
 
-static void bfcDefer(BfcCompiler *compiler)
+static void bfcDefer(BFCompiler *compiler)
 {
     BFC_FREE(compiler->code);
     compiler->code = NULL;

@@ -14,10 +14,10 @@ typedef int16_t i16;
 typedef int32_t i32;
 typedef int64_t i64;
 
-typedef enum BfcBool
+typedef enum BFBool
 {
     BFC_FALSE = 0,
     BFC_TRUE  = 1
-} BfcBool;
+} BFBool;
 
 #endif /* TYPES_H */

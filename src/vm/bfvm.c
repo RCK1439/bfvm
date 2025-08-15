@@ -13,10 +13,10 @@
 
 struct BFVirtualMachine
 {
-    u8               data[BFVM_DATA_SIZE];
-    const BfcOpCode *code;
-    size_t           ip;
-    u16              dp;
+    u8              data[BFVM_DATA_SIZE];
+    const BFOpCode *code;
+    size_t          ip;
+    u16             dp;
 };
 
 static void bfvmAddb(BFVirtualMachine *vm, u8 val);
@@ -30,7 +30,7 @@ static void bfvmJmp(BFVirtualMachine *vm, size_t line);
 
 BFVirtualMachine *bfvmInitVirtualMachine(int argc, char **argv)
 {
-    const BfcOpCode *const code = bfcCompile(argc < 2 ? NULL : argv[1]);
+    const BFOpCode *const code = bfcCompile(argc < 2 ? NULL : argv[1]);
     if (!code)
     {
         return NULL;

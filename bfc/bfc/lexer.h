@@ -3,9 +3,9 @@
 
 #include "core/error.h"
 
-typedef struct BfcLexer BfcLexer;
+typedef struct BFLexer BFLexer;
 
-typedef enum BfcToken
+typedef enum BFToken
 {
     TOK_EOF         = -1,   /* EOF */
     TOK_ADD         = 0x2B, /* + */
@@ -16,14 +16,14 @@ typedef enum BfcToken
     TOK_COMMA       = 0x2C, /* , */
     TOK_BRACE_LEFT  = 0x5B, /* [ */
     TOK_BRACE_RIGHT = 0x5D  /* ] */
-} BfcToken;
+} BFToken;
 
-BfcLexer *bfcInitLexer(const char *filepath);
-void bfcCloseLexer(BfcLexer *lexer);
+BFLexer *bfcInitLexer(const char *filepath);
+void bfcCloseLexer(BFLexer *lexer);
 
-void bfcNextToken(BfcLexer *lexer, BfcToken *token);
+void bfcNextToken(BFLexer *lexer, BFToken *token);
 
-BfcErrorSink bfcGetErrorSink(const BfcLexer *lexer);
-BfcSourcePosition bfcGetCurrentSourcePosition(const BfcLexer *lexer);
+BFErrorSink bfcGetErrorSink(const BFLexer *lexer);
+BFSourcePosition bfcGetCurrentSourcePosition(const BFLexer *lexer);
 
 #endif /* LEXER_H */
