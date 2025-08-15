@@ -26,16 +26,18 @@ BfcLexer *bfcInitLexer(const char *filepath)
     FILE *source = NULL;
     if (filepath)
     {
-#if defined(BFVM_LINUX)
+#if defined(BFC_PLATFORM_LINUX)
         if ((source = fopen(filepath, "r")) == NULL)
         {
-            bfcPrintError("could not open file: %s", filepath);
+            bfcPrintError(sink, "could not open file: %s", filepath);
+            bfcCloseErrorSink(sink);
             return NULL;
         }
-#elif defined (BFVM_WINDOWS)
+#elif defined (BFC_PLATFORM_WINDOWS)
         if (fopen_s(&source, filepath, "r") != 0)
         {
-            bfcPrintError("could not open file: %s", filepath);
+            bfcPrintError(sink, "could not open file: %s", filepath);
+            bfcCloseErrorSink(sink);
             return NULL;
         }
 #endif

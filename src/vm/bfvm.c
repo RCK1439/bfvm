@@ -79,7 +79,7 @@ void bfvmRunVirtualMachine(BFVirtualMachine *vm)
                 bfvmJmp(vm, vm->code[vm->ip].operands.instrLine);
                 break;
             default:
-                bfvmPrintError("unknown opcode %d\n", vm->code[vm->ip].instr);
+                bfvmPrintError("unknown instruction %d\n", vm->code[vm->ip].instr);
                 break;
         }
     }

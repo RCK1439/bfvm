@@ -6,13 +6,13 @@
 
 #define INIT_CODE_SIZE 32UL
 
-#define PARSE_CHAIN(TOKEN, OP, OFFSET)                      \
+#define PARSE_CHAIN(TOKEN, INSTR, OFFSET)                   \
     bfcEnsureCodeSpace(compiler);                           \
-    compiler->code[compiler->pos].instr = (OP);             \
+    compiler->code[compiler->pos].instr = INSTR;            \
     OFFSET = 0;                                             \
-    while (compiler->currToken == (TOKEN))                  \
+    while (compiler->currToken == TOKEN)                    \
     {                                                       \
-        (OFFSET)++;                                         \
+        OFFSET++;                                           \
         bfcNextToken(compiler->lexer, &compiler->currToken);\
     }                                                       \
     compiler->pos++                                         \
@@ -55,7 +55,6 @@ const BfcOpCode *bfcCompile(const char *filepath)
     bfcParseProgram(compiler);
     BfcOpCode *const code = compiler->code;
 
-    BFC_FREE(compiler->code);
     bfcCloseLexer(compiler->lexer);
     BFC_FREE(compiler);
 
