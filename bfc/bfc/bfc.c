@@ -1,8 +1,9 @@
 #include "bfc.h"
-#include "core/error.h"
-#include "lexer.h"
 
+#include "core/error.h"
 #include "core/memory.h"
+
+#include "lexer/lexer.h"
 
 #define INIT_CODE_SIZE 32UL
 

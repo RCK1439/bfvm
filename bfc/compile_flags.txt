@@ -4,4 +4,4 @@
 -Wpedantic
 -std=c99
 
--Isrc/
+-Ibfc/
