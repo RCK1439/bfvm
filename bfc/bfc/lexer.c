@@ -6,10 +6,10 @@
 #include <stdio.h>
 #include <string.h>
 
-#define IS_BF_CMD(ch)                      \
-    (ch == '+' || ch == '-' || ch == '>' ||\
-     ch == '<' || ch == '.' || ch == ',' ||\
-     ch == ']' || ch == '[')               \
+#define IS_BF_CMD(ch)                            \
+    ((ch) == '+' || (ch) == '-' || (ch) == '>' ||\
+     (ch) == '<' || (ch) == '.' || (ch) == ',' ||\
+     (ch) == ']' || (ch) == '[')                 \
 
 struct BFLexer
 {
