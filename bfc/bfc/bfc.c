@@ -14,7 +14,7 @@
     while (compiler->currToken == TOKEN)                    \
     {                                                       \
         OFFSET++;                                           \
-        bfcNextToken(compiler->lexer, &compiler->currToken);\
+        compiler->currToken = bfcNextToken(compiler->lexer);\
     }                                                       \
     compiler->pos++                                         \
 
@@ -66,7 +66,7 @@ const BFOpCode *bfcCompile(const char *filepath)
 
 static void bfcParseProgram(BFCompiler *compiler)
 {
-    bfcNextToken(compiler->lexer, &compiler->currToken);
+    compiler->currToken = bfcNextToken(compiler->lexer);
     while (compiler->currToken != TOK_EOF)
     {
         switch (compiler->currToken)
@@ -161,7 +161,7 @@ static void bfcParseWrite(BFCompiler *compiler)
     bfcEnsureCodeSpace(compiler);
 
     compiler->code[compiler->pos++].instr = BFC_WRITE;
-    bfcNextToken(compiler->lexer, &compiler->currToken);
+    compiler->currToken = bfcNextToken(compiler->lexer);
 }
 
 static void bfcParseRead(BFCompiler *compiler)
@@ -174,7 +174,7 @@ static void bfcParseRead(BFCompiler *compiler)
     bfcEnsureCodeSpace(compiler);
 
     compiler->code[compiler->pos++].instr = BFC_READ;
-    bfcNextToken(compiler->lexer, &compiler->currToken);
+    compiler->currToken = bfcNextToken(compiler->lexer);
 }
 
 static void bfcParseConditional(BFCompiler *compiler)
@@ -190,7 +190,7 @@ static void bfcParseConditional(BFCompiler *compiler)
     bfcEnsureCodeSpace(compiler);
     compiler->code[compiler->pos++].instr = BFC_JZ;
 
-    bfcNextToken(compiler->lexer, &compiler->currToken);
+    compiler->currToken = bfcNextToken(compiler->lexer);
     while (compiler->currToken != TOK_BRACE_RIGHT)
     {
         switch (compiler->currToken)
@@ -232,7 +232,7 @@ static void bfcParseConditional(BFCompiler *compiler)
         }
     }
 
-    bfcNextToken(compiler->lexer, &compiler->currToken);
+    compiler->currToken = bfcNextToken(compiler->lexer);
     compiler->code[openPos].operands.instrLine = compiler->pos + 1;
 
     bfcEnsureCodeSpace(compiler);

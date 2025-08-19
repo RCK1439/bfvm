@@ -27,7 +27,7 @@ typedef enum BFToken
 BFLexer *bfcInitLexer(const char *filepath);
 void bfcCloseLexer(BFLexer *lexer);
 
-void bfcNextToken(BFLexer *lexer, BFToken *token);
+BFToken bfcNextToken(BFLexer *lexer);
 
 BFSourcePosition bfcGetCurrentSourcePosition(const BFLexer *lexer);
 const char *bfcGetProgramName(const BFLexer *lexer);

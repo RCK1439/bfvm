@@ -54,7 +54,7 @@ void bfcPrintErrorPos(const char *progName, size_t line, size_t column, const ch
 
     if (progName)
     {
-        sprintf(prefix, BFC_FMT_PROG,
+        snprintf(prefix, BFC_MAX_PREFIX_SIZE, BFC_FMT_PROG,
             BFC_ASCII_BOLD_WHITE, progName, BFC_ASCII_RESET,
             BFC_ASCII_BOLD_WHITE, line, column, BFC_ASCII_RESET,
             err
@@ -62,7 +62,7 @@ void bfcPrintErrorPos(const char *progName, size_t line, size_t column, const ch
     }
     else
     {
-        sprintf(prefix, BFC_FMT_NO_PROG,
+        snprintf(prefix, BFC_MAX_PREFIX_SIZE, BFC_FMT_NO_PROG,
             BFC_ASCII_BOLD_WHITE, line, column, BFC_ASCII_RESET,
             err
         );

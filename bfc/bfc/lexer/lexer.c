@@ -84,14 +84,14 @@ void bfcCloseLexer(BFLexer *lexer)
     BFC_FREE(lexer);
 }
 
-void bfcNextToken(BFLexer *lexer, BFToken *token)
+BFToken bfcNextToken(BFLexer *lexer)
 {
     do
     {
         bfcNextCharacter(lexer);
     } while (!IS_BF_CMD(lexer->currentCharacter) && lexer->currentCharacter != EOF);
 
-    *token = (BFToken)lexer->currentCharacter;
+    return (BFToken)lexer->currentCharacter;
 }
 
 BFSourcePosition bfcGetCurrentSourcePosition(const BFLexer *lexer)
