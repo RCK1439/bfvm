@@ -23,46 +23,36 @@ static void bfcNextCharacter(BFLexer *lexer);
 
 BFLexer *bfcInitLexer(const char *filepath)
 {
-    FILE *source = NULL;
-    char *programName = NULL;
-
-    if (filepath)
-    {
 #if defined(BFC_PLATFORM_LINUX)
-        if ((source = fopen(filepath, "r")) == NULL)
-        {
-            bfcPrintError("could not open file: %s", filepath);
-            return NULL;
-        }
+    FILE *const source = fopen(filepath, "r");
+    if (!source)
+    {
+        bfcPrintError("could not open file: %s", filepath);
+        return NULL;
+    }
 #elif defined (BFC_PLATFORM_WINDOWS)
-        if (fopen_s(&source, filepath, "r") != 0)
-        {
-            bfcPrintError("could not open file: %s", filepath);
-            return NULL;
-        }
+    FILE *const source;
+    if (fopen_s(&source, filepath, "r") != 0)
+    {
+        bfcPrintError("could not open file: %s", filepath);
+        return NULL;
+    }
 #endif
 
-        const char *c = strchr(filepath, '/');
-        if (!c)
-        {
-            c = (char *)filepath;
-        }
-        else
-        {
-            c++;
-        }
-        programName = bfcCloneString(c);
+    const char *c = strchr(filepath, '/');
+    if (!c)
+    {
+        c = (char *)filepath;
     }
     else
     {
-        bfcPrintInfo("enter commands:");
-        source = stdin;
+        c++;
     }
 
     BFLexer *const lexer = BFC_MALLOC(BFLexer, 1);
     lexer->position.line = 1;
     lexer->position.column = 0;
-    lexer->programName = programName;
+    lexer->programName = bfcCloneString(c);
     lexer->source = source;
     lexer->currentCharacter = 0x00;
 
@@ -71,16 +61,8 @@ BFLexer *bfcInitLexer(const char *filepath)
 
 void bfcCloseLexer(BFLexer *lexer)
 {
-    if (lexer->source != stdin)
-    {
-        fclose(lexer->source);
-    }
-
-    if (lexer->programName)
-    {
-        BFC_FREE(lexer->programName);
-    }
-
+    fclose(lexer->source);
+    BFC_FREE(lexer->programName);
     BFC_FREE(lexer);
 }
 

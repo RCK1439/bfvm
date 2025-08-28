@@ -30,7 +30,13 @@ static void bfvmJmp(BFVirtualMachine *vm, size_t line);
 
 BFVirtualMachine *bfvmInitVirtualMachine(int argc, char **argv)
 {
-    const BFOpCode *const code = bfcCompile(argc < 2 ? NULL : argv[1]);
+    if (argc < 2)
+    {
+        bfvmPrintError("no sources");
+        return NULL;
+    }
+
+    const BFOpCode *const code = bfcCompile(argv[1]);
     if (!code)
     {
         return NULL;
